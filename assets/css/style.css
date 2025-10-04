@@ -190,7 +190,11 @@ main{padding:2rem 0 4rem}
 }
 
 @media(max-width:720px){
-  .social-links{flex-direction:column;gap:0.75rem}
+  .social-links{flex-direction:column;gap:1rem}
+  .social-links a {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
 }
 
 /* PDF preview */
