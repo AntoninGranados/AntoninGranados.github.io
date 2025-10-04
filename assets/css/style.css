@@ -288,6 +288,23 @@ main{padding:1rem 0 2rem}
     display: block
 }
 
+/* Project status ribbon */
+.project-image.in-progress::before {
+    content: 'In Progress';
+    position: absolute;
+    background: #F1FA8C; /* Dracula yellow */
+    color: #282a36; /* Dracula background */
+    padding: 0.5rem 4rem;
+    transform: rotate(45deg);
+    transform-origin: center;
+    top: 1.5rem;
+    right: -3.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
 @media(max-width:720px){
     .project-card, .project-card:nth-child(even){
         flex-direction: column;

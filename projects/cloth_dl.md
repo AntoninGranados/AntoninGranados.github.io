@@ -1,5 +1,5 @@
 ---
-title: Cloth Simulation with Machine Learning
+title: Cloth Simulation with DL
 layout: project
 ---
 
