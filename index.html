@@ -8,6 +8,7 @@ layout: null
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Home — Antonin Granados</title>
+  <link rel="icon" href="/assets/img/icon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -17,11 +18,15 @@ layout: null
   <header class="site-header">
     <div class="container header-inner">
       <div class="brand">
-        <a href="/" class="brand-link">
-          <img src="/assets/icons/telecom.svg" alt="Telecom Paris logo" class="brand-logo">
-          <h1>Antonin Granados</h1>
-        </a>
-        <p class="muted">Engineering student at Telecom Paris</p>
+        <div class="brand-content">
+          <a href="https://www.telecom-paris.fr" class="brand-logo" target="_blank">
+            <img src="/assets/logos/telecom.svg" alt="Telecom Paris logo">
+          </a>
+          <div class="brand-text">
+            <h1>Antonin Granados</h1>
+            <p class="muted">Engineering student at Telecom Paris</p>
+          </div>
+        </div>
       </div>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="/">Home</a>
@@ -39,8 +44,8 @@ layout: null
                     <div class="hero-text">
                         <h2>Hi, I'm <span class="name">Antonin Granados</span></h2>
                         <p class="tagline">
-                            I'm a 2nd-year engineering student at <a href="https://www.telecom-paris.fr" target="_blank" rel="noopener">Telecom Paris</a>. I follow the <a href="https://www.telecom-paris.fr/fr/ingenieur/formation/2e-annee-orientation/3d-systemes-interactifs" target="_blank" rel="noopener">IGR (3D Systems & Interactive)</a> and <a href="https://www.telecom-paris.fr/fr/ingenieur/formation/2e-annee-orientation/image" target="_blank" rel="noopener">IMA (Image)</a> specializations. And I'm mostly interested by computer graphics, simulation, and machine learning.<br>
-                            Additionally, I'm enrolled in the "Parcours Recherche" (research track) under the supervision of <a href="https://perso.telecom-paristech.fr/kum/" target="_blank" rel="noopener">Kiwon Um</a>, working on <i>Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications</i>.
+                            Currently in my 2nd year at <a href="https://www.telecom-paris.fr" target="_blank" rel="noopener">Telecom Paris</a>, specializing in both <a href="https://www.telecom-paris.fr/fr/ingenieur/formation/2e-annee-orientation/3d-systemes-interactifs" target="_blank" rel="noopener">3D Systems & Interactive</a> and <a href="https://www.telecom-paris.fr/fr/ingenieur/formation/2e-annee-orientation/image" target="_blank" rel="noopener">Image Processing</a> tracks. My main areas of interest include computer graphics, simulation, and machine learning.<br>
+                            Alongside my regular coursework, I'm enrolled in the research program ("Parcours Recherche"), collaborating with <a href="https://perso.telecom-paristech.fr/kum/" target="_blank" rel="noopener">Kiwon Um</a> on <i>Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications</i>.
                         </p>
                     </div>
                     <div class="hero-media">
@@ -56,23 +61,23 @@ layout: null
         <ul class="social-links">
             <li>
                 <a href="mailto:antonin.granados@telecom-paris.fr">
-                    <img src="/assets/icons/email.svg" alt="Email icon"> <span>antonin.granados@telecom-paris.fr</span>
+                    <img src="/assets/logos/email.svg" alt="Email icon"> <span>Mail</span>
                 </a>
             </li>
             <li>
                 <a href="https://github.com/AntoninGranados" target="_blank">
-                    <img src="/assets/icons/github.svg" alt="GitHub icon"> <span>GitHub</span>
+                    <img src="/assets/logos/github.svg" alt="GitHub icon"> <span>GitHub</span>
                 </a>
             </li>
             <li>
                 <a href="https://www.linkedin.com/in/antonin-granados/" target="_blank">
-                    <img src="/assets/icons/linkedin.svg" alt="LinkedIn icon"> <span>LinkedIn</span>
+                    <img src="/assets/logos/linkedin.svg" alt="LinkedIn icon"> <span>LinkedIn</span>
                 </a>
             </li>
         </ul>
     </section>
 
-        <section id="projects" class="container">
+    <section id="projects" class="container">
         <h3>Projects</h3>
         <div class="projects-grid">
             <a href="/projects/cloth_ml.html" class="project-card">
@@ -82,7 +87,17 @@ layout: null
                 <div class="project-content">
                     <h4>Cloth Simulation with Machine Learning</h4>
                     <p>Physics-based Simulation of <b>Deformable Objects</b> with <b>Deep Learning</b> for Computer Graphics Applications</p>
-                    <time class="project-date">September — <i>now</i> 2025</time>
+                    <time class="project-date">September 2025 — <i>now</i></time>
+                </div>
+            </a>
+            <a href="/projects/vk_ray.html" class="project-card">
+                <div class="project-image">
+                    <img src="/assets/img/projects/vk_ray_preview.png" alt="Preview of VkRay">
+                </div>
+                <div class="project-content">
+                    <h4>VkRay</h4>
+                    <p>A real-time <b>Raytracer</b> using a custom <b>Vulkan</b> engine</p>
+                    <time class="project-date"><i>now</i></time>
                 </div>
             </a>
             <a href="/projects/gpu_smoke.html" class="project-card">
@@ -90,20 +105,20 @@ layout: null
                     <img src="/assets/img/projects/gpu_smoke_preview.png" alt="Preview of GPU Smoke simulation">
                 </div>
                 <div class="project-content">
-                    <h4>Smoke on the GPU</h4>
+                    <h4>Smoke Simulation on the GPU</h4>
                     <p><b>Simulation</b> and <b>Rendering</b> of Smoke using <b>Compute Shader</b> for the <b>Godot</b> game engine</p>
-                    <time class="project-date">February — July 2025</time>
+                    <time class="project-date">February 2025 — July 2025</time>
                 </div>
             </a>
         </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>&copy; {{ 'now' | date: "%Y" }} Antonin Granados — <a href="/">antoningranados.github.io</a></p>
-    </div>
-  </footer>
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; {{ 'now' | date: "%Y" }} Antonin Granados — <a href="/">antoningranados.github.io</a> — Using the <a href="https://draculatheme.com" target="_blank" rel="noopener">Dracula Theme</a></p>
+        </div>
+    </footer>
 </body>
 </html>
 
