@@ -1,66 +1,109 @@
 ---
 title: Home
-layout: default
+layout: null
 ---
-<section id="hero">
-    <div class="container">
-        <div class="hero-card">
-            <div class="hero-inner">
-                <div class="hero-text">
-                    <h2>Hi, I'm <span class="name">Antonin Granados</span></h2>
-                    <p class="tagline">
-                        I'm a 2nd-year engineering student at <a href="https://www.telecom-paris.fr" target="_blank" rel="noopener">Telecom Paris</a>. I follow the <a href="https://www.telecom-paris.fr/fr/ingenieur/formation/2e-annee-orientation/3d-systemes-interactifs" target="_blank" rel="noopener">IGR (3D Systems & Interactive)</a> and <a href="https://www.telecom-paris.fr/fr/ingenieur/formation/2e-annee-orientation/image" target="_blank" rel="noopener">IMA (Image)</a> specializations. And I'm mostly interested by computer graphics, simulation, and machine learning.<br>
-                        Additionally, I'm enrolled in the "Parcours Recherche" (research track) under the supervision of <a href="https://perso.telecom-paristech.fr/kum/" target="_blank" rel="noopener">Kiwon Um</a>, working on <i>Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications</i>.
-                    </p>
-                </div>
-                <div class="hero-media">
-                    <img src="/assets/img/avatar.jpg" alt="Antonin Granados" class="avatar">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home — Antonin Granados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <a href="/" class="brand-link">
+          <img src="/assets/icons/telecom.svg" alt="Telecom Paris logo" class="brand-logo">
+          <h1>Antonin Granados</h1>
+        </a>
+        <p class="muted">Engineering student at Telecom Paris</p>
+      </div>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/#projects">Projects</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="hero">
+        <div class="container">
+            <div class="hero-card">
+                <div class="hero-inner">
+                    <div class="hero-text">
+                        <h2>Hi, I'm <span class="name">Antonin Granados</span></h2>
+                        <p class="tagline">
+                            I'm a 2nd-year engineering student at <a href="https://www.telecom-paris.fr" target="_blank" rel="noopener">Telecom Paris</a>. I follow the <a href="https://www.telecom-paris.fr/fr/ingenieur/formation/2e-annee-orientation/3d-systemes-interactifs" target="_blank" rel="noopener">IGR (3D Systems & Interactive)</a> and <a href="https://www.telecom-paris.fr/fr/ingenieur/formation/2e-annee-orientation/image" target="_blank" rel="noopener">IMA (Image)</a> specializations. And I'm mostly interested by computer graphics, simulation, and machine learning.<br>
+                            Additionally, I'm enrolled in the "Parcours Recherche" (research track) under the supervision of <a href="https://perso.telecom-paristech.fr/kum/" target="_blank" rel="noopener">Kiwon Um</a>, working on <i>Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications</i>.
+                        </p>
+                    </div>
+                    <div class="hero-media">
+                        <img src="/assets/img/avatar.jpg" alt="Antonin Granados" class="avatar">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        </section>
+
+    <section id="contact" class="container">
+        <h3>Contact</h3>
+        <ul class="social-links">
+            <li>
+                <a href="mailto:antonin.granados@telecom-paris.fr">
+                    <img src="/assets/icons/email.svg" alt="Email icon"> <span>antonin.granados@telecom-paris.fr</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/AntoninGranados" target="_blank">
+                    <img src="/assets/icons/github.svg" alt="GitHub icon"> <span>GitHub</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.linkedin.com/in/antonin-granados/" target="_blank">
+                    <img src="/assets/icons/linkedin.svg" alt="LinkedIn icon"> <span>LinkedIn</span>
+                </a>
+            </li>
+        </ul>
     </section>
 
-<section id="contact" class="container">
-    <h3>Contact</h3>
-    <ul class="social-links">
-        <li>
-            <a href="mailto:antonin.granados@telecom-paris.fr">
-                <img src="/assets/icons/email.svg" alt="Email icon"> <span>antonin.granados@telecom-paris.fr</span>
+    <section id="projects" class="container">
+        <h3>Projects</h3>
+        <div class="projects-grid">
+            <a href="/projects/cloth_ml.html" class="project-card">
+                <div class="project-image">
+                    <img src="/assets/img/projects/cloth_ml_preview.png" alt="Preview of Cloth Simulation with Machine Learning">
+                </div>
+                <div class="project-content">
+                    <h4>Cloth Simulation with Machine Learning</h4>
+                    <p>Physics-based Simulation of <b>Deformable Objects</b> with <b>Deep Learning</b> for Computer Graphics Applications</p>
+                    <time class="project-date">September — <i>now</i> 2025</time>
+                </div>
             </a>
-        </li>
-        <li>
-            <a href="https://github.com/AntoninGranados" target="_blank">
-                <img src="/assets/icons/github.svg" alt="GitHub icon"> <span>GitHub</span>
+            <a href="/projects/gpu_smoke.html" class="project-card">
+                <div class="project-image">
+                    <img src="/assets/img/projects/gpu_smoke_preview.png" alt="Preview of GPU Smoke simulation">
+                </div>
+                <div class="project-content">
+                    <h4>Smoke on the GPU</h4>
+                    <p><b>Simulation</b> and <b>Rendering</b> of Smoke using <b>Compute Shader</b> for the <b>Godot</b> game engine</p>
+                    <time class="project-date">February — July 2025</time>
+                </div>
             </a>
-        </li>
-        <li>
-            <a href="https://www.linkedin.com/in/antonin-granados/" target="_blank">
-                <img src="/assets/icons/linkedin.svg" alt="LinkedIn icon"> <span>LinkedIn</span>
-            </a>
-        </li>
-    </ul>
-</section>
+        </div>
+    </section>
+  </main>
 
-<section id="projects" class="container">
-    <h3>Projects</h3>
-    <div class="projects-grid">
-        <a href="/projects/cloth_ml.html" class="project-card">
-            <img src="/assets/img/projects/cloth_ml_preview.png" alt="Preview of Cloth Simulation with Machine Learning" class="project-image">
-            <div class="project-content">
-                <h4>Cloth Simulation with Machine Learning</h4>
-                <p>Physics-based Simulation of <b>Deformable Objects</b> with <b>Deep Learning</b> for Computer Graphics Applications</p>
-                <time class="project-date">September — <i>now</i> 2025</time>
-            </div>
-        </a>
-        <a href="/projects/gpu_smoke.html" class="project-card">
-            <img src="/assets/img/projects/gpu_smoke_preview.png" alt="Preview of GPU Smoke simulation" class="project-image">
-            <div class="project-content">
-                <h4>Smoke on the GPU</h4>
-                <p><b>Simulation</b> and <b>Rendering</b> of Smoke using <b>Compute Shader</b> for the <b>Godot</b> game engine</p>
-                <time class="project-date">February — July 2025</time>
-            </div>
-        </a>
-        <!-- Add more project cards here -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; {{ 'now' | date: "%Y" }} Antonin Granados — <a href="/">antoningranados.github.io</a></p>
     </div>
-</section>
+  </footer>
+</body>
+</html>
+
