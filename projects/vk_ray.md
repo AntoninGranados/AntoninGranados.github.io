@@ -3,4 +3,4 @@ title: VkRay
 layout: project
 ---
 
-# VkRay: Vulkan Raytracer
+# VkRay: a Vulkan Raytracer
