@@ -26,13 +26,13 @@ The project centers around a 2D racing simulation where AI-controlled cars learn
 
 ### Track Editor
 
-<img src="/assets/img/projects/tipe_tracks.png" alt="Track Editor Examples">
+<img src="/assets/img/projects/tipe_tracks.png" alt="Track Editor Examples" width="50%">
 
 The environment includes a custom track editor that uses Bézier curves to create smooth, challenging racing circuits. This allows for precise control over track design and difficulty levels, providing diverse challenges for the evolving neural networks.
 
 ### Sensor System
 
-<img src="/assets/img/projects/tipe_sensor.png" alt="Car Sensor System">
+<img src="/assets/img/projects/tipe_sensor.png" alt="Car Sensor System" width="50%">
 
 Cars are equipped with ray-cast sensors that detect track boundaries and obstacles. These sensors provide essential input data to the neural networks, allowing them to:
 - Measure distances to track boundaries
