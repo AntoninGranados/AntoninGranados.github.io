@@ -1,16 +1,22 @@
 :root{
   /* Colors */
-  --bg: #f8f8f2; /* Dracula background */
-  --card: #fff;
-  --muted: #6272a4; /* Dracula comment */
-  --accent: #BD93F9; /* Dracula pink */
-  --link: #BD93F9; /* Dracula orange */
-  --text: #282a36; /* Dracula background as text */
-  --title: #44475a; /* Dracula current line */
-  --heading-1: #BD93F9; /* Dracula purple for H1 headings */
-  --heading-2: #282a36; /* Dracula background for H2 headings */
-  --heading-3: #44475a; /* Dracula current line for H3 headings */
-  --text-body: #44475a; /* Dracula current line */
+  --bg: #282A36;
+  /* --bg: #f8f8f2; */
+  /* --card: #fff; */
+  --card: #44475A;
+  /* --muted: #6272a4; */
+  --muted: rgba(248, 248, 242, 0.7);
+  --accent: #BD93F9;
+  --link: #BD93F9;
+  /*--text: #282a36; */
+  /*--title: #44475a; */
+  --text: #f8f8f2;
+  --title: #f8f8f2;
+  --heading-1: #BD93F9;
+  /*--heading-2: #282a36; */
+  /*--heading-3: #44475a; */
+  --heading-2: #f8f8f2;
+  --heading-3: #f8f8f2;
   --border: 1px solid rgba(98, 114, 164, 0.3); /* Dracula comment with low opacity */
   
   /* Typography */
@@ -21,7 +27,7 @@
   --font-size-2xl: 32px;   /* Main headings */
   
   /* Layout */
-  --max-width: 980px;
+  --max-width: 1000px;
   
   /* Border Radius */
   --radius-sm: 4px;
@@ -29,9 +35,9 @@
   --radius-lg: 10px;
   
   /* Shadows */
-  --shadow-sm: 0 6px 18px rgba(40,42,54,0.2);
-  --shadow-md: 0 12px 28px rgba(40,42,54,0.4);
-  --shadow-lg: 0 14px 32px rgba(40,42,54,0.5);
+  --shadow-sm: 0 6px 18px rgba(0, 0, 0 ,0.5);
+  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 14px 32px rgba(0, 0, 0, 1.0);
   
   /* Transitions */
   --transition-default: 0.1s ease-in-out;
@@ -39,20 +45,23 @@
 
 /* Reset & base */
 *{box-sizing:border-box}
-html,body{height:100%}
+html,body{
+    height:100%;
+    scroll-behavior: smooth;
+}
 .body-wrap{
-  min-height:100%;
-  color: var(--text);
+    min-height:100%;
+    color: var(--text);
 }
 
 body{
-  margin:0;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  color: var(--text);
-  background-color: var(--bg);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  line-height:1.5;
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: var(--text);
+    background-color: var(--bg);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.5;
 }
 
 .container{
@@ -80,7 +89,7 @@ body{
 }
 .brand .muted{
     margin:0;
-    color:#6b7280;
+    color:var(--muted);
     font-size:0.85rem}
 .site-nav a{
     color:var(--text);
@@ -113,6 +122,7 @@ body{
     width: 44px;
     flex-shrink: 0;
     text-decoration: none;
+    background-color: var(--text);
 }
 .brand-logo img {
     width: 100%;
@@ -160,7 +170,7 @@ body{
     font-weight:600
 }
 .tagline{
-    color:#4b5563;
+    color:var(--text);
     max-width:60ch;
     text-align: justify;
     hyphens: auto;
@@ -180,7 +190,7 @@ body{
     border: var(--border);
     border-radius:var(--radius-lg);
     padding:1.5rem;
-    box-shadow:var(--shadow-sm)
+    box-shadow:var(--shadow-md)
 }
 .hero-inner{
     display:flex;
@@ -253,12 +263,12 @@ main{padding:1rem 0 2rem}
 .social-links {
     list-style: none;
     padding: 0;
-    margin: 1.5rem 0;
+    margin: 1.5rem auto;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
 }
 
 .social-links li {
@@ -268,6 +278,7 @@ main{padding:1rem 0 2rem}
 .social-links a {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
     padding: 1rem 1.5rem;
     color: var(--text);
@@ -312,14 +323,14 @@ main{padding:1rem 0 2rem}
     border: var(--border);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 6px 18px rgba(98,114,164,0.06);
+    box-shadow: var(--shadow-sm);
     color: inherit;
     text-decoration: none;
     transition: transform var(--transition-default), box-shadow var(--transition-default), border-color var(--transition-default)
 }
 .project-card:hover{
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(68,71,90,0.25);
+    box-shadow: var(--shadow-md);
     border-color: var(--link)
 }
 .project-content{
@@ -371,7 +382,7 @@ main{padding:1rem 0 2rem}
     width: 280px;
     flex: 0 0 280px;
     border-right: 1px solid rgba(11,18,32,0.06);
-    background: #f8fafc;
+    background: var(--card);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -389,8 +400,8 @@ main{padding:1rem 0 2rem}
 .project-image.in-progress::before {
     content: 'In Progress';
     position: absolute;
-    background: #F1FA8C; /* Dracula yellow */
-    color: #282a36; /* Dracula background */
+    background: #F1FA8C;
+    color: var(--bg);
     padding: 0.5rem 4rem;
     transform: rotate(45deg);
     transform-origin: center;
@@ -398,8 +409,7 @@ main{padding:1rem 0 2rem}
     right: -3.5rem;
     font-weight: 600;
     font-size: 0.85rem;
-    box-shadow: 0 2px 6px rgba(40,42,54,0.3),
-                0 6px 16px rgba(40,42,54,0.2);
+    box-shadow: var(--shadow-sm);
     z-index: 1;
 }
 
@@ -432,7 +442,7 @@ main{padding:1rem 0 2rem}
 .social-links{
     list-style:none;
     padding:0;
-    margin:0;
+    margin:0 auto;
     display:flex;
     flex-direction:row;
     gap:1.25rem;
@@ -443,7 +453,7 @@ main{padding:1rem 0 2rem}
     display:inline-flex;
     align-items:center;
     gap:0.5rem;
-    color:#374151;
+    color:var(--text);
     text-decoration:none;
     padding:0.35rem 0.6rem;
     border-radius:8px
@@ -480,7 +490,7 @@ main{padding:1rem 0 2rem}
 
 /* Project page markdown content */
 .markdown-content{
-    max-width:var(--max-width);
+    max-width: var(--max-width);
     margin:0 auto;
     padding:0 1.25rem;
 }
@@ -509,15 +519,15 @@ main{padding:1rem 0 2rem}
 }
 
 .markdown-content p {
-    color: var(--text-body);
+    color: var(--text);
     line-height: 1.7;
     margin: 1.2rem auto;
-    max-width: 65ch;
+    max-width: 90%;
     text-align: justify;
     hyphens: auto;
 }
 .markdown-content ul{
-    color: var(--text-body);
+    color: var(--text);
     line-height:1.7;
     margin:1.2rem auto;
     padding-left:1.5rem;
@@ -580,7 +590,6 @@ main{padding:1rem 0 2rem}
     background: var(--bg);
     box-shadow: var(--shadow-md);
 }
-
 /* Utility */
 .muted{color:var(--muted)}
 
