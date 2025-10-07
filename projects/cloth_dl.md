@@ -12,17 +12,41 @@ $$
     \mathcal{L}_{total} = \mathcal{L}_{streching} + \mathcal{L}_{bending} + \mathcal{L}_{gravity} + \mathcal{L}_{friction} + \mathcal{L}_{collision} + \mathcal{L}_{inertia}
 $$
 
-$$
-\begin{aligned}
-    \mathcal{L}_{streching} &= \frac{1}{2} \sum_{t \in \mathcal{T}} \lambda tr(E_t)^2 + \mu tr(E_t^2) \space,\\
-    &\text{where } \lambda, \mu \text{ are Lamé constants and } E_t \text{ is the Green strain tensor}\\
-    \mathcal{L}_{bending} &= \frac{1}{2} \sum_{e \in \mathcal{E}} k_{bending} (\theta_e - \theta_e^0)^2\\
-    \mathcal{L}_{gravity} &= -\sum_{v \in \mathcal{V}} m_v \mathbf{g} \cdot \mathbf{x}_v \\
-    \mathcal{L}_{friction} &= \\
-    \mathcal{L}_{collision} &= \sum_{v \in \mathcal{V}} k_{collision} max(\epsilon - d_{collider}(x), 0)^3\\
-    \mathcal{L}_{inertia} &= \frac{1}{2} \sum_{v \in \mathcal{V}} m_v ||\mathbf{x}_v^{t+1} - 2 \mathbf{x}_v^{t} + \mathbf{x}_v^{t-1}||^2 \\
-\end{aligned}
-$$
+- **Streching**: where $\lambda$ and $\mu$ are [Lamé constants (wiki)](https://en.wikipedia.org/wiki/Lamé_parameters) and $E_t$ is the [Green strain tensor (wiki)](https://en.wikipedia.org/wiki/Finite_strain_theory#Green_strain_tensor_(left_Cauchy–Green_deformation_tensor))
+
+    $$
+        \mathcal{L}_{streching} = \sum_{t \in \mathcal{T}} \frac{1}{2} \lambda tr(E_t)^2 + \mu tr(E_t^2)
+    $$
+
+- **Bending**: where $\theta_e$ and $\theta_e^0$ are respectively the is the current and the resting [dihedral angle (wiki)](https://en.wikipedia.org/wiki/Dihedral_angle) of edge $e$
+
+    $$
+        \mathcal{L}_{bending} = \sum_{e \in \mathcal{E}} \frac{1}{2} k_{bending} (\theta_e - \theta_e^0)^2
+    $$
+
+- **Gravity**:
+
+    $$
+        \mathcal{L}_{gravity} = -\sum_{v \in \mathcal{V}} m_v \mathbf{g} \cdot \mathbf{x}_v
+    $$
+
+- **Friction**: where $\mathbf{v}_v^{tangent\space collider}$ is the tangential velocity of vertex $v$ w.r.t. the collider
+
+    $$
+        \mathcal{L}_{friction} = \sum_{v \in \mathcal{V}} k_{friction} ||\mathbf{v}_v^{tangent\space collider}||^2
+    $$
+
+- **Collision**: where $d_{collider}(\mathbf{x}_v)$ is the distance of vertex $v$ to the collider
+
+    $$
+        \mathcal{L}_{collision} = \sum_{v \in \mathcal{V}} k_{collision} max(\epsilon - d_{collider}(\mathbf{x}_v), 0)^3
+    $$
+
+- **Inertia**:
+
+    $$
+        \mathcal{L}_{inertia} = \sum_{v \in \mathcal{V}} \frac{1}{2} m_v ||\mathbf{x}_v^{t+1} - 2 \mathbf{x}_v^{t} + \mathbf{x}_v^{t-1}||^2
+    $$
 
 1. **SNUG: Self-Supervised Neural Dynamic Garments**<a id="snug"></a>, I. Santesteban, M. A. Otaduy, and D. Casas, *Conference on Computer Vision and Pattern Recognition*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2204.02219)]
 
