@@ -12,10 +12,10 @@ $$
     \mathcal{L}_{total} = \mathcal{L}_{streching} + \mathcal{L}_{bending} + \mathcal{L}_{gravity} + \mathcal{L}_{friction} + \mathcal{L}_{collision} + \mathcal{L}_{inertia}
 $$
 
-- **Streching**: where $\lambda$ and $\mu$ are [Lamé constants (wiki)](https://en.wikipedia.org/wiki/Lamé_parameters) and $E_t$ is the [Green strain tensor (wiki)](https://en.wikipedia.org/wiki/Finite_strain_theory#Green_strain_tensor_(left_Cauchy–Green_deformation_tensor))
+- **Streching**: where $\lambda$ and $\mu$ are [Lamé constants (wiki)](https://en.wikipedia.org/wiki/Lamé_parameters) and $E_f$ is the [Green strain tensor (wiki)](https://en.wikipedia.org/wiki/Finite_strain_theory#Finite_strain_tensors) of the face $f$
 
     $$
-        \mathcal{L}_{streching} = \sum_{t \in \mathcal{T}} \frac{1}{2} \lambda tr(E_t)^2 + \mu tr(E_t^2)
+        \mathcal{L}_{streching} = \sum_{f \in \mathcal{F}} Area_f \cdot (\frac{\lambda}{2} tr(E_f)^2 + \mu tr(E_f^2))
     $$
 
 - **Bending**: where $\theta_e$ and $\theta_e^0$ are respectively the is the current and the resting [dihedral angle (wiki)](https://en.wikipedia.org/wiki/Dihedral_angle) of edge $e$
@@ -47,6 +47,13 @@ $$
     $$
         \mathcal{L}_{inertia} = \sum_{v \in \mathcal{V}} \frac{1}{2} m_v ||\mathbf{x}_v^{t+1} - 2 \mathbf{x}_v^{t} + \mathbf{x}_v^{t-1}||^2
     $$
+
+Even with unsupervised learning we need a dataset that would serve as input for the model. Here the tshirt (simulated using [ARCSim](http://graphics.berkeley.edu/resources/ARCSim/)) comes from the [VTO dataset](https://github.com/isantesteban/vto-dataset) used by [HOOD](#hood).
+<img src="/assets/videos/cloth_dl_vto_dataset.gif" alt="VTO Dataset demo" width="70%"><a id="vto_dataset"></a>
+
+But the body (collider) is missing as it came from the [CMU Motion Capture Database](https://mocap.cs.cmu.edu) (videos) and was converted to [SMPL](https://smpl.is.tue.mpg.de) format using a video to pose algorithm ([SURREAL](https://www.di.ens.fr/willow/research/surreal/data/)). I tried to compute the bones rotation directly from the CMU files (which are given thus using video to pose should not be necessary). But probably due to local/global coordinates differences between the two datasets, I did not manage to compute the body pose for now (the [image below](#smpl_dataset) should be the first frame of the [animation above](#vto_dataset)).
+
+<img src="/assets/videos/cloth_dl_smpl_dataset.png" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
 
 1. **SNUG: Self-Supervised Neural Dynamic Garments**<a id="snug"></a>, I. Santesteban, M. A. Otaduy, and D. Casas, *Conference on Computer Vision and Pattern Recognition*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2204.02219)]
 

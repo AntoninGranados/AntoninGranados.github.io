@@ -15,16 +15,21 @@
       tex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']],
         displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true
+        processEscapes: true,
+        tags: 'none'
       },
       chtml: {
         displayAlign: 'center',
-        displayIndent: '0em'
+        displayIndent: '0em',
+        scale: 1
       },
       options: {
         skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
         ignoreHtmlClass: 'tex2jax_ignore',
-        processHtmlClass: 'tex2jax_process'
+        processHtmlClass: 'tex2jax_process',
+        renderActions: {
+          addMenu: []
+        }
       },
       startup: {
         pageReady: () => {
@@ -34,7 +39,7 @@
     };
   </script>
 
-  <script id="MathJax-script" async defer
+  <script id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
   </script>
 </head>
