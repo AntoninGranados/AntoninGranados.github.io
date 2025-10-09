@@ -54,6 +54,12 @@ $$
         \mathcal{L}_{collision} = \sum_{v \in \mathcal{V}} k_{collision} max(\epsilon - d_{collider}(\mathbf{x}_v), 0)^3
     $$
 
+    <div class="video-container" width="100%">
+    <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+        <source src="/assets/videos/cloth_dl_collision.mp4" type="video/mp4">
+    </video>
+    </div><a id="collision"></a>
+
 - **Inertia**:
 
     $$
