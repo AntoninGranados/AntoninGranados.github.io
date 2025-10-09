@@ -9,20 +9,32 @@ layout: project
 The main challenge for implementing **unsupervised learning** is the computation of the loss, because the model will still be the same as in [MeshGraphNets](#mgn). Here is the loss function used in [HOOD](#hood), with some of the terms (_bending_, _gravity_, _collision_ and _inertia_) found in [SNUG](#snug):
 
 $$
-    \mathcal{L}_{total} = \mathcal{L}_{streching} + \mathcal{L}_{bending} + \mathcal{L}_{gravity} + \mathcal{L}_{friction} + \mathcal{L}_{collision} + \mathcal{L}_{inertia}
+    \mathcal{L}_{total} = \mathcal{L}_{stretching} + \mathcal{L}_{bending} + \mathcal{L}_{gravity} + \mathcal{L}_{friction} + \mathcal{L}_{collision} + \mathcal{L}_{inertia}
 $$
 
-- **Streching**: where $\lambda$ and $\mu$ are [Lamé constants (wiki)](https://en.wikipedia.org/wiki/Lamé_parameters) and $E_f$ is the [Green strain tensor (wiki)](https://en.wikipedia.org/wiki/Finite_strain_theory#Finite_strain_tensors) of the face $f$
+- **Stretching**: where $\lambda$ and $\mu$ are [Lamé constants (wiki)](https://en.wikipedia.org/wiki/Lamé_parameters) and $G_f$ is the [Green strain tensor (wiki)](https://en.wikipedia.org/wiki/Finite_strain_theory#Finite_strain_tensors) of the face $f$
 
     $$
-        \mathcal{L}_{streching} = \sum_{f \in \mathcal{F}} Area_f \cdot (\frac{\lambda}{2} tr(E_f)^2 + \mu tr(E_f^2))
+        \mathcal{L}_{stretching} = \sum_{f \in \mathcal{F}} Area_f \cdot (\frac{\lambda}{2} tr(G_f)^2 + \mu tr(G_f^2))
     $$
+
+    <div class="video-container" width="100%">
+    <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+        <source src="/assets/videos/cloth_dl_stretching.mp4" type="video/mp4">
+    </video>
+    </div><a id="stretching"></a>
 
 - **Bending**: where $\theta_e$ and $\theta_e^0$ are respectively the is the current and the resting [dihedral angle (wiki)](https://en.wikipedia.org/wiki/Dihedral_angle) of edge $e$
 
     $$
-        \mathcal{L}_{bending} = \sum_{e \in \mathcal{E}} \frac{1}{2} k_{bending} (\theta_e - \theta_e^0)^2
+        \mathcal{L}_{bending} = \sum_{e \in \mathcal{E}} k_{bending} (\theta_e - \theta_e^0)^2
     $$
+
+    <div class="video-container" width="100%">
+    <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+        <source src="/assets/videos/cloth_dl_bending.mp4" type="video/mp4">
+    </video>
+    </div><a id="bending"></a>
 
 - **Gravity**:
 
@@ -68,6 +80,13 @@ After additional training, the model shows more coherent behavior, though collis
     <source src="/assets/videos/cloth_dl_sphere_2.mp4" type="video/mp4">
 </video>
 </div>
+
+So I created a **uniform dataset**, which was built by interpolating (barycenter interpolation) a uniform mesh with [MeshGraphNets](#mgn)'s dataset. As we can see in the [video below](#uniform_dataset), due to the lack of vertex density in some critical places, there are some sort of wrinkle on sharp bend. And the _node count ratio_ (the node count in the interpolated mesh divided by the node count in the ground truth) is not great except when the remeshing create a lot of new nodes.
+<div class="video-container">
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl_uniform_dataset.mp4" type="video/mp4">
+</video>
+</div><a id="uniform_dataset"></a>
 
 This is why most papers discussed this week incorporate some form of **unsupervised learning**.
 
