@@ -6,10 +6,9 @@ layout: project
 # Neuroevolution & NEAT - TIPE Project
 
 <div class="video-container">
-    <video controls>
-        <source src="/assets/videos/tipe_demo.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+<video width="70%" autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+    <source src="/assets/videos/tipe_demo.mp4" type="video/mp4">
+</video>
 </div>
 
 ## Context

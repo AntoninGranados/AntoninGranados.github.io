@@ -76,5 +76,22 @@
       <p>&copy; {{ 'now' | date: "%Y" }} Antonin Granados — <a href="/">antoningranados.github.io</a> — Using the <a href="https://draculatheme.com" target="_blank" rel="noopener">Dracula Theme</a></p>
     </div>
   </footer>
+
+  <script>
+    // Open links in a new tab if they are external
+    document.addEventListener('DOMContentLoaded', function() {
+      const links = document.querySelectorAll('a[href]');
+      
+      links.forEach(function(link) {
+        const href = link.getAttribute('href');
+        
+        if (href && (href.startsWith('http://') || href.startsWith('https://')) && 
+            !href.includes(window.location.hostname)) {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

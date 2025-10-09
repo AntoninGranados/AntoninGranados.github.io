@@ -49,7 +49,11 @@ $$
     $$
 
 Even with unsupervised learning we need a dataset that would serve as input for the model. Here the tshirt (simulated using [ARCSim](http://graphics.berkeley.edu/resources/ARCSim/)) comes from the [VTO dataset](https://github.com/isantesteban/vto-dataset) used by [HOOD](#hood).
-<img src="/assets/videos/cloth_dl_vto_dataset.gif" alt="VTO Dataset demo" width="70%"><a id="vto_dataset"></a>
+<div class="video-container">
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl_vto_dataset.mp4" type="video/mp4">
+</video>
+</div><a id="vto_dataset"></a>
 
 But the body (collider) is missing as it came from the [CMU Motion Capture Database](https://mocap.cs.cmu.edu) (videos) and was converted to [SMPL](https://smpl.is.tue.mpg.de) format using a video to pose algorithm ([SURREAL](https://www.di.ens.fr/willow/research/surreal/data/)). I tried to compute the bones rotation directly from the CMU files (which are given thus using video to pose should not be necessary). But probably due to local/global coordinates differences between the two datasets, I did not manage to compute the body pose for now (the [image below](#smpl_dataset) should be the first frame of the [animation above](#vto_dataset)).
 
@@ -59,7 +63,11 @@ But the body (collider) is missing as it came from the [CMU Motion Capture Datab
 
 ### Week 29/09/2025 — Meeting 03/10/2025
 After additional training, the model shows more coherent behavior, though collision handling remains challenging. This issue might stem from our use of a relatively coarse mesh (30x30 nodes). Even though we don't implement remeshing, the model is trained on finer data from a remeshed dataset.
-<img src="/assets/videos/cloth_dl_sphere_2.gif" alt="Sphere Dynamic demo 2" width="70%">
+<div class="video-container">
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+    <source src="/assets/videos/cloth_dl_sphere_2.mp4" type="video/mp4">
+</video>
+</div>
 
 This is why most papers discussed this week incorporate some form of **unsupervised learning**.
 
@@ -75,7 +83,11 @@ Report of the week (*the links inside don't work*) [[PDF](../assets/docs/project
 The next phase involved the **Sphere Dynamic** dataset, which features the same flag interacting with a moving sphere instead of wind. While the dataset implements on-the-fly **remeshing**, we chose to omit this feature as it would be computationally expensive for real-time applications.
 
 The current results are preliminary, with only ~150 epochs completed out of the 2000 suggested in the original paper. At this stage, collision handling has not been successfully learned:
-<img src="/assets/videos/cloth_dl_sphere_1.gif" alt="Sphere Dynamic demo 1" width="70%">
+<div class="video-container">
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+    <source src="/assets/videos/cloth_dl_sphere_1.mp4" type="video/mp4">
+</video>
+</div>
 
 1. **Bi-Stride Multi-Scale Graph Neural Network for Mesh-Based Physical Simulation**, Y. Cao, M. Chai, M. Li, and C. Jiang, , 2022, [[PDF ArXiv](https://arxiv.org/pdf/2210.02573v1)]
 2. **MultiScale MeshGraphNets**, M. Fortunato, T. Pfaff, P. Wirnsberger, A. Pritzel, and P. Battaglia, *International Conference on Machine Learning*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2210.00612)]
@@ -86,6 +98,10 @@ The current results are preliminary, with only ~150 epochs completed out of the 
 This week focused on implementing the basic [MeshGraphNets](#mgn) architecture. Specifically, we trained the model on the **Flag Minimal** dataset (_error in the GIF title_) — a dataset simulating a flag in wind using a uniform mesh.
 
 The results are promising, despite limited training of only ~400 epochs out of the recommended 2000. In the demonstration below, only the initial frame is provided to the model. The GIF compares the rollout results (*left*: model prediction, *right*: validation dataset sample):
-<img src="/assets/videos/cloth_dl_flag_minimal.gif" alt="Flag Minimal example" width="70%">
+<div class="video-container">
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+    <source src="/assets/videos/cloth_dl_flag_minimal.mp4" type="video/mp4">
+</video>
+</div>
 
 1. **Learning Mesh-Based Simulation with Graph Networks**<a id="mgn"></a>, T. Pfaff, M. Fortunato, A. Sanchez-Gonzalez, and P. W. Battaglia, *International Conference on Learning Representations*, 2021, [[PDF ArXiv](https://arxiv.org/pdf/2010.03409)]

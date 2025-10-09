@@ -147,6 +147,25 @@ layout: null
                 }
             });
         });
+
+        // Ouvrir tous les liens externes dans un nouvel onglet
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href]');
+            
+            links.forEach(function(link) {
+                const href = link.getAttribute('href');
+                
+                // Vérifier si c'est un lien externe (commence par http/https et n'est pas le même domaine)
+                if (href && (href.startsWith('http://') || href.startsWith('https://')) && 
+                    !href.includes(window.location.hostname)) {
+                    // Ne pas modifier les liens qui ont déjà target="_blank"
+                    if (!link.getAttribute('target')) {
+                        link.setAttribute('target', '_blank');
+                        link.setAttribute('rel', 'noopener noreferrer');
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
