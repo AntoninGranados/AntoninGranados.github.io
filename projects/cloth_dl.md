@@ -5,6 +5,8 @@ layout: project
 # Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
 
 ## Updates
+### Week 13/10/2025
+
 ### Week 06/10/2025
 The main challenge for implementing **unsupervised learning** is the computation of the loss, because the model will still be the same as in [MeshGraphNets](#mgn). Here is the loss function used in [HOOD](#hood), with some of the terms (_bending_, _gravity_, _collision_ and _inertia_) found in [SNUG](#snug):
 

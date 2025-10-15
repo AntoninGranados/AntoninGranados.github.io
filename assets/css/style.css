@@ -20,11 +20,11 @@
   --border: 1px solid rgba(98, 114, 164, 0.3); /* Dracula comment with low opacity */
   
   /* Typography */
-  --font-size-sm: 16px;    /* Small text (footer, metadata) */
-  --font-size-base: 18px;  /* Base text size */
-  --font-size-lg: 20px;    /* Subtitles */
-  --font-size-xl: 24px;    /* Section titles */
-  --font-size-2xl: 32px;   /* Main headings */
+  --font-size-sm: 10px;    /* Small text (footer, metadata) */
+  --font-size-base: 12px;  /* Base text size */
+  --font-size-lg: 14px;    /* Subtitles */
+  --font-size-xl: 16px;    /* Section titles */
+  --font-size-2xl: 20px;   /* Main headings */
   
   /* Layout */
   --max-width: 1000px;
@@ -85,12 +85,12 @@ body{
 }
 .brand h1{
     margin:0;
-    font-size:1.15rem
+    font-size:var(--font-size-lg)
 }
 .brand .muted{
     margin:0;
     color:var(--muted);
-    font-size:0.85rem}
+    font-size:var(--font-size-sm)}
 .site-nav a{
     color:var(--text);
     text-decoration:none;
@@ -231,7 +231,7 @@ body{
 
 /* Sections */
 main{padding:1rem 0 2rem}
-.container > h3{text-align:center;color:var(--text);margin:1.5rem 0 1rem;font-size:1.75rem;position:relative}
+.container > h3{text-align:center;color:var(--text);margin:1.5rem 0 1rem;font-size:var(--font-size-2xl);position:relative}
 .container > h3::after{content:'';display:block;width:60px;height:2px;background:var(--accent);margin:0.75rem auto 0;opacity:0.7}
 
 /* Footer */
@@ -342,14 +342,14 @@ main{padding:1rem 0 2rem}
 }
 .project-content h4{
     margin:0 0 0.75rem 0;
-    font-size:1.25rem;
+    font-size:var(--font-size-xl);
     color: var(--title);
     transition: color var(--transition-default)
 }
 .project-content p{
     color:var(--muted);
     margin:0;
-    font-size:0.95rem;
+    font-size:var(--font-size-base);
     line-height:1.6;
     flex-grow:1;
     overflow:hidden;
@@ -365,7 +365,7 @@ main{padding:1rem 0 2rem}
     display:block;
     margin-top:1rem;
     color:var(--muted);
-    font-size:0.85rem;
+    font-size:var(--font-size-sm);
     opacity:0.8
 }
 
@@ -408,7 +408,7 @@ main{padding:1rem 0 2rem}
     top: 1.5rem;
     right: -3.5rem;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
     box-shadow: var(--shadow-sm);
     z-index: 1;
 }
@@ -473,7 +473,7 @@ main{padding:1rem 0 2rem}
 
 /* Responsive tweaks */
 @media(min-width:900px){
-  .brand h1{font-size:1.5rem}
+  .brand h1{font-size:var(--font-size-xl)}
 }
 
 @media(min-width:720px){
