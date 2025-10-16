@@ -6,6 +6,12 @@ layout: project
 
 ## Updates
 ### Week 13/10/2025
+I started the week by trying to compile [ARCSim](#arcsim), but it uses some old depedencies and relies on Python 2. So it was very hard (maybe impossible) to compile on my MacBook M3. I also tried on the schools computers (GPUs) that run on Linux, by I also had no luck as I did not found a way to install Python 2 easily.
+
+I then looked into [Taichi](https://www.taichi-lang.org), but I wanted something that could do simulations out of the box (like ARCSim, which simply uses JSON to describe the scenes). 
+
+1. **Adaptive Anisotropic Remeshing for Cloth Simulation**<a id="arcsim"></a>, R. Narain, A. Samii, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH Asia 2012_, 2012, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
+2. **Folding and Crumpling Adaptive Sheets**, R. Narain, T. Pfaff, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH_, 2013, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
 
 ### Week 06/10/2025
 The main challenge for implementing **unsupervised learning** is the computation of the loss, because the model will still be the same as in [MeshGraphNets](#mgn). Here is the loss function used in [HOOD](#hood), with some of the terms (_bending_, _gravity_, _collision_ and _inertia_) found in [SNUG](#snug):
@@ -68,7 +74,7 @@ $$
         \mathcal{L}_{inertia} = \sum_{v \in \mathcal{V}} \frac{1}{2} m_v ||\mathbf{x}_v^{t+1} - 2 \mathbf{x}_v^{t} + \mathbf{x}_v^{t-1}||^2
     $$
 
-Even with unsupervised learning we need a dataset that would serve as input for the model. Here the tshirt (simulated using [ARCSim](http://graphics.berkeley.edu/resources/ARCSim/)) comes from the [VTO dataset](https://github.com/isantesteban/vto-dataset) used by [HOOD](#hood).
+Even with unsupervised learning we need a dataset that would serve as input for the model. Here the tshirt (simulated using [ARCSim](#arcsim)) comes from the [VTO dataset](https://github.com/isantesteban/vto-dataset) used by [HOOD](#hood).
 <div class="video-container">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
     <source src="/assets/videos/cloth_dl_vto_dataset.mp4" type="video/mp4">

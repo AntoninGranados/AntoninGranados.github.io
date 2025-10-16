@@ -11,6 +11,12 @@ layout: project
 </video>
 </div>
 
+
+<div style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem auto;">
+    <img src="/assets/img/projects/tipe/ex1.png" alt="Exemple 1" style="width: 50%; height: auto;">
+    <img src="/assets/img/projects/tipe/ex2.png" alt="Exemple 2" style="width: 50%; height: auto;">
+</div>
+
 ## Context
 
 As part of my CPGE (Classes Préparatoires aux Grandes Écoles) curriculum, I conducted a research project (TIPE) focusing on neuroevolution algorithms, particularly NEAT (NeuroEvolution of Augmenting Topologies). The goal was to evolve neural networks capable of controlling cars in a 2D racing environment.
@@ -25,13 +31,13 @@ The project centers around a 2D racing simulation where AI-controlled cars learn
 
 ### Track Editor
 
-<img src="/assets/img/projects/tipe_tracks.png" alt="Track Editor Examples" width="50%">
+<img src="/assets/img/projects/tipe/tracks.png" alt="Track Editor Examples" width="50%">
 
 The environment includes a custom track editor that uses Bézier curves to create smooth, challenging racing circuits. This allows for precise control over track design and difficulty levels, providing diverse challenges for the evolving neural networks.
 
 ### Sensor System
 
-<img src="/assets/img/projects/tipe_sensor.png" alt="Car Sensor System" width="50%">
+<img src="/assets/img/projects/tipe/sensor.png" alt="Car Sensor System" width="50%">
 
 Cars are equipped with ray-cast sensors that detect track boundaries and obstacles. These sensors provide essential input data to the neural networks, allowing them to:
 - Measure distances to track boundaries
