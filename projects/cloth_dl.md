@@ -6,9 +6,13 @@ layout: project
 
 ## Updates
 ### Week 13/10/2025
-I started the week by trying to compile [ARCSim](#arcsim), but it uses some old depedencies and relies on Python 2. So it was very hard (maybe impossible) to compile on my MacBook M3. I also tried on the schools computers (GPUs) that run on Linux, by I also had no luck as I did not found a way to install Python 2 easily.
+I started the week by trying to compile [ARCSim](#arcsim), but it uses some old dependencies and relies on Python 2. So it was very hard (maybe impossible) to compile on my MacBook M3. I also tried on the school computers (GPUs) that run on Linux, but I also had no luck as I did not find a way to install Python 2.
 
-I then looked into [Taichi](https://www.taichi-lang.org), but I wanted something that could do simulations out of the box (like ARCSim, which simply uses JSON to describe the scenes). 
+I then looked into [Taichi](https://www.taichi-lang.org), but I wanted something that could do simulations "out of the box" (like ARCSim, which simply uses JSON to describe the scenes).
+
+I then tried the [SOFA framework](https://www.sofa-framework.org) and even though I had a bit of trouble compiling it, I managed to make it work on my computer. It uses XML to describe the scenes and can also work entirely through its Python interface (describe the scene + run the simulation). It also has a graphical interface (this is why I had some issues) which is useful but not strictly needed for my needs. It can simulate a wide variety of material - from cloth to rigid bodies - so if we want to expand our field during the year, I will be able to use the same framework.
+
+<img src="/assets/imgs/projects/cloth_dl/sofa_demo.png" alt="SOFA demo" width="50%"><a id="sofa_demo"></a>
 
 1. **Adaptive Anisotropic Remeshing for Cloth Simulation**<a id="arcsim"></a>, R. Narain, A. Samii, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH Asia 2012_, 2012, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
 2. **Folding and Crumpling Adaptive Sheets**, R. Narain, T. Pfaff, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH_, 2013, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
@@ -83,7 +87,7 @@ Even with unsupervised learning we need a dataset that would serve as input for 
 
 But the body (collider) is missing as it came from the [CMU Motion Capture Database](https://mocap.cs.cmu.edu) (videos) and was converted to [SMPL](https://smpl.is.tue.mpg.de) format using a video to pose algorithm ([SURREAL](https://www.di.ens.fr/willow/research/surreal/data/)). I tried to compute the bones rotation directly from the CMU files (which are given thus using video to pose should not be necessary). But probably due to local/global coordinates differences between the two datasets, I did not manage to compute the body pose for now (the [image below](#smpl_dataset) should be the first frame of the [animation above](#vto_dataset)).
 
-<img src="/assets/videos/cloth_dl_smpl_dataset.png" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
+<img src="/assets/imgs/projects/cloth_dl/smpl_dataset.png" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
 
 1. **SNUG: Self-Supervised Neural Dynamic Garments**<a id="snug"></a>, I. Santesteban, M. A. Otaduy, and D. Casas, *Conference on Computer Vision and Pattern Recognition*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2204.02219)]
 
