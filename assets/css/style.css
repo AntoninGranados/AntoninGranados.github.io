@@ -526,6 +526,31 @@ main{padding:1rem 0 2rem}
     text-align: justify;
     hyphens: auto;
 }
+
+/* Code blocks */
+.markdown-content pre {
+    margin: 1.2rem auto;
+    max-width: 90%;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.markdown-content pre code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', Monaco, Menlo, Consolas, monospace;
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    tab-size: 4;
+}
+
+.markdown-content code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', Monaco, Menlo, Consolas, monospace;
+    font-size: var(--font-size-base);
+    background: var(--card);
+    color: var(--text);
+    padding: 0.2em 0.4em;
+    border-radius: var(--radius-sm);
+}
+
 .markdown-content ul{
     color: var(--text);
     line-height:1.7;

@@ -4,7 +4,19 @@ layout: project
 ---
 # Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
 
-## Week 20/10/2025 - 03/11/2025
+## Week 03/11/2025
+I created a Python interface for ARCSim (see the repo on [GitHub](https://github.com/AntoninGranados/arcsim-python/tree/main)) to allow for "automated" simulation. It automatically runs all ARCSim commands and provides updates while it is executing. The configuration of the simulation can be created using code instead of relying on a JSON file (JSON is still usable). The scripts also provide an easy way to generate procedural mesh (only plane for now) using Poisson or uniform sampling.
+
+A simple simulation could look like this:
+```python
+arcsim = ARCSimRunner()
+arcsim.run_simulation(config, out_dir)
+arcsim.generate_obj(out_dir)
+sim_state = arcsim.load_obj(out_dir)
+sim_state.save_npz("simulation.npz")
+```
+
+## Week 20/10/2025 - 27/10/2025
 I managed to make a simulation using the SOFA Framework and its Python binding. The issue is that I had to make the wind force myself (in Python - which is a bit slow even with numpy vectorization) because I didn't find a simple plugin.
 
 We can also see issues on the [video](#demo-sofa) on the edges (they flip and intersect the cloth). And some parts look stiffer than others, which might come from the Rayleigh parameters I chose.
