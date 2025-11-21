@@ -4,6 +4,45 @@ layout: project
 ---
 # Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
 
+<!-- Week quick navigation (uses .social-links from style.css) -->
+<style>
+    /* Week links grid: reuse .social-links visuals, but display as responsive grid */
+    .week-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+        padding: 0;
+        margin: 0.75rem auto 1.25rem auto;
+        max-width: var(--max-width);
+    }
+    .week-links li { list-style: none; margin: 0; }
+    .week-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
+
+    /* Force exactly 4 columns on desktop */
+    @media (min-width: 900px) {
+        .week-links { grid-template-columns: repeat(3, 1fr); }
+    }
+</style>
+<div class="container">
+    <ul class="social-links week-links">
+        <li><a href="#week-17-11-2025">Week 17/11/2025</a></li>
+        <li><a href="#week-10-11-2025">Week 10/11/2025</a></li>
+        <li><a href="#week-03-11-2025">Week 03/11/2025</a></li>
+        <li><a href="#week-27-10-2025">Week 27/10/2025</a></li>
+        <li><a href="#week-20-10-2025">Week 20/10/2025</a></li>
+        <li><a href="#week-13-10-2025">Week 13/10/2025</a></li>
+        <li><a href="#week-06-10-2025">Week 06/10/2025</a></li>
+        <li><a href="#week-03-10-2025">Week 03/10/2025</a></li>
+        <li><a href="#week-29-09-2025">Week 29/09/2025</a></li>
+        <li><a href="#week-26-09-2025">Week 26/09/2025</a></li>
+        <li><a href="#week-22-09-2025">Week 22/09/2025</a></li>
+        <li><a href="#week-18-09-2025">Week 18/09/2025</a></li>
+        <li><a href="#week-15-09-2025">Week 15/09/2025</a></li>
+    </ul>
+</div>
+
+<a id="week-10-11-2025"></a>
+<a id="week-17-11-2025"></a>
 ## Week 10/11/2025 - 17/11/2025
 Using my ARCSim-Python interface, I created several small datasets. The first one consists of a flag in the wind, and the second one contains a flag affected only by gravity.
 
@@ -11,8 +50,15 @@ I rebuilt the core architecture of my MeshGraphNet implementation from scratch t
 
 I have also made good progress on the state-of-the-art report and found a paper ([MeshGraphNetRP](mgn-rp)) that improves generalization by adding more loss terms to the supervised version of MeshGraphNet, as well as additional features for the nodes (force and kinetic energy) and the edges (bending at the edge, e.g., the dihedral angle between the two faces connected by the edge).
 
+### Discussion (21/11/2025)
+- Mix between supervised and self-supervised (similar to [MeshGraphNetRP](mgn-rp) where the ground-truth is used in the loss with other physical losses). But adding a decaying factor on the ground-truth term to slowly switch to purely self-supervised and not rely on the simulator
+- Add the [Lamé constants](@lamé) to the mesh features and train with a wide variety of them (regardless of the one used in the ground truth because its effect on training would slowly disapear)
+
+### Biliography
 1. **MeshGraphNetRP: Improving Generalization of GNN-based Cloth Simulation**<a id="mgn-rp"></a>, E. I. Libao, M. Lee, S. Kim, S. Lee, *Proceedings of the 16th ACM SIGGRAPH Conference on Motion, Interaction and Games*, 2023, [[PDF ACM](https://dl.acm.org/doi/pdf/10.1145/3623264.3624441)]
 
+
+<a id="week-03-11-2025"></a>
 ## Week 03/11/2025
 I created a Python interface for ARCSim (see the repo on [GitHub](https://github.com/AntoninGranados/arcsim-python/tree/main)) to allow for "automated" simulation. It automatically runs all ARCSim commands and provides updates while it is executing. The configuration of the simulation can be created using code instead of relying on a JSON file (JSON is still usable). The scripts also provide an easy way to generate procedural mesh (only plane for now) using Poisson or uniform sampling.
 
@@ -25,6 +71,8 @@ sim_state = arcsim.load_obj(out_dir)
 sim_state.save_npz("simulation.npz")
 ```
 
+<a id="week-20-10-2025"></a>
+<a id="week-27-10-2025"></a>
 ## Week 20/10/2025 - 27/10/2025
 I managed to make a simulation using the SOFA Framework and its Python binding. The issue is that I had to make the wind force myself (in Python - which is a bit slow even with numpy vectorization) because I didn't find a simple plugin.
 
@@ -50,6 +98,7 @@ The last two simulations (without remeshing) are about 5 times faster and use ar
 </video>
 </div><a id="demo-arcsim"></a>
 
+<a id="week-13-10-2025"></a>
 ## Week 13/10/2025
 I started the week by trying to compile [ARCSim](#arcsim), but it uses some old dependencies and relies on Python 2. So it was very hard (maybe impossible) to compile on my MacBook M3. I also tried on the school computers (GPUs) that run on Linux, but I also had no luck as I did not find a way to install Python 2.
 
@@ -59,9 +108,11 @@ I then tried the [SOFA framework](https://www.sofa-framework.org) and even thoug
 
 <img src="/assets/imgs/projects/cloth_dl/sofa_demo.png" alt="SOFA demo" width="50%"><a id="sofa_demo"></a>
 
+### Biliography
 1. **Adaptive Anisotropic Remeshing for Cloth Simulation**<a id="arcsim"></a>, R. Narain, A. Samii, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH Asia 2012_, 2012, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
 2. **Folding and Crumpling Adaptive Sheets**, R. Narain, T. Pfaff, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH_, 2013, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
 
+<a id="week-06-10-2025"></a>
 ## Week 06/10/2025
 The main challenge for implementing **unsupervised learning** is the computation of the loss, because the model will still be the same as in [MeshGraphNets](#mgn). Here is the loss function used in [HOOD](#hood), with some of the terms (_bending_, _gravity_, _collision_ and _inertia_) found in [SNUG](#snug):
 
@@ -69,7 +120,7 @@ $$
     \mathcal{L}_{total} = \mathcal{L}_{stretching} + \mathcal{L}_{bending} + \mathcal{L}_{gravity} + \mathcal{L}_{friction} + \mathcal{L}_{collision} + \mathcal{L}_{inertia}
 $$
 
-- **Stretching**: where $\lambda$ and $\mu$ are [Lamé constants (wiki)](https://en.wikipedia.org/wiki/Lamé_parameters) and $G_f$ is the [Green strain tensor (wiki)](https://en.wikipedia.org/wiki/Finite_strain_theory#Finite_strain_tensors) of the face $f$
+- **Stretching**: where $\lambda$ and $\mu$ are [Lamé constants (wiki)](https://en.wikipedia.org/wiki/Lamé_parameters)<a id="lamé"></a> and $G_f$ is the [Green strain tensor (wiki)](https://en.wikipedia.org/wiki/Finite_strain_theory#Finite_strain_tensors) of the face $f$
 
     $$
         \mathcal{L}_{stretching} = \sum_{f \in \mathcal{F}} Area_f \cdot (\frac{\lambda}{2} tr(G_f)^2 + \mu tr(G_f^2))
@@ -134,8 +185,11 @@ But the body (collider) is missing as it came from the [CMU Motion Capture Datab
 
 <img src="/assets/imgs/projects/cloth_dl/smpl_dataset.png" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
 
+### Biliography
 1. **SNUG: Self-Supervised Neural Dynamic Garments**<a id="snug"></a>, I. Santesteban, M. A. Otaduy, and D. Casas, *Conference on Computer Vision and Pattern Recognition*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2204.02219)]
 
+<a id="week-29-09-2025"></a>
+<a id="week-03-10-2025"></a>
 ## Week 29/09/2025 — Meeting 03/10/2025
 After additional training, the model shows more coherent behavior, though collision handling remains challenging. This issue might stem from our use of a relatively coarse mesh (30x30 nodes). Even though we don't implement remeshing, the model is trained on finer data from a remeshed dataset.
 <div class="video-container">
@@ -154,6 +208,8 @@ So I created a **uniform dataset**, which was built by interpolating (barycenter
 This is why most papers discussed this week incorporate some form of **unsupervised learning**.
 
 Report of the week (*the links inside don't work*) [[PDF](../assets/docs/projects/cloth_dl/report_week_29_09.pdf)].
+
+### Biliography
 1. **Neural Cloth Simulation**, H. Bertiche, M. Madadi, and S. Escalera, *ACM Transactions on Graphics*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2212.11220)]
 2. **N-Cloth: Predicting 3D Cloth Deformation with Mesh-Based Networks**, Y. Li et al., *Computer Graphics Forum (Proceedings of Eurographics)*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2112.06397)]
 3. **Hood: Hierarchical graphs for generalized modelling of clothing dynamics**<a id="hood"></a>, A. Grigorev, M. J. Black, and O. Hilliges, *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*, 2023, [[PDF ArXiv](https://arxiv.org/pdf/2212.07242)]
@@ -161,6 +217,8 @@ Report of the week (*the links inside don't work*) [[PDF](../assets/docs/project
 5. **FastClothGNN: Optimizing Message Passing in Graph Neural Networks for Accelerating Real-Time Cloth Simulation**<a id="fastgnn"></a>, Y. Zhang, K. Yu, and X. Zhang, *Graphical Models*
 , 2024, [[HTML ScienceDirect](https://www.sciencedirect.com/science/article/pii/S1524070325000207)]
 
+<a id="week-22-09-2025"></a>
+<a id="week-26-09-2025"></a>
 ## Week 22/09/2025 — Meeting 26/09/2025
 The next phase involved the **Sphere Dynamic** dataset, which features the same flag interacting with a moving sphere instead of wind. While the dataset implements on-the-fly **remeshing**, we chose to omit this feature as it would be computationally expensive for real-time applications.
 
@@ -171,10 +229,13 @@ The current results are preliminary, with only ~150 epochs completed out of the 
 </video>
 </div>
 
+### Biliography
 1. **Bi-Stride Multi-Scale Graph Neural Network for Mesh-Based Physical Simulation**, Y. Cao, M. Chai, M. Li, and C. Jiang, , 2022, [[PDF ArXiv](https://arxiv.org/pdf/2210.02573v1)]
 2. **MultiScale MeshGraphNets**, M. Fortunato, T. Pfaff, P. Wirnsberger, A. Pritzel, and P. Battaglia, *International Conference on Machine Learning*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2210.00612)]
 3. **X-MeshGraphNet: Scalable Multi-Scale Graph Neural Networks for Physics Simulation**<a id="x-mgn"></a>, M. A. Nabian, C. Liu, R. Ranade, and S. Choudhry, , 2024, [[PDF ArXiv](https://arxiv.org/pdf/2411.17164)]
 
+<a id="week-15-09-2025"></a>
+<a id="week-18-09-2025"></a>
 ## Week 15/09/2025 — Meeting 18/09/2025
 This week focused on implementing the basic [MeshGraphNets](#mgn) architecture. Specifically, we trained the model on the **Flag Minimal** dataset (_error in the GIF title_) — a dataset simulating a flag in wind using a uniform mesh.
 
@@ -185,4 +246,5 @@ The results are promising, despite limited training of only ~400 epochs out of t
 </video>
 </div>
 
+### Biliography
 1. **Learning Mesh-Based Simulation with Graph Networks**<a id="mgn"></a>, T. Pfaff, M. Fortunato, A. Sanchez-Gonzalez, and P. W. Battaglia, *International Conference on Learning Representations*, 2021, [[PDF ArXiv](https://arxiv.org/pdf/2010.03409)]
