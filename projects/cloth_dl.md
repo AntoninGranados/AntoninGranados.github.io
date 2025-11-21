@@ -4,6 +4,15 @@ layout: project
 ---
 # Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
 
+## Week 10/11/2025 - 17/11/2025
+Using my ARCSim-Python interface, I created several small datasets. The first one consists of a flag in the wind, and the second one contains a flag affected only by gravity.
+
+I rebuilt the core architecture of my MeshGraphNet implementation from scratch to use the `HeteroData` class from `torch-geometric`. This class enables "automatic" message passing in the GNN blocks: I only need to define the graph, the node and edge features, and the aggregation method (at a high level — in my case, simply specifying "add"). It also makes it much easier to use larger batch sizes (so far, I had only used batches of size 1), as batching is handled automatically.
+
+I have also made good progress on the state-of-the-art report and found a paper ([MeshGraphNetRP](mgn-rp)) that improves generalization by adding more loss terms to the supervised version of MeshGraphNet, as well as additional features for the nodes (force and kinetic energy) and the edges (bending at the edge, e.g., the dihedral angle between the two faces connected by the edge).
+
+1. **MeshGraphNetRP: Improving Generalization of GNN-based Cloth Simulation**<a id="mgn-rp"></a>, E. I. Libao, M. Lee, S. Kim, S. Lee, *Proceedings of the 16th ACM SIGGRAPH Conference on Motion, Interaction and Games*, 2023, [[PDF ACM](https://dl.acm.org/doi/pdf/10.1145/3623264.3624441)]
+
 ## Week 03/11/2025
 I created a Python interface for ARCSim (see the repo on [GitHub](https://github.com/AntoninGranados/arcsim-python/tree/main)) to allow for "automated" simulation. It automatically runs all ARCSim commands and provides updates while it is executing. The configuration of the simulation can be created using code instead of relying on a JSON file (JSON is still usable). The scripts also provide an easy way to generate procedural mesh (only plane for now) using Poisson or uniform sampling.
 
@@ -72,7 +81,7 @@ $$
     </video>
     </div><a id="stretching"></a>
 
-- **Bending**: where $\theta_e$ and $\theta_e^0$ are respectively the is the current and the resting [dihedral angle (wiki)](https://en.wikipedia.org/wiki/Dihedral_angle) of edge $e$
+- **Bending**: where $\theta_e$ and $\theta_e^0$ are respectively the current and the resting [dihedral angle (wiki)](https://en.wikipedia.org/wiki/Dihedral_angle) of edge $e$
 
     $$
         \mathcal{L}_{bending} = \sum_{e \in \mathcal{E}} k_{bending} (\theta_e - \theta_e^0)^2
