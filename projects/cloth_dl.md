@@ -25,6 +25,8 @@ layout: project
 </style>
 <div class="container">
     <ul class="social-links week-links">
+        <li><a href="#week-01-12-2025">Week 01/12/2025</a></li>
+        <li><a href="#week-24-11-2025">Week 24/11/2025</a></li>
         <li><a href="#week-17-11-2025">Week 17/11/2025</a></li>
         <li><a href="#week-10-11-2025">Week 10/11/2025</a></li>
         <li><a href="#week-03-11-2025">Week 03/11/2025</a></li>
@@ -41,6 +43,22 @@ layout: project
     </ul>
 </div>
 
+<div class="pdf-embed" markdown="0">
+    <object data="/assets/docs/projects/cloth_dl/sota_report.pdf" type="application/pdf">
+        <p>Your browser doesn't support embedded PDFs.
+        <a href="/assets/docs/projects/cloth_dl/sota_report.pdf">Download the PDF report</a> instead.</p>
+    </object>
+</div>
+
+<a id="week-01-12-2025"></a>
+<a id="week-24-11-2025"></a>
+## Week 24/11/2025 - 01/12/2025
+During these weeks, I finished the first version of the State of the Art Report.
+
+I was also able to finish the implementation of the loss function used in [HOOD](#hood). To do this I used the terms explicitly described in the [SNUG](#snug) paper (even though they are not an MGN modification, they should still match the formulation). I first tried to do it only using this loss, so training in a self-supervised setup, but it did not converge because the gravity term might have been too strong, making the cloth stretch downward indefinitely.
+
+I also tried a semi-supervised setup, by using the MGN loss (error in the predicted and ground-truth positions), in addition to the physical loss described above. But I had the same issue as before. I will try to add more importance to the attachment to data to stabilise learning in the beginning and then decrease the coefficient over time to make the physical terms more important.
+
 <a id="week-10-11-2025"></a>
 <a id="week-17-11-2025"></a>
 ## Week 10/11/2025 - 17/11/2025
@@ -48,19 +66,18 @@ Using my ARCSim-Python interface, I created several small datasets. The first on
 
 I rebuilt the core architecture of my MeshGraphNet implementation from scratch to use the `HeteroData` class from `torch-geometric`. This class enables "automatic" message passing in the GNN blocks: I only need to define the graph, the node and edge features, and the aggregation method (at a high level — in my case, simply specifying "add"). It also makes it much easier to use larger batch sizes (so far, I had only used batches of size 1), as batching is handled automatically.
 
-I have also made good progress on the state-of-the-art report and found a paper ([MeshGraphNetRP](mgn-rp)) that improves generalization by adding more loss terms to the supervised version of MeshGraphNet, as well as additional features for the nodes (force and kinetic energy) and the edges (bending at the edge, e.g., the dihedral angle between the two faces connected by the edge).
+I have also made good progress on the state-of-the-art report and found a paper ([MeshGraphNetRP](#mgn-rp)) that improves generalization by adding more loss terms to the supervised version of MeshGraphNet, as well as additional features for the nodes (force and kinetic energy) and the edges (bending at the edge, e.g., the dihedral angle between the two faces connected by the edge).
 
 ### Discussion (21/11/2025)
-- Mix between supervised and self-supervised (similar to [MeshGraphNetRP](mgn-rp) where the ground-truth is used in the loss with other physical losses). But adding a decaying factor on the ground-truth term to slowly switch to purely self-supervised and not rely on the simulator
-- Add the [Lamé constants](@lamé) to the mesh features and train with a wide variety of them (regardless of the one used in the ground truth because its effect on training would slowly disapear)
+- Mix between supervised and self-supervised (similar to [MeshGraphNetRP](#mgn-rp) where the ground truth is used in the loss with other physical losses), but add a decaying factor on the ground-truth term to slowly switch to purely self-supervised and not rely on the simulator
+- Add the [Lamé constants](#lamé) to the mesh features and train with a wide variety of them (regardless of the one used in the ground truth because its effect on training would slowly disappear)
 
-### Biliography
+### Bibliography
 1. **MeshGraphNetRP: Improving Generalization of GNN-based Cloth Simulation**<a id="mgn-rp"></a>, E. I. Libao, M. Lee, S. Kim, S. Lee, *Proceedings of the 16th ACM SIGGRAPH Conference on Motion, Interaction and Games*, 2023, [[PDF ACM](https://dl.acm.org/doi/pdf/10.1145/3623264.3624441)]
-
 
 <a id="week-03-11-2025"></a>
 ## Week 03/11/2025
-I created a Python interface for ARCSim (see the repo on [GitHub](https://github.com/AntoninGranados/arcsim-python/tree/main)) to allow for "automated" simulation. It automatically runs all ARCSim commands and provides updates while it is executing. The configuration of the simulation can be created using code instead of relying on a JSON file (JSON is still usable). The scripts also provide an easy way to generate procedural mesh (only plane for now) using Poisson or uniform sampling.
+I created a Python interface for ARCSim (see the repo on [GitHub](https://github.com/AntoninGranados/arcsim-python/tree/main)) to allow for "automated" simulation. It automatically runs all ARCSim commands and provides updates while it is executing. The configuration of the simulation can be created using code instead of relying on a JSON file (JSON is still usable). The scripts also provide an easy way to generate procedural meshes (only planes for now) using Poisson or uniform sampling.
 
 A simple simulation could look like this:
 ```python
@@ -74,9 +91,9 @@ sim_state.save_npz("simulation.npz")
 <a id="week-20-10-2025"></a>
 <a id="week-27-10-2025"></a>
 ## Week 20/10/2025 - 27/10/2025
-I managed to make a simulation using the SOFA Framework and its Python binding. The issue is that I had to make the wind force myself (in Python - which is a bit slow even with numpy vectorization) because I didn't find a simple plugin.
+I managed to make a simulation using the SOFA Framework and its Python binding. The issue is that I had to make the wind force myself (in Python — which is a bit slow even with numpy vectorization) because I didn't find a simple plugin.
 
-We can also see issues on the [video](#demo-sofa) on the edges (they flip and intersect the cloth). And some parts look stiffer than others, which might come from the Rayleigh parameters I chose.
+We can also see issues on the [video](#demo-sofa) on the edges (they flip and intersect the cloth), and some parts look stiffer than others, which might come from the Rayleigh parameters I chose.
 
 <div class="video-container" width="100%">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
@@ -84,11 +101,11 @@ We can also see issues on the [video](#demo-sofa) on the edges (they flip and in
 </video>
 </div><a id="demo-sofa"></a>
 
-I also looked into [Argus](https://github.com/lijieumn/Argus-distribution), a newer version of ARCSim with the addition of friction. But I had the same problem during compilation as the ones I got with ARCSim.
+I also looked into [Argus](https://github.com/lijieumn/Argus-distribution), a newer version of ARCSim with the addition of friction. But I had the same compilation problems as with ARCSim.
 
-But while I was looking for a solution, I came across an [Arcsim correction](https://github.com/kaist-silab/arcsim). There were still some problems but I managed to make it work (without any graphical interface), and I made a few simulations to test it shown in the [video](#demo-arcsim).
+While I was looking for a solution, I came across an [Arcsim correction](https://github.com/kaist-silab/arcsim). There were still some problems, but I managed to make it work (without any graphical interface), and I made a few simulations to test it, shown in the [video](#demo-arcsim).
 
-First with remeshing (the default flag simulation), the simulation takes around 10 minutes and the flag looks to be able to stretch a lot. I then tried to do the simulation on a uniformly sampled plane (similar to the one I used to interpolate the remeshed simulation in previous weeks), but we can see some "bands" appearing due to the regularity of the mesh. To fix this I used Poisson sampling and Delaunay triangulation which greatly reduces the artifacts.
+First with remeshing (the default flag simulation), the simulation takes around 10 minutes, and the flag looks like it can stretch a lot. I then tried to do the simulation on a uniformly sampled plane (similar to the one I used to interpolate the remeshed simulation in previous weeks), but we can see some "bands" appearing due to the regularity of the mesh. To fix this I used Poisson sampling and Delaunay triangulation, which greatly reduces the artifacts.
 
 The last two simulations (without remeshing) are about 5 times faster and use around 90% fewer vertices.
 
@@ -100,15 +117,15 @@ The last two simulations (without remeshing) are about 5 times faster and use ar
 
 <a id="week-13-10-2025"></a>
 ## Week 13/10/2025
-I started the week by trying to compile [ARCSim](#arcsim), but it uses some old dependencies and relies on Python 2. So it was very hard (maybe impossible) to compile on my MacBook M3. I also tried on the school computers (GPUs) that run on Linux, but I also had no luck as I did not find a way to install Python 2.
+I started the week by trying to compile [ARCSim](#arcsim), but it uses some old dependencies and relies on Python 2. So it was very hard (maybe impossible) to compile on my MacBook M3. I also tried on the school computers (GPUs) that run on Linux, but I had no luck as I did not find a way to install Python 2.
 
 I then looked into [Taichi](https://www.taichi-lang.org), but I wanted something that could do simulations "out of the box" (like ARCSim, which simply uses JSON to describe the scenes).
 
-I then tried the [SOFA framework](https://www.sofa-framework.org) and even though I had a bit of trouble compiling it, I managed to make it work on my computer. It uses XML to describe the scenes and can also work entirely through its Python interface (describe the scene + run the simulation). It also has a graphical interface (this is why I had some issues) which is useful but not strictly needed for my needs. It can simulate a wide variety of material - from cloth to rigid bodies - so if we want to expand our field during the year, I will be able to use the same framework.
+I then tried the [SOFA framework](https://www.sofa-framework.org) and even though I had a bit of trouble compiling it, I managed to make it work on my computer. It uses XML to describe the scenes and can also work entirely through its Python interface (describe the scene + run the simulation). It also has a graphical interface (this is why I had some issues), which is useful but not strictly needed for my needs. It can simulate a wide variety of materials — from cloth to rigid bodies — so if we want to expand our field during the year, I will be able to use the same framework.
 
 <img src="/assets/imgs/projects/cloth_dl/sofa_demo.png" alt="SOFA demo" width="50%"><a id="sofa_demo"></a>
 
-### Biliography
+### Bibliography
 1. **Adaptive Anisotropic Remeshing for Cloth Simulation**<a id="arcsim"></a>, R. Narain, A. Samii, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH Asia 2012_, 2012, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
 2. **Folding and Crumpling Adaptive Sheets**, R. Narain, T. Pfaff, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH_, 2013, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
 
@@ -174,18 +191,18 @@ $$
         \mathcal{L}_{inertia} = \sum_{v \in \mathcal{V}} \frac{1}{2} m_v ||\mathbf{x}_v^{t+1} - 2 \mathbf{x}_v^{t} + \mathbf{x}_v^{t-1}||^2
     $$
 
-Even with unsupervised learning we need a dataset that would serve as input for the model. Here the tshirt (simulated using [ARCSim](#arcsim)) comes from the [VTO dataset](https://github.com/isantesteban/vto-dataset) used by [HOOD](#hood).
+Even with unsupervised learning, we need a dataset that would serve as input for the model. Here the T-shirt (simulated using [ARCSim](#arcsim)) comes from the [VTO dataset](https://github.com/isantesteban/vto-dataset) used by [HOOD](#hood).
 <div class="video-container">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
     <source src="/assets/videos/cloth_dl/vto_dataset.mp4" type="video/mp4">
 </video>
 </div><a id="vto_dataset"></a>
 
-But the body (collider) is missing as it came from the [CMU Motion Capture Database](https://mocap.cs.cmu.edu) (videos) and was converted to [SMPL](https://smpl.is.tue.mpg.de) format using a video to pose algorithm ([SURREAL](https://www.di.ens.fr/willow/research/surreal/data/)). I tried to compute the bones rotation directly from the CMU files (which are given thus using video to pose should not be necessary). But probably due to local/global coordinates differences between the two datasets, I did not manage to compute the body pose for now (the [image below](#smpl_dataset) should be the first frame of the [animation above](#vto_dataset)).
+But the body (collider) is missing as it came from the [CMU Motion Capture Database](https://mocap.cs.cmu.edu) (videos) and was converted to [SMPL](https://smpl.is.tue.mpg.de) format using a video-to-pose algorithm ([SURREAL](https://www.di.ens.fr/willow/research/surreal/data/)). I tried to compute the bone rotations directly from the CMU files (which are given, so using video-to-pose should not be necessary). But probably due to local/global coordinate differences between the two datasets, I did not manage to compute the body pose for now (the [image below](#smpl_dataset) should be the first frame of the [animation above](#vto_dataset)).
 
 <img src="/assets/imgs/projects/cloth_dl/smpl_dataset.png" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
 
-### Biliography
+### Bibliography
 1. **SNUG: Self-Supervised Neural Dynamic Garments**<a id="snug"></a>, I. Santesteban, M. A. Otaduy, and D. Casas, *Conference on Computer Vision and Pattern Recognition*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2204.02219)]
 
 <a id="week-29-09-2025"></a>
@@ -198,7 +215,7 @@ After additional training, the model shows more coherent behavior, though collis
 </video>
 </div>
 
-So I created a **uniform dataset**, which was built by interpolating (barycenter interpolation) a uniform mesh with [MeshGraphNets](#mgn)'s dataset. As we can see in the [video below](#uniform_dataset), due to the lack of vertex density in some critical places, there are some sort of wrinkle on sharp bend. And the _node count ratio_ (the node count in the interpolated mesh divided by the node count in the ground truth) is not great except when the remeshing create a lot of new nodes.
+So I created a **uniform dataset**, which was built by interpolating (barycenter interpolation) a uniform mesh with [MeshGraphNets](#mgn)'s dataset. As we can see in the [video below](#uniform_dataset), due to the lack of vertex density in some critical places, there are some wrinkles on sharp bends. The _node count ratio_ (the node count in the interpolated mesh divided by the node count in the ground truth) is also not great, except when the remeshing creates a lot of new nodes.
 <div class="video-container">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
     <source src="/assets/videos/cloth_dl/uniform_dataset.mp4" type="video/mp4">
@@ -209,13 +226,12 @@ This is why most papers discussed this week incorporate some form of **unsupervi
 
 Report of the week (*the links inside don't work*) [[PDF](../assets/docs/projects/cloth_dl/report_week_29_09.pdf)].
 
-### Biliography
+### Bibliography
 1. **Neural Cloth Simulation**, H. Bertiche, M. Madadi, and S. Escalera, *ACM Transactions on Graphics*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2212.11220)]
 2. **N-Cloth: Predicting 3D Cloth Deformation with Mesh-Based Networks**, Y. Li et al., *Computer Graphics Forum (Proceedings of Eurographics)*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2112.06397)]
 3. **Hood: Hierarchical graphs for generalized modelling of clothing dynamics**<a id="hood"></a>, A. Grigorev, M. J. Black, and O. Hilliges, *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*, 2023, [[PDF ArXiv](https://arxiv.org/pdf/2212.07242)]
 4. **SENC: Handling Self-collision in Neural Cloth Simulation**<a id="senc"></a>, Z. Liao, S. Wang, and T. Komura, *European Conference on Computer Vision*, 2024, [[PDF ArXiv](https://arxiv.org/pdf/2407.12479)]
-5. **FastClothGNN: Optimizing Message Passing in Graph Neural Networks for Accelerating Real-Time Cloth Simulation**<a id="fastgnn"></a>, Y. Zhang, K. Yu, and X. Zhang, *Graphical Models*
-, 2024, [[HTML ScienceDirect](https://www.sciencedirect.com/science/article/pii/S1524070325000207)]
+5. **FastClothGNN: Optimizing Message Passing in Graph Neural Networks for Accelerating Real-Time Cloth Simulation**<a id="fastgnn"></a>, Y. Zhang, K. Yu, and X. Zhang, *Graphical Models*, 2024, [[HTML ScienceDirect](https://www.sciencedirect.com/science/article/pii/S1524070325000207)]
 
 <a id="week-22-09-2025"></a>
 <a id="week-26-09-2025"></a>
@@ -229,10 +245,10 @@ The current results are preliminary, with only ~150 epochs completed out of the 
 </video>
 </div>
 
-### Biliography
-1. **Bi-Stride Multi-Scale Graph Neural Network for Mesh-Based Physical Simulation**, Y. Cao, M. Chai, M. Li, and C. Jiang, , 2022, [[PDF ArXiv](https://arxiv.org/pdf/2210.02573v1)]
+### Bibliography
+1. **Bi-Stride Multi-Scale Graph Neural Network for Mesh-Based Physical Simulation**, Y. Cao, M. Chai, M. Li, and C. Jiang, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2210.02573v1)]
 2. **MultiScale MeshGraphNets**, M. Fortunato, T. Pfaff, P. Wirnsberger, A. Pritzel, and P. Battaglia, *International Conference on Machine Learning*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2210.00612)]
-3. **X-MeshGraphNet: Scalable Multi-Scale Graph Neural Networks for Physics Simulation**<a id="x-mgn"></a>, M. A. Nabian, C. Liu, R. Ranade, and S. Choudhry, , 2024, [[PDF ArXiv](https://arxiv.org/pdf/2411.17164)]
+3. **X-MeshGraphNet: Scalable Multi-Scale Graph Neural Networks for Physics Simulation**<a id="x-mgn"></a>, M. A. Nabian, C. Liu, R. Ranade, and S. Choudhry, 2024, [[PDF ArXiv](https://arxiv.org/pdf/2411.17164)]
 
 <a id="week-15-09-2025"></a>
 <a id="week-18-09-2025"></a>
@@ -246,5 +262,5 @@ The results are promising, despite limited training of only ~400 epochs out of t
 </video>
 </div>
 
-### Biliography
+### Bibliography
 1. **Learning Mesh-Based Simulation with Graph Networks**<a id="mgn"></a>, T. Pfaff, M. Fortunato, A. Sanchez-Gonzalez, and P. W. Battaglia, *International Conference on Learning Representations*, 2021, [[PDF ArXiv](https://arxiv.org/pdf/2010.03409)]
