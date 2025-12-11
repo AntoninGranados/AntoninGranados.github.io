@@ -25,6 +25,7 @@ layout: project
 </style>
 <div class="container">
     <ul class="social-links week-links">
+        <li><a href="#week-08-12-2025">Week 08/12/2025</a></li>
         <li><a href="#week-01-12-2025">Week 01/12/2025</a></li>
         <li><a href="#week-24-11-2025">Week 24/11/2025</a></li>
         <li><a href="#week-17-11-2025">Week 17/11/2025</a></li>
@@ -51,6 +52,18 @@ layout: project
 </div>
 
 ## Week
+
+## Week 08/12/2025 <a id="week-08-12-2025"></a>
+I found an issue in my code (I was expecting a mistake in the stretching loss but hadn't found it before) by comparing with the source code of [HOOD](#hood) (see [GitHub](https://github.com/dolorousrtur/hood)). I was computing the Green strain tensor using the formula I found for the 2D case, but did not project the 3D points onto the triangle's plane (which made some sort of mix between the strain tensor of a 3D tetrahedron and a 2D triangle). I also found that they didn't normalise the losses to take into account the size of the mesh (ie. dividing by the node count, edge count or the total area).
+
+After fixing this, I did an overfit test using 10 random samples from my custom dataset without any noise added. I first tried with the supervised approach as a baseline. It converged pretty quickly so I stopped the training after only 200 steps.
+<img src="/assets/imgs/projects/cloth_dl/overfit_sup.png" alt="Overfit Supervised" width="100%"><a id="overfit-supervised"></a>
+
+After this, I tried with the unsupervised loss; the results also looked satisfying. They were much slower (1000 steps on the graph below) but this was expected. I also displayed each of the loss terms separately under the total graph (from left to right: Inertia, Gravity, Bending, Stretching). Be aware that each graph is not to scale; for instance the gravity practically didn't decrease while the stretching did most of the work.
+<img src="/assets/imgs/projects/cloth_dl/overfit_unsup.png" alt="Overfit Unsupervised" width="100%"><a id="overfit-unsupervised"></a>
+
+### Bibliography
+1. **FNOPT: Resolution-Agnostic, Self-Supervised Cloth Simulation using Meta-Optimization with Fourier Neural Operators**<a id="FNOpt"></a>, R. Chen, T. Tran, S. Parashar, 2025, [[PDF ArXiv](https://arxiv.org/pdf/2512.05762)]
 
 ## Week 24/11/2025 - 01/12/2025 <a id="week-24-11-2025"></a> <a id="week-01-12-2025"></a>
 During these weeks, I finished the first version of the State of the Art Report.
