@@ -4,9 +4,27 @@ layout: project
 ---
 
 # VkRay: a Vulkan Raytracer
+
+Custom path tracer built directly on Vulkan (no ray-tracing extensions), with an in-app scene editor using ImGui + ImGuizmo.
+
 ## The User Interface
-<img src="/assets/imgs/projects/vk_ray/ui.png" alt="User Interface" width="100%">
+<img src="/assets/imgs/projects/vk_ray/ui.png" alt="User Interface" width="60%">
+
+## What it does
+- Progressive path tracer running entirely in on fragment shaders; two floating-point render targets ping-pong to accumulate samples frame after frame.
+- Interactive scene editing: add/select spheres, planes, and boxes; move/rotate/scale them with gizmos.
+- Material system: lambertian, metal (with fuzz), dielectric glass, emissive lights.
+- Lighting: emissive geometry and configurable skylight presets (Day / Sunset / Night / Empty).
+- Built-in console/notification window with commands (`clear`, `help`, `reload` shaders, toggle `render`-only, `exit`).
+
+## How it works
+- Scene data is packed into storage buffers (per-primitive buffers + an indirection/object buffer for selection) and consumed by the fragment shader for ray/primitive intersections.
+- A small Vulkan wrapper (`VkSmol`) handles descriptor set updates, dynamic rendering, and shader hot-reload so you can iterate quickly.
+- The renderer keeps two RGBA32F images: one is read as the previous accumulation while the other is written, then they swap each frame.
+- Camera uses a fly setup (right-click to unlock look; WASD + Space/Shift to move; scroll to change FOV). Any movement or UI change bumps the frame counter back to zero to keep accumulation clean.
 
 ## Demos
-<img src="/assets/imgs/projects/vk_ray/cornell1.png" alt="Cornell Box 1" width="100%">
-<img src="/assets/imgs/projects/vk_ray/cornell2.png" alt="Cornell Box 2" width="100%">
+<div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0;">
+    <img src="/assets/imgs/projects/vk_ray/cornell1.png" alt="Cornell Box 1" style="width: 60%; height: auto;">
+    <img src="/assets/imgs/projects/vk_ray/cornell2.png" alt="Cornell Box 2" style="width: 60%; height: auto;">
+</div>

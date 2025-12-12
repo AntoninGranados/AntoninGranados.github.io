@@ -368,6 +368,30 @@ main{padding:1rem 0 2rem}
     font-size:var(--font-size-sm);
     opacity:0.8
 }
+.project-activity{
+    display:flex;
+    align-items:center;
+    gap:0.45rem;
+    flex-wrap:wrap;
+    margin-top:0.65rem;
+    color:var(--muted);
+    font-size:var(--font-size-sm)
+}
+.project-activity__pill{
+    display:inline-flex;
+    align-items:center;
+    gap:0.3rem;
+    padding:0.2rem 0.55rem;
+    border-radius:var(--radius-sm);
+    background: rgba(248, 248, 242, 0.06);
+    border: 1px solid rgba(98, 114, 164, 0.3);
+    color: var(--text);
+    white-space: nowrap;
+    line-height: 1.2
+}
+.project-activity + .project-date{
+    margin-top:0.35rem
+}
 
 /* Alternate image position */
 .project-card:nth-child(even){
@@ -634,4 +658,3 @@ main{padding:1rem 0 2rem}
 }
 /* Utility */
 .muted{color:var(--muted)}
-
