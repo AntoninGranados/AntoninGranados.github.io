@@ -136,30 +136,48 @@ layout: null
     </footer>
 
     <script>
-        // Enhanced smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    const headerHeight = document.querySelector('.site-header').offsetHeight;
-                    const targetPosition = target.offsetTop - headerHeight - 20;
-                    
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
-            const links = document.querySelectorAll('a[href]');
-            
-            links.forEach(function(link) {
+            const normalizePath = (path) => path.replace(/\/index\.html$/, '').replace(/\/$/, '') || '/';
+            const currentPath = normalizePath(window.location.pathname);
+            const header = document.querySelector('.site-header');
+
+            const scrollToId = (id) => {
+                const target = document.getElementById(id);
+                if (!target) return false;
+                const offset = header ? header.offsetHeight + 20 : 0;
+                const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top, behavior: 'smooth' });
+                return true;
+            };
+
+            // Smooth scroll for same-page anchors (including /#contact style links)
+            document.querySelectorAll('a[href*="#"]').forEach(link => {
                 const href = link.getAttribute('href');
-                
-                if (href && (href.startsWith('http://') || href.startsWith('https://')) && 
+                if (!href) return;
+                const url = new URL(href, window.location.origin);
+                if (normalizePath(url.pathname) !== currentPath || !url.hash) return;
+
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = decodeURIComponent(url.hash.slice(1));
+                    if (scrollToId(id)) {
+                        history.replaceState(null, '', window.location.pathname + window.location.search);
+                    }
+                });
+            });
+
+            // Handle initial hash on load (e.g., arriving from another page)
+            if (window.location.hash) {
+                const id = decodeURIComponent(window.location.hash.slice(1));
+                if (scrollToId(id)) {
+                    history.replaceState(null, '', window.location.pathname + window.location.search);
+                }
+            }
+
+            // Open external links in a new tab
+            document.querySelectorAll('a[href]').forEach(function(link) {
+                const href = link.getAttribute('href');
+                if (href && (href.startsWith('http://') || href.startsWith('https://')) &&
                     !href.includes(window.location.hostname)) {
                     if (!link.getAttribute('target')) {
                         link.setAttribute('target', '_blank');

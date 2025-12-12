@@ -81,6 +81,48 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script>
+    // Smooth scroll to same-page anchors without leaving hashes in the URL
+    document.addEventListener('DOMContentLoaded', () => {
+      const normalizePath = (path) => path.replace(/\/index\.html$/, '').replace(/\/$/, '') || '/';
+      const currentPath = normalizePath(window.location.pathname);
+      const header = document.querySelector('.site-header');
+
+      const scrollToId = (id) => {
+        const target = document.getElementById(id);
+        if (!target) return false;
+        const offset = header ? header.offsetHeight + 20 : 0;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+        return true;
+      };
+
+      // Handle clicks on same-page anchors (including /#contact style links when already on /)
+      document.querySelectorAll('a[href*="#"]').forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+
+        const url = new URL(href, window.location.origin);
+        if (normalizePath(url.pathname) !== currentPath || !url.hash) return;
+
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = decodeURIComponent(url.hash.slice(1));
+          if (scrollToId(id)) {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+          }
+        });
+      });
+
+      // If the page was loaded with a hash, scroll once and clear it
+      if (window.location.hash) {
+        const id = decodeURIComponent(window.location.hash.slice(1));
+        if (scrollToId(id)) {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+      }
+    });
+  </script>
+  <script>
     // Initialize syntax highlighting
     document.addEventListener('DOMContentLoaded', function() {
       // Highlight all code blocks

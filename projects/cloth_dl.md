@@ -25,24 +25,25 @@ layout: project
 </style>
 <div class="container">
     <ul class="social-links week-links">
-        <li><a href="#week-08-12-2025">Week 08/12/2025</a></li>
-        <li><a href="#week-01-12-2025">Week 01/12/2025</a></li>
-        <li><a href="#week-24-11-2025">Week 24/11/2025</a></li>
-        <li><a href="#week-17-11-2025">Week 17/11/2025</a></li>
-        <li><a href="#week-10-11-2025">Week 10/11/2025</a></li>
-        <li><a href="#week-03-11-2025">Week 03/11/2025</a></li>
-        <li><a href="#week-27-10-2025">Week 27/10/2025</a></li>
-        <li><a href="#week-20-10-2025">Week 20/10/2025</a></li>
-        <li><a href="#week-13-10-2025">Week 13/10/2025</a></li>
-        <li><a href="#week-06-10-2025">Week 06/10/2025</a></li>
-        <li><a href="#week-03-10-2025">Week 03/10/2025</a></li>
-        <li><a href="#week-29-09-2025">Week 29/09/2025</a></li>
-        <li><a href="#week-26-09-2025">Week 26/09/2025</a></li>
-        <li><a href="#week-22-09-2025">Week 22/09/2025</a></li>
-        <li><a href="#week-18-09-2025">Week 18/09/2025</a></li>
-        <li><a href="#week-15-09-2025">Week 15/09/2025</a></li>
+        <li><a href="#week-08-12-2025" data-target="week-08-12-2025">Week 08/12/2025</a></li>
+        <li><a href="#week-01-12-2025" data-target="week-01-12-2025">Week 01/12/2025</a></li>
+        <li><a href="#week-24-11-2025" data-target="week-24-11-2025">Week 24/11/2025</a></li>
+        <li><a href="#week-17-11-2025" data-target="week-17-11-2025">Week 17/11/2025</a></li>
+        <li><a href="#week-10-11-2025" data-target="week-10-11-2025">Week 10/11/2025</a></li>
+        <li><a href="#week-03-11-2025" data-target="week-03-11-2025">Week 03/11/2025</a></li>
+        <li><a href="#week-27-10-2025" data-target="week-27-10-2025">Week 27/10/2025</a></li>
+        <li><a href="#week-20-10-2025" data-target="week-20-10-2025">Week 20/10/2025</a></li>
+        <li><a href="#week-13-10-2025" data-target="week-13-10-2025">Week 13/10/2025</a></li>
+        <li><a href="#week-06-10-2025" data-target="week-06-10-2025">Week 06/10/2025</a></li>
+        <li><a href="#week-03-10-2025" data-target="week-03-10-2025">Week 03/10/2025</a></li>
+        <li><a href="#week-29-09-2025" data-target="week-29-09-2025">Week 29/09/2025</a></li>
+        <li><a href="#week-26-09-2025" data-target="week-26-09-2025">Week 26/09/2025</a></li>
+        <li><a href="#week-22-09-2025" data-target="week-22-09-2025">Week 22/09/2025</a></li>
+        <li><a href="#week-18-09-2025" data-target="week-18-09-2025">Week 18/09/2025</a></li>
+        <li><a href="#week-15-09-2025" data-target="week-15-09-2025">Week 15/09/2025</a></li>
     </ul>
 </div>
+
 
 <div class="pdf-embed" markdown="0">
     <object data="/assets/docs/projects/cloth_dl/sota_report.pdf" type="application/pdf">
