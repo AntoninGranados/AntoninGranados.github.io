@@ -11,7 +11,7 @@ Custom path tracer built directly on Vulkan (no ray-tracing extensions), with an
 <img src="/assets/imgs/projects/vk_ray/ui.png" alt="User Interface" width="80%">
 
 ## What it does
-- Progressive path tracer running entirely in on fragment shaders; two floating-point render targets ping-pong to accumulate samples frame after frame.
+- Progressive path tracer running entirely on fragment shaders; two floating-point render targets ping-pong to accumulate samples frame after frame.
 - Interactive scene editing: add/select spheres, planes, and boxes; move/rotate/scale them with gizmos.
 - Material system: lambertian, metal (with fuzz), dielectric glass, emissive lights.
 - Lighting: emissive geometry and configurable skylight presets (Day / Sunset / Night / Empty).
