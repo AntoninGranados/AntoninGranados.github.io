@@ -25,10 +25,11 @@ Custom path tracer built directly on Vulkan (no ray-tracing extensions), with an
 
 ## Demos
 <div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0;">
-    <img src="/assets/imgs/projects/vk_ray/material1.png" alt="Material Test 1" style="width: 60%; height: auto;">
-    <img src="/assets/imgs/projects/vk_ray/material2.png" alt="Material Test 2" style="width: 60%; height: auto;">
+    <img src="/assets/imgs/projects/vk_ray/material1.png" alt="Material Test 1" style="width: 50%; height: auto;">
+    <img src="/assets/imgs/projects/vk_ray/material2.png" alt="Material Test 2" style="width: 50%; height: auto;">
 </div>
+<img src="/assets/imgs/projects/vk_ray/material3.png" alt="Material Test 3" style="width: 80%; height: auto;">
 <div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0;">
-    <img src="/assets/imgs/projects/vk_ray/cornell1.png" alt="Cornell Box 1" style="width: 60%; height: auto;">
-    <img src="/assets/imgs/projects/vk_ray/cornell2.png" alt="Cornell Box 2" style="width: 60%; height: auto;">
+    <img src="/assets/imgs/projects/vk_ray/cornell1.png" alt="Cornell Box 1" style="width: 50%; height: auto;">
+    <img src="/assets/imgs/projects/vk_ray/cornell2.png" alt="Cornell Box 2" style="width: 50%; height: auto;">
 </div>
