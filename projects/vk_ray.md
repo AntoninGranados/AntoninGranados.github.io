@@ -8,7 +8,7 @@ layout: project
 Custom path tracer built directly on Vulkan (no ray-tracing extensions), with an in-app scene editor using ImGui + ImGuizmo.
 
 ## The User Interface
-<img src="/assets/imgs/projects/vk_ray/ui.png" alt="User Interface" width="80%">
+<img src="/assets/imgs/projects/vk_ray/ui.png" alt="User Interface" width="90%">
 
 ## What it does
 - Progressive path tracer running entirely on fragment shaders; two floating-point render targets ping-pong to accumulate samples frame after frame.
@@ -24,9 +24,6 @@ Custom path tracer built directly on Vulkan (no ray-tracing extensions), with an
 - Camera uses a fly setup (right-click to unlock look; WASD + Space/Shift to move; scroll to change FOV). Any movement or UI change bumps the frame counter back to zero to keep accumulation clean.
 
 ## Demos
-<div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0;">
-    <img src="/assets/imgs/projects/vk_ray/material1.png" alt="Material Test 1" style="width: 40%; height: auto;">
-    <img src="/assets/imgs/projects/vk_ray/material2.png" alt="Material Test 2" style="width: 40%; height: auto;">
-</div>
-<img src="/assets/imgs/projects/vk_ray/material3.png" alt="Material Test 3" style="width: 100%; height: auto;">
-<img src="/assets/imgs/projects/vk_ray/cornell2.png" alt="Cornell Box 2" style="width: 100%; height: auto;">
+<img src="/assets/imgs/projects/vk_ray/material1.png" alt="Material Test 1" style="width: 90%; height: auto;">
+<img src="/assets/imgs/projects/vk_ray/material2.png" alt="Material Test 2" style="width: 90%; height: auto;">
+<img src="/assets/imgs/projects/vk_ray/cornell2.png" alt="Cornell Box 2" style="width: 90%; height: auto;">

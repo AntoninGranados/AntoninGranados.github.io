@@ -25,6 +25,7 @@ layout: project
 </style>
 <div class="container">
     <ul class="social-links week-links">
+        <li><a href="#week-15-12-2025" data-target="week-08-12-2025">Week 15/12/2025</a></li>
         <li><a href="#week-08-12-2025" data-target="week-08-12-2025">Week 08/12/2025</a></li>
         <li><a href="#week-01-12-2025" data-target="week-01-12-2025">Week 01/12/2025</a></li>
         <li><a href="#week-24-11-2025" data-target="week-24-11-2025">Week 24/11/2025</a></li>
@@ -46,13 +47,15 @@ layout: project
 
 
 <div class="pdf-embed" markdown="0">
-    <object data="/assets/docs/projects/cloth_dl/sota_report.pdf" type="application/pdf">
+    <object data="/assets/docs/projects/cloth_dl/sota-report.pdf" type="application/pdf">
         <p>Your browser doesn't support embedded PDFs.
-        <a href="/assets/docs/projects/cloth_dl/sota_report.pdf">Download the PDF report</a> instead.</p>
+        <a href="/assets/docs/projects/cloth_dl/sota-report.pdf">Download the PDF report</a> instead.</p>
     </object>
 </div>
 
 ## Week
+
+## Week 15/12/2025 <a id="week-15-12-2025"></a>
 
 ## Week 08/12/2025 <a id="week-08-12-2025"></a>
 I found an issue in my code (I was expecting a mistake in the stretching loss but hadn't found it before) by comparing with the source code of [HOOD](#hood) (see [GitHub](https://github.com/dolorousrtur/hood)). I was computing the Green strain tensor using the formula I found for the 2D case, but did not project the 3D points onto the triangle's plane (which made some sort of mix between the strain tensor of a 3D tetrahedron and a 2D triangle). I also found that they didn't normalise the losses to take into account the size of the mesh (ie. dividing by the node count, edge count or the total area).
@@ -234,7 +237,7 @@ So I created a **uniform dataset**, which was built by interpolating (barycenter
 
 This is why most papers discussed this week incorporate some form of **unsupervised learning**.
 
-Report of the week (*the links inside don't work*) [[PDF](../assets/docs/projects/cloth_dl/report_week_29_09.pdf)].
+Report of the week (*the links inside don't work*) [[PDF](../assets/docs/projects/cloth_dl/report-week-29-09.pdf)].
 
 ### Bibliography
 1. **Neural Cloth Simulation**, H. Bertiche, M. Madadi, and S. Escalera, *ACM Transactions on Graphics*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2212.11220)]
