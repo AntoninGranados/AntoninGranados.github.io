@@ -9,7 +9,7 @@ layout: project
     /* Week links grid: reuse .social-links visuals, but display as responsive grid */
     .week-links {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 0.75rem;
         padding: 0;
         margin: 0.75rem auto 1.25rem auto;
@@ -18,9 +18,8 @@ layout: project
     .week-links li { list-style: none; margin: 0; }
     .week-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
 
-    /* Force exactly 4 columns on desktop */
     @media (min-width: 900px) {
-        .week-links { grid-template-columns: repeat(3, 1fr); }
+        .week-links { grid-template-columns: repeat(4, minmax(180px, 1fr)); }
     }
 </style>
 <div class="container">
@@ -55,9 +54,20 @@ layout: project
 
 ## Week
 
-## Week 15/12/2025 <a id="week-15-12-2025"></a>
+## <a id="week-15-12-2025"></a> Week 15/12/2025
+I rewrote the report on Overleaf and made some modifications to add more details (especially when notations were not clear enough).
 
-## Week 08/12/2025 <a id="week-08-12-2025"></a>
+I also tried to implement rollouts during the training process by computing the mean of the self-supervised loss I implemented last time. To add a supervised loss term, I would need to modify how my data loader works because it does not currently keep track of the future frames (i.e., I can't have the 10 frames after the one selected).
+
+Initially, I used a rollout length of 8, but it was extremely slow. I then tried with 4 and recorded the [video](#self-sup). We can still see some stretching, but this is at around 80 epochs; training is still slow, so I haven't had time to run more (I can only use my laptop for now).
+
+<div class="video-container" width="100%"><a id="self-sup"></a>
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl/self_sup_roll4.mp4" type="video/mp4">
+</video>
+</div>
+
+## <a id="week-08-12-2025"></a> Week 08/12/2025
 I found an issue in my code (I was expecting a mistake in the stretching loss but hadn't found it before) by comparing with the source code of [HOOD](#hood) (see [GitHub](https://github.com/dolorousrtur/hood)). I was computing the Green strain tensor using the formula I found for the 2D case, but did not project the 3D points onto the triangle's plane (which made some sort of mix between the strain tensor of a 3D tetrahedron and a 2D triangle). I also found that they didn't normalise the losses to take into account the size of the mesh (ie. dividing by the node count, edge count or the total area).
 
 After fixing this, I did an overfit test using 10 random samples from my custom dataset without any noise added. I first tried with the supervised approach as a baseline. It converged pretty quickly so I stopped the training after only 200 steps.
@@ -69,7 +79,7 @@ After this, I tried with the unsupervised loss; the results also looked satisfyi
 ### Bibliography
 1. **FNOPT: Resolution-Agnostic, Self-Supervised Cloth Simulation using Meta-Optimization with Fourier Neural Operators**<a id="FNOpt"></a>, R. Chen, T. Tran, S. Parashar, 2025, [[PDF ArXiv](https://arxiv.org/pdf/2512.05762)]
 
-## Week 24/11/2025 - 01/12/2025 <a id="week-24-11-2025"></a> <a id="week-01-12-2025"></a>
+## <a id="week-24-11-2025"></a> <a id="week-01-12-2025"></a> Week 24/11/2025 - 01/12/2025
 During these weeks, I finished the first version of the State of the Art Report.
 
 I was also able to finish the implementation of the loss function used in [HOOD](#hood). To do this I used the terms explicitly described in the [SNUG](#snug) paper (even though they are not an MGN modification, they should still match the formulation). I first tried to do it only using this loss, so training in a self-supervised setup, but it did not converge because the gravity term might have been too strong, making the cloth stretch downward indefinitely.
@@ -81,7 +91,7 @@ I also tried a semi-supervised setup, by using the MGN loss (error in the predic
 - Try to overfit to see if the model can learn
 - Remove the gravity loss term and include it directly in the inertia (could also add any other force in that way)
 
-## Week 10/11/2025 - 17/11/2025 <a id="week-10-11-2025"></a> <a id="week-17-11-2025"></a>
+## <a id="week-10-11-2025"></a> <a id="week-17-11-2025"></a> Week 10/11/2025 - 17/11/2025
 Using my ARCSim-Python interface, I created several small datasets. The first one consists of a flag in the wind, and the second one contains a flag affected only by gravity.
 
 I rebuilt the core architecture of my MeshGraphNet implementation from scratch to use the `HeteroData` class from `torch-geometric`. This class enables "automatic" message passing in the GNN blocks: I only need to define the graph, the node and edge features, and the aggregation method (at a high level — in my case, simply specifying "add"). It also makes it much easier to use larger batch sizes (so far, I had only used batches of size 1), as batching is handled automatically.
@@ -95,7 +105,7 @@ I have also made good progress on the state-of-the-art report and found a paper 
 ### Bibliography
 1. **MeshGraphNetRP: Improving Generalization of GNN-based Cloth Simulation**<a id="mgn-rp"></a>, E. I. Libao, M. Lee, S. Kim, S. Lee, *Proceedings of the 16th ACM SIGGRAPH Conference on Motion, Interaction and Games*, 2023, [[PDF ACM](https://dl.acm.org/doi/pdf/10.1145/3623264.3624441)]
 
-## Week 03/11/2025 <a id="week-03-11-2025"></a>
+## <a id="week-03-11-2025"></a> Week 03/11/2025
 I created a Python interface for ARCSim (see the repo on [GitHub](https://github.com/AntoninGranados/arcsim-python/tree/main)) to allow for "automated" simulation. It automatically runs all ARCSim commands and provides updates while it is executing. The configuration of the simulation can be created using code instead of relying on a JSON file (JSON is still usable). The scripts also provide an easy way to generate procedural meshes (only planes for now) using Poisson or uniform sampling.
 
 A simple simulation could look like this:
@@ -107,16 +117,16 @@ sim_state = arcsim.load_obj(out_dir)
 sim_state.save_npz("simulation.npz")
 ```
 
-## Week 20/10/2025 - 27/10/2025 <a id="week-20-10-2025"></a> <a id="week-27-10-2025"></a>
+## <a id="week-20-10-2025"></a> <a id="week-27-10-2025"></a> Week 20/10/2025 - 27/10/2025
 I managed to make a simulation using the SOFA Framework and its Python binding. The issue is that I had to make the wind force myself (in Python — which is a bit slow even with numpy vectorization) because I didn't find a simple plugin.
 
 We can also see issues on the [video](#demo-sofa) on the edges (they flip and intersect the cloth), and some parts look stiffer than others, which might come from the Rayleigh parameters I chose.
 
-<div class="video-container" width="100%">
+<div class="video-container" width="100%"><a id="demo-sofa"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
     <source src="/assets/videos/cloth_dl/sofa.mp4" type="video/mp4">
 </video>
-</div><a id="demo-sofa"></a>
+</div>
 
 I also looked into [Argus](https://github.com/lijieumn/Argus-distribution), a newer version of ARCSim with the addition of friction. But I had the same compilation problems as with ARCSim.
 
@@ -126,13 +136,13 @@ First with remeshing (the default flag simulation), the simulation takes around 
 
 The last two simulations (without remeshing) are about 5 times faster and use around 90% fewer vertices.
 
-<div class="video-container" width="100%">
+<div class="video-container" width="100%"><a id="demo-arcsim"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture width="50%">
     <source src="/assets/videos/cloth_dl/arcsim.mp4" type="video/mp4">
 </video>
-</div><a id="demo-arcsim"></a>
+</div>
 
-## Week 13/10/2025 <a id="week-13-10-2025"></a>
+## <a id="week-13-10-2025"></a> Week 13/10/2025
 I started the week by trying to compile [ARCSim](#arcsim), but it uses some old dependencies and relies on Python 2. So it was very hard (maybe impossible) to compile on my MacBook M3. I also tried on the school computers (GPUs) that run on Linux, but I had no luck as I did not find a way to install Python 2.
 
 I then looked into [Taichi](https://www.taichi-lang.org), but I wanted something that could do simulations "out of the box" (like ARCSim, which simply uses JSON to describe the scenes).
@@ -145,7 +155,7 @@ I then tried the [SOFA framework](https://www.sofa-framework.org) and even thoug
 1. **Adaptive Anisotropic Remeshing for Cloth Simulation**<a id="arcsim"></a>, R. Narain, A. Samii, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH Asia 2012_, 2012, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
 2. **Folding and Crumpling Adaptive Sheets**, R. Narain, T. Pfaff, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH_, 2013, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
 
-## Week 06/10/2025 <a id="week-06-10-2025"></a>
+## <a id="week-06-10-2025"></a> Week 06/10/2025
 The main challenge for implementing **unsupervised learning** is the computation of the loss, because the model will still be the same as in [MeshGraphNets](#mgn). Here is the loss function used in [HOOD](#hood), with some of the terms (_bending_, _gravity_, _collision_ and _inertia_) found in [SNUG](#snug):
 
 $$
@@ -158,11 +168,11 @@ $$
         \mathcal{L}_{stretching} = \sum_{f \in \mathcal{F}} Area_f \cdot (\frac{\lambda}{2} tr(G_f)^2 + \mu tr(G_f^2))
     $$
 
-    <div class="video-container" width="100%">
+    <div class="video-container" width="100%"><a id="stretching"></a>
     <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
         <source src="/assets/videos/cloth_dl/stretching.mp4" type="video/mp4">
     </video>
-    </div><a id="stretching"></a>
+    </div>
 
 - **Bending**: where $\theta_e$ and $\theta_e^0$ are respectively the current and the resting [dihedral angle (wiki)](https://en.wikipedia.org/wiki/Dihedral_angle) of edge $e$
 
@@ -170,11 +180,11 @@ $$
         \mathcal{L}_{bending} = \sum_{e \in \mathcal{E}} k_{bending} (\theta_e - \theta_e^0)^2
     $$
 
-    <div class="video-container" width="100%">
+    <div class="video-container" width="100%"><a id="bending"></a>
     <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
         <source src="/assets/videos/cloth_dl/bending.mp4" type="video/mp4">
     </video>
-    </div><a id="bending"></a>
+    </div>
 
 - **Gravity**:
 
@@ -194,11 +204,11 @@ $$
         \mathcal{L}_{collision} = \sum_{v \in \mathcal{V}} k_{collision} max(\epsilon - d_{collider}(\mathbf{x}_v), 0)^3
     $$
 
-    <div class="video-container" width="100%">
+    <div class="video-container" width="100%"><a id="collision"></a>
     <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
         <source src="/assets/videos/cloth_dl/collision.mp4" type="video/mp4">
     </video>
-    </div><a id="collision"></a>
+    </div>
 
 - **Inertia**:
 
@@ -207,11 +217,11 @@ $$
     $$
 
 Even with unsupervised learning, we need a dataset that would serve as input for the model. Here the T-shirt (simulated using [ARCSim](#arcsim)) comes from the [VTO dataset](https://github.com/isantesteban/vto-dataset) used by [HOOD](#hood).
-<div class="video-container">
+<div class="video-container"><a id="vto_dataset"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
     <source src="/assets/videos/cloth_dl/vto_dataset.mp4" type="video/mp4">
 </video>
-</div><a id="vto_dataset"></a>
+</div>
 
 But the body (collider) is missing as it came from the [CMU Motion Capture Database](https://mocap.cs.cmu.edu) (videos) and was converted to [SMPL](https://smpl.is.tue.mpg.de) format using a video-to-pose algorithm ([SURREAL](https://www.di.ens.fr/willow/research/surreal/data/)). I tried to compute the bone rotations directly from the CMU files (which are given, so using video-to-pose should not be necessary). But probably due to local/global coordinate differences between the two datasets, I did not manage to compute the body pose for now (the [image below](#smpl_dataset) should be the first frame of the [animation above](#vto_dataset)).
 
@@ -220,7 +230,7 @@ But the body (collider) is missing as it came from the [CMU Motion Capture Datab
 ### Bibliography
 1. **SNUG: Self-Supervised Neural Dynamic Garments**<a id="snug"></a>, I. Santesteban, M. A. Otaduy, and D. Casas, *Conference on Computer Vision and Pattern Recognition*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2204.02219)]
 
-## Week 29/09/2025 — Meeting 03/10/2025 <a id="week-29-09-2025"></a> <a id="week-03-10-2025"></a>
+## <a id="week-29-09-2025"></a> <a id="week-03-10-2025"></a> Week 29/09/2025 — Meeting 03/10/2025
 After additional training, the model shows more coherent behavior, though collision handling remains challenging. This issue might stem from our use of a relatively coarse mesh (30x30 nodes). Even though we don't implement remeshing, the model is trained on finer data from a remeshed dataset.
 <div class="video-container">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
@@ -229,11 +239,11 @@ After additional training, the model shows more coherent behavior, though collis
 </div>
 
 So I created a **uniform dataset**, which was built by interpolating (barycenter interpolation) a uniform mesh with [MeshGraphNets](#mgn)'s dataset. As we can see in the [video below](#uniform_dataset), due to the lack of vertex density in some critical places, there are some wrinkles on sharp bends. The _node count ratio_ (the node count in the interpolated mesh divided by the node count in the ground truth) is also not great, except when the remeshing creates a lot of new nodes.
-<div class="video-container">
+<div class="video-container"><a id="uniform_dataset"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
     <source src="/assets/videos/cloth_dl/uniform_dataset.mp4" type="video/mp4">
 </video>
-</div><a id="uniform_dataset"></a>
+</div>
 
 This is why most papers discussed this week incorporate some form of **unsupervised learning**.
 
@@ -246,7 +256,7 @@ Report of the week (*the links inside don't work*) [[PDF](../assets/docs/project
 4. **SENC: Handling Self-collision in Neural Cloth Simulation**<a id="senc"></a>, Z. Liao, S. Wang, and T. Komura, *European Conference on Computer Vision*, 2024, [[PDF ArXiv](https://arxiv.org/pdf/2407.12479)]
 5. **FastClothGNN: Optimizing Message Passing in Graph Neural Networks for Accelerating Real-Time Cloth Simulation**<a id="fastgnn"></a>, Y. Zhang, K. Yu, and X. Zhang, *Graphical Models*, 2024, [[HTML ScienceDirect](https://www.sciencedirect.com/science/article/pii/S1524070325000207)]
 
-## Week 22/09/2025 — Meeting 26/09/2025 <a id="week-22-09-2025"></a> <a id="week-26-09-2025"></a>
+## <a id="week-22-09-2025"></a> <a id="week-26-09-2025"></a> Week 22/09/2025 — Meeting 26/09/2025
 The next phase involved the **Sphere Dynamic** dataset, which features the same flag interacting with a moving sphere instead of wind. While the dataset implements on-the-fly **remeshing**, we chose to omit this feature as it would be computationally expensive for real-time applications.
 
 The current results are preliminary, with only ~150 epochs completed out of the 2000 suggested in the original paper. At this stage, collision handling has not been successfully learned:
@@ -261,7 +271,7 @@ The current results are preliminary, with only ~150 epochs completed out of the 
 2. **MultiScale MeshGraphNets**, M. Fortunato, T. Pfaff, P. Wirnsberger, A. Pritzel, and P. Battaglia, *International Conference on Machine Learning*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2210.00612)]
 3. **X-MeshGraphNet: Scalable Multi-Scale Graph Neural Networks for Physics Simulation**<a id="x-mgn"></a>, M. A. Nabian, C. Liu, R. Ranade, and S. Choudhry, 2024, [[PDF ArXiv](https://arxiv.org/pdf/2411.17164)]
 
-## Week 15/09/2025 — Meeting 18/09/2025 <a id="week-15-09-2025"></a> <a id="week-18-09-2025"></a>
+## <a id="week-15-09-2025"></a> <a id="week-18-09-2025"></a> Week 15/09/2025 — Meeting 18/09/2025
 This week focused on implementing the basic [MeshGraphNets](#mgn) architecture. Specifically, we trained the model on the **Flag Minimal** dataset (_error in the GIF title_) — a dataset simulating a flag in wind using a uniform mesh.
 
 The results are promising, despite limited training of only ~400 epochs out of the recommended 2000. In the demonstration below, only the initial frame is provided to the model. The GIF compares the rollout results (*left*: model prediction, *right*: validation dataset sample):
