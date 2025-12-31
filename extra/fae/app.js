@@ -1,0 +1,487 @@
+const CSV_PATH = "abroad_formations.csv";
+const TRACKS_PATH = "abroad_formations_tracks.csv";
+const LINKS_PATH = "abroad_formations_links.csv";
+const PRICES_PATH = "abroad_formations_prices.csv";
+
+const tableBody = document.getElementById("tableBody");
+const searchInput = document.getElementById("searchInput");
+const continentFilter = document.getElementById("continentFilter");
+const countryFilter = document.getElementById("countryFilter");
+const typeFilter = document.getElementById("typeFilter");
+const trackFilter = document.getElementById("trackFilter");
+const statTotal = document.getElementById("statTotal");
+const statFiltered = document.getElementById("statFiltered");
+
+let rows = [];
+let filtered = [];
+let sortKey = "formation_title";
+let sortAsc = true;
+
+const IPP_QS_RANK = 46;
+const tooltip = createTooltip();
+
+function createTooltip() {
+  const el = document.createElement("div");
+  el.className = "price-tooltip";
+  document.body.appendChild(el);
+  return el;
+}
+
+const COUNTRY_CODES = {
+  Argentina: "AR",
+  Australia: "AU",
+  Austria: "AT",
+  Belgium: "BE",
+  Brazil: "BR",
+  Canada: "CA",
+  China: "CN",
+  Colombia: "CO",
+  Croatia: "HR",
+  "Czech Republic": "CZ",
+  Finland: "FI",
+  Germany: "DE",
+  Greece: "GR",
+  India: "IN",
+  Ireland: "IE",
+  Italy: "IT",
+  Japan: "JP",
+  Mexico: "MX",
+  Netherlands: "NL",
+  Norway: "NO",
+  Poland: "PL",
+  Portugal: "PT",
+  Romania: "RO",
+  Russia: "RU",
+  Singapore: "SG",
+  Slovakia: "SK",
+  "South Korea": "KR",
+  Spain: "ES",
+  Sweden: "SE",
+  Switzerland: "CH",
+  Taiwan: "TW",
+  Turkey: "TR",
+  "United Kingdom": "GB",
+  "United States": "US",
+  Uruguay: "UY",
+  Vietnam: "VN",
+};
+
+function flagFromCountry(country) {
+  const key = (country || "").trim();
+  const code = COUNTRY_CODES[key];
+  if (!code) return "";
+  return code
+    .toUpperCase()
+    .split("")
+    .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
+    .join("");
+}
+
+function parseCSV(text) {
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  if (!lines.length) return [];
+  const headers = splitCSVLine(lines[0]);
+  return lines.slice(1).map((line) => {
+    const cells = splitCSVLine(line);
+    const row = {};
+    headers.forEach((h, idx) => {
+      row[h] = cells[idx] ?? "";
+    });
+    return row;
+  });
+}
+
+function parseTracks(raw) {
+  if (!raw) return [];
+  return raw
+    .split(/[;,]/)
+    .map((track) => track.trim())
+    .filter((track) => track && track.toLowerCase() !== "any");
+}
+
+function parseRank(raw) {
+  if (!raw) return null;
+  const digits = raw.toString().replace(/[^0-9]/g, "");
+  if (!digits) return null;
+  const value = parseInt(digits, 10);
+  return Number.isFinite(value) ? value : null;
+}
+
+function formatPrice(raw) {
+  if (!raw) return "N/A";
+  const trimmed = raw.trim();
+  if (!trimmed) return "N/A";
+  const normalized = trimmed.replace(/,/g, "");
+  const numbers = normalized.match(/\d+/g) || [];
+  if (!numbers.length) return trimmed;
+  const main = numbers.reduce((a, b) => (b.length > a.length ? b : a), numbers[0]);
+  const value = parseInt(main, 10);
+  if (!Number.isFinite(value)) return trimmed;
+  const withSpaces = value.toLocaleString("fr-FR");
+  return `${withSpaces} €`;
+}
+
+function attachWarningTooltips() {
+  const warnings = document.querySelectorAll(".price-warning");
+  if (!warnings.length) return;
+
+  const show = (event) => {
+    const text = event.currentTarget.getAttribute("data-tooltip") || "";
+    tooltip.textContent = text;
+    tooltip.classList.add("visible");
+  };
+
+  const hide = () => {
+    tooltip.classList.remove("visible");
+  };
+
+  const move = (event) => {
+    const offset = 14;
+    let x = event.clientX + offset;
+    let y = event.clientY + offset;
+    const rect = tooltip.getBoundingClientRect();
+    if (x + rect.width > window.innerWidth - 12) {
+      x = window.innerWidth - rect.width - 12;
+    }
+    if (y + rect.height > window.innerHeight - 12) {
+      y = window.innerHeight - rect.height - 12;
+    }
+    tooltip.style.left = `${x}px`;
+    tooltip.style.top = `${y}px`;
+  };
+
+  warnings.forEach((warning) => {
+    warning.addEventListener("mouseenter", show);
+    warning.addEventListener("mouseleave", hide);
+    warning.addEventListener("mousemove", move);
+  });
+}
+
+function splitCSVLine(line) {
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === "," && !inQuotes) {
+      result.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+function loadCSV() {
+  Promise.all([
+    fetch(`${CSV_PATH}?cache=${Date.now()}`).then((res) => res.text()),
+    fetch(`${TRACKS_PATH}?cache=${Date.now()}`).then((res) => res.text()),
+    fetch(`${LINKS_PATH}?cache=${Date.now()}`).then((res) => res.text()),
+    fetch(`${PRICES_PATH}?cache=${Date.now()}`).then((res) => res.text()),
+  ])
+    .then(([formationsText, tracksText, linksText, pricesText]) => {
+      const formationRows = parseCSV(formationsText);
+      const trackRows = parseCSV(tracksText);
+      const trackMap = new Map(trackRows.map((row) => [row.code, row.related_tracks || row.tracks || ""]));
+      const linksRows = parseCSV(linksText);
+      const linksMap = new Map(linksRows.map((row) => [row.code, row.links || row.link || ""]));
+      const pricesRows = parseCSV(pricesText);
+      const pricesMap = new Map(
+        pricesRows.map((row) => [
+          row.code,
+          { price: row.price || "", basis: row.basis || "" },
+        ]),
+      );
+      rows = formationRows.map((row) => ({
+        ...row,
+        related_tracks: trackMap.get(row.code) || "",
+        formation_link: linksMap.get(row.code) || "",
+        price: (pricesMap.get(row.code) || {}).price || "",
+        price_basis: (pricesMap.get(row.code) || {}).basis || "",
+      }));
+      populateFilters(rows);
+      applyFilters();
+      updateSortIndicators();
+    })
+    .catch(() => {
+      tableBody.innerHTML = '<tr><td colspan="8" class="empty">Failed to load CSV.</td></tr>';
+    });
+}
+
+function populateFilters(data) {
+  const continents = new Set();
+  const countries = new Set();
+  const tracks = new Set();
+  data.forEach((row) => {
+    if (row.continent) continents.add(row.continent);
+    if (row.country) countries.add(row.country);
+    if (row.related_tracks) {
+      parseTracks(row.related_tracks).forEach((track) => tracks.add(track));
+    }
+  });
+  renderCheckboxOptions(continentFilter, Array.from(continents).sort());
+  renderCountryOptions(Array.from(countries).sort());
+  renderTrackOptions(Array.from(tracks).sort());
+  statTotal.textContent = data.length;
+}
+
+function fillSelect(select, values, allLabel = "All") {
+  const current = select.value;
+  select.innerHTML = `<option value="">${allLabel}</option>`;
+  values.forEach((value) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = value;
+    select.appendChild(opt);
+  });
+  select.value = current;
+}
+
+function renderCheckboxOptions(container, values) {
+  container.innerHTML = "";
+  values.forEach((item) => {
+    const value = typeof item === "string" ? item : item.value;
+    const labelText = typeof item === "string" ? item : item.label;
+    const flag = typeof item === "string" ? "" : item.flag;
+    const label = document.createElement("label");
+    label.className = "track-option";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = value;
+    const flagSpan = document.createElement("span");
+    flagSpan.className = "flag";
+    flagSpan.textContent = flag || "";
+    const span = document.createElement("span");
+    span.textContent = labelText;
+    label.appendChild(input);
+    label.appendChild(flagSpan);
+    label.appendChild(span);
+    container.appendChild(label);
+  });
+}
+
+function renderCountryOptions(values) {
+  const items = values.map((country) => ({
+    value: country,
+    label: country,
+    flag: flagFromCountry(country),
+  }));
+  renderCheckboxOptions(countryFilter, items);
+}
+
+function renderTrackOptions(values) {
+  renderCheckboxOptions(trackFilter, values);
+}
+
+function renderTypeOptions() {
+  renderCheckboxOptions(typeFilter, [
+    { value: "Ex", label: "Exchange (Ex)" },
+    { value: "DD", label: "Double Degree (DD)" },
+    { value: "Mx", label: "Master (Mx)" },
+  ]);
+}
+
+function getSelectedValues(container) {
+  return Array.from(container.querySelectorAll("input[type=\"checkbox\"]:checked")).map(
+    (input) => input.value,
+  );
+}
+
+function updateCountryOptions() {
+  const selectedContinents = getSelectedValues(continentFilter);
+  const countries = new Set();
+  rows.forEach((row) => {
+    if (!row.country) return;
+    if (!selectedContinents.length || selectedContinents.includes(row.continent)) {
+      countries.add(row.country);
+    }
+  });
+  const selectedCountries = new Set(getSelectedValues(countryFilter));
+  renderCountryOptions(Array.from(countries).sort());
+  // Restore selections that still apply.
+  countryFilter.querySelectorAll("input[type=\"checkbox\"]").forEach((input) => {
+    if (selectedCountries.has(input.value)) {
+      input.checked = true;
+    }
+  });
+}
+
+function applyFilters() {
+  const query = searchInput.value.trim().toLowerCase();
+  const selectedContinents = getSelectedValues(continentFilter);
+  const selectedCountries = getSelectedValues(countryFilter);
+  const selectedTypes = getSelectedValues(typeFilter);
+  const selectedTracks = getSelectedValues(trackFilter);
+
+  filtered = rows.filter((row) => {
+    const matchesQuery = !query || Object.values(row).some((val) => (val || "").toLowerCase().includes(query));
+    const matchesContinent = !selectedContinents.length || selectedContinents.includes(row.continent);
+    const matchesCountry = !selectedCountries.length || selectedCountries.includes(row.country);
+    const code = row.code || "";
+    const codeTypeMatch = code.match(/5(DD|Ex|Mx)/);
+    const codeType = codeTypeMatch ? codeTypeMatch[1] : "";
+    const matchesType = !selectedTypes.length || selectedTypes.includes(codeType);
+    const relatedTracks = parseTracks(row.related_tracks);
+    const matchesTrack =
+      !selectedTracks.length || selectedTracks.some((track) => relatedTracks.includes(track));
+    return matchesQuery && matchesContinent && matchesCountry && matchesType && matchesTrack;
+  });
+
+  statFiltered.textContent = filtered.length;
+  renderTable();
+}
+
+function renderTable() {
+  const data = [...filtered].sort((a, b) => {
+    const valA = (a[sortKey] || "").toString();
+    const valB = (b[sortKey] || "").toString();
+    if (!valA && !valB) return 0;
+    if (!valA) return 1;
+    if (!valB) return -1;
+    if (sortKey === "qs_rank_2025") {
+      const numA = parseRank(valA) ?? 9999;
+      const numB = parseRank(valB) ?? 9999;
+      return sortAsc ? numA - numB : numB - numA;
+    }
+    if (sortKey === "price") {
+      const rawA = (a.price || a.price_basis || "").toString();
+      const rawB = (b.price || b.price_basis || "").toString();
+      const numA = parseInt(rawA.replace(/[^0-9]/g, ""), 10);
+      const numB = parseInt(rawB.replace(/[^0-9]/g, ""), 10);
+      const safeA = Number.isFinite(numA) ? numA : 9_999_999;
+      const safeB = Number.isFinite(numB) ? numB : 9_999_999;
+      return sortAsc ? safeA - safeB : safeB - safeA;
+    }
+    return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+  });
+
+  if (!data.length) {
+    tableBody.innerHTML = '<tr><td colspan="8" class="empty">No formations match your filters.</td></tr>';
+    return;
+  }
+
+  let ippMarkerInserted = false;
+  const ippMarkerRow = `
+        <tr class="ipp-marker">
+          <td colspan="8">
+            <span>IPP QS 2025 rank: ${IPP_QS_RANK}</span>
+          </td>
+        </tr>
+      `;
+
+  const rowsHtml = data.map((row) => {
+      const formationTitle = stripCountryParen(row.formation_title || "");
+      const codeValue = row.code || "";
+      const synapsesUrl = row.synapses_url || "";
+      const codeCell = synapsesUrl
+        ? `<a href="${synapsesUrl}" target="_blank" rel="noopener">${codeValue}</a>`
+        : codeValue;
+      const formationLink = row.formation_link || "";
+      const formationCell = formationLink
+        ? `<a href="${formationLink}" target="_blank" rel="noopener">${formationTitle}</a>`
+        : formationTitle;
+      const countryFlag = flagFromCountry(row.country || "");
+      const countryCell = countryFlag ? `${countryFlag} ${row.country || ""}` : row.country || "";
+      const relatedTracks = parseTracks(row.related_tracks).join(", ");
+      const rawPrice = row.price || row.price_basis || "";
+      const formattedPrice = formatPrice(rawPrice);
+      const isHeuristic = (row.price_basis || "").toLowerCase().includes("heuristic");
+      const priceClass = isHeuristic ? "price-heuristic" : "";
+      const rowRank = parseRank(row.qs_rank_2025);
+      if (sortKey === "qs_rank_2025" && !ippMarkerInserted && rowRank !== null) {
+        const shouldInsert = sortAsc ? rowRank >= IPP_QS_RANK : rowRank <= IPP_QS_RANK;
+        if (shouldInsert) {
+          ippMarkerInserted = true;
+          return `${ippMarkerRow}
+        <tr>
+          <td>${codeCell}</td>
+          <td>${formationCell}</td>
+          <td>${countryCell}</td>
+          <td>${row.continent || ""}</td>
+          <td>${relatedTracks}</td>
+          <td>${row.qs_university || ""}</td>
+          <td>${row.qs_rank_2025 || ""}</td>
+          <td class="${priceClass}">${formattedPrice}</td>
+        </tr>
+      `;
+        }
+      }
+      return `
+        <tr>
+          <td>${codeCell}</td>
+          <td>${formationCell}</td>
+          <td>${countryCell}</td>
+          <td>${row.continent || ""}</td>
+          <td>${relatedTracks}</td>
+          <td>${row.qs_university || ""}</td>
+          <td>${row.qs_rank_2025 || ""}</td>
+          <td class="${priceClass}">${formattedPrice}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  if (sortKey === "qs_rank_2025" && !ippMarkerInserted) {
+    tableBody.innerHTML = rowsHtml + ippMarkerRow;
+    attachWarningTooltips();
+    return;
+  }
+
+  tableBody.innerHTML = rowsHtml;
+  attachWarningTooltips();
+}
+
+function stripCountryParen(title) {
+  return title.replace(/\s*\([^)]*\)\s*$/, "").trim();
+}
+
+function handleSort(e) {
+  const th = e.target.closest("th[data-key]");
+  if (!th) return;
+  const key = th.getAttribute("data-key");
+  if (!key) return;
+  if (sortKey === key) {
+    sortAsc = !sortAsc;
+  } else {
+    sortKey = key;
+    sortAsc = true;
+  }
+  document.querySelectorAll("th").forEach((th) => th.classList.remove("active"));
+  th.classList.add("active");
+  updateSortIndicators();
+  renderTable();
+}
+
+function updateSortIndicators() {
+  document.querySelectorAll("th[data-key]").forEach((th) => {
+    const arrow = th.querySelector(".sort-arrow");
+    if (!arrow) return;
+    if (th.getAttribute("data-key") === sortKey) {
+      arrow.textContent = sortAsc ? "↑" : "↓";
+    } else {
+      arrow.textContent = "";
+    }
+  });
+}
+
+searchInput.addEventListener("input", applyFilters);
+continentFilter.addEventListener("change", () => {
+  updateCountryOptions();
+  applyFilters();
+});
+countryFilter.addEventListener("change", applyFilters);
+typeFilter.addEventListener("change", applyFilters);
+trackFilter.addEventListener("change", applyFilters);
+document.querySelector("thead").addEventListener("click", handleSort);
+
+renderTypeOptions();
+loadCSV();
