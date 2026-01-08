@@ -27,6 +27,7 @@ let partnerRows = [];
 let partnerFiltered = [];
 let partnerSortKey = "country";
 let partnerSortAsc = true;
+let partnershipIndex = [];
 
 const IPP_QS_RANK = 46;
 const tooltip = createTooltip();
@@ -134,6 +135,91 @@ function getQsRank(row) {
   return row.qs_rank || row.qs_rank_2025 || "";
 }
 
+function normalizeText(value) {
+  if (!value) return "";
+  return value
+    .toString()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function escapeAttribute(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function formatSourceLabel(url) {
+  try {
+    const hostname = new URL(url).hostname.replace(/^www\./, "");
+    return hostname || "source";
+  } catch {
+    return "source";
+  }
+}
+
+function extractUniversityCandidate(title) {
+  if (!title) return "";
+  const normalized = normalizeText(title);
+  const patterns = [
+    /avec\s+(.+?)(?:\s+-\s+|$)/,
+    /a\s+l\s*'?universite\s+de\s+(.+?)(?:\s*\(|$)/,
+    /a\s+l\s*'?universite\s+(.+?)(?:\s*\(|$)/,
+    /at\s+(.+?)(?:\s*\(|$)/,
+    /with\s+(.+?)(?:\s*\(|$)/,
+    /a\s+l\s*'?ecole\s+(.+?)(?:\s*\(|$)/,
+    /ecole\s+(.+?)(?:\s*\(|$)/,
+    /institut\s+(.+?)(?:\s*\(|$)/,
+  ];
+  for (const pattern of patterns) {
+    const match = normalized.match(pattern);
+    if (match && match[1]) return match[1].trim();
+  }
+  return normalized;
+}
+
+function getFormationType(code) {
+  const match = (code || "").match(/5(DD|Ex|Mx)/);
+  return match ? match[1] : "";
+}
+
+function buildPartnershipIndex(rowsData) {
+  return rowsData.flatMap((row) => {
+    const name = normalizeText(row.institution || "");
+    if (!name) return [];
+    const types = getPartnerTypes(row.details || "");
+    if (!types.length) return [{ name, type: "any" }];
+    return types.map((type) => ({ name, type }));
+  });
+}
+
+function isFormationInPartnership(row) {
+  if (!partnershipIndex.length) return false;
+  const type = getFormationType(row.code || "");
+  const candidates = [extractUniversityCandidate(row.formation_title || "")];
+  if (row.qs_university) candidates.push(normalizeText(row.qs_university));
+  const formationName = normalizeText(row.formation_title || "");
+  for (const entry of partnershipIndex) {
+    if (entry.type !== "any" && entry.type !== type) continue;
+    if (formationName.includes(entry.name)) {
+      return true;
+    }
+    for (const candidate of candidates) {
+      if (!candidate) continue;
+      if (candidate.includes(entry.name) || entry.name.includes(candidate)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function getPartnerTypes(details) {
   if (!details) return [];
   const normalized = details.toLowerCase();
@@ -151,6 +237,19 @@ function resolveQsYear(data) {
   return (withYear && (withYear.qs_year || withYear.qs_year_2025)) || "2025";
 }
 
+function buildPriceTooltip(row) {
+  const parts = [];
+  const basis = row.price_basis || "";
+  if (basis) {
+    parts.push(`Basis: ${basis}`);
+  }
+  const notes = row.price_notes || "";
+  if (notes) {
+    parts.push(`Notes: ${notes}`);
+  }
+  return parts.join("\n");
+}
+
 function formatPrice(raw) {
   if (!raw) return "N/A";
   const trimmed = raw.trim();
@@ -166,7 +265,7 @@ function formatPrice(raw) {
 }
 
 function attachWarningTooltips() {
-  const warnings = document.querySelectorAll(".price-warning, .info-icon");
+  const warnings = document.querySelectorAll(".price-warning, .info-icon, .price-info");
   if (!warnings.length) return;
 
   const show = (event) => {
@@ -200,6 +299,7 @@ function attachWarningTooltips() {
     warning.addEventListener("mousemove", move);
   });
 }
+
 
 function splitCSVLine(line) {
   const result = [];
@@ -247,6 +347,8 @@ function loadCSV() {
           {
             price: row.price || row.estimated_price || "",
             basis: row.basis || row.estimation_basis || "",
+            sources: row.source_urls || row.sources || "",
+            notes: row.notes || "",
           },
         ]),
       );
@@ -256,7 +358,16 @@ function loadCSV() {
         formation_link: linksMap.get(row.code) || "",
         price: (pricesMap.get(row.code) || {}).price || "",
         price_basis: (pricesMap.get(row.code) || {}).basis || "",
+        price_sources: (pricesMap.get(row.code) || {}).sources || "",
+        price_notes: (pricesMap.get(row.code) || {}).notes || "",
+        in_partnerships: false,
       }));
+      if (partnerRows.length) {
+        partnershipIndex = buildPartnershipIndex(partnerRows);
+        rows.forEach((row) => {
+          row.in_partnerships = isFormationInPartnership(row);
+        });
+      }
       qsYear = resolveQsYear(rows);
       if (qsYearLabel) qsYearLabel.textContent = qsYear;
       if (qsYearFooter) qsYearFooter.textContent = qsYear;
@@ -275,6 +386,10 @@ function loadPartnerships() {
     .then((res) => res.text())
     .then((text) => {
       partnerRows = parseCSV(text);
+      partnershipIndex = buildPartnershipIndex(partnerRows);
+      rows.forEach((row) => {
+        row.in_partnerships = isFormationInPartnership(row);
+      });
       if (qsYearLabelPartners) {
         qsYearLabelPartners.textContent = resolveQsYear(partnerRows);
       }
@@ -434,7 +549,7 @@ function applyFilters() {
   const onlyBothPages = bothPagesToggle && bothPagesToggle.checked;
 
   filtered = rows.filter((row) => {
-    const matchesQuery = !query || Object.values(row).some((val) => (val || "").toLowerCase().includes(query));
+    const matchesQuery = !query || Object.values(row).some((val) => String(val || "").toLowerCase().includes(query));
     const matchesContinent = !selectedContinents.length || selectedContinents.includes(row.continent);
     const matchesCountry = !selectedCountries.length || selectedCountries.includes(row.country);
     const code = row.code || "";
@@ -444,14 +559,13 @@ function applyFilters() {
     const relatedTracks = parseTracks(row.related_tracks);
     const matchesTrack =
       !selectedTracks.length || selectedTracks.some((track) => relatedTracks.includes(track));
-    const inBoth = (row.in_both_pages || "").toLowerCase() === "yes";
-    const matchesBoth = !onlyBothPages || inBoth;
+    const matchesBoth = !onlyBothPages || !partnershipIndex.length || row.in_partnerships;
     return matchesQuery && matchesContinent && matchesCountry && matchesType && matchesTrack && matchesBoth;
   });
 
   partnerFiltered = partnerRows.filter((row) => {
     const matchesQuery =
-      !query || Object.values(row).some((val) => (val || "").toLowerCase().includes(query));
+      !query || Object.values(row).some((val) => String(val || "").toLowerCase().includes(query));
     const matchesContinent =
       !selectedContinents.length || selectedContinents.includes(row.continent);
     const matchesCountry =
@@ -524,8 +638,23 @@ function renderTable() {
       const priceBasis = (row.price_basis || "").toLowerCase();
       const isHeuristic = priceBasis.includes("heuristic") || priceBasis.includes("supposition");
       const priceClass = isHeuristic ? "price-heuristic" : "";
-      const inBoth = (row.in_both_pages || "").toLowerCase() === "yes";
-      const inBothCell = inBoth ? '<span class="in-both-check">✓</span>' : "";
+      const priceTooltip = buildPriceTooltip(row);
+      const priceInfo = priceTooltip
+        ? `<span class="price-info" data-tooltip="${escapeAttribute(priceTooltip)}">i</span>`
+        : "";
+      const priceSources = (row.price_sources || "").split("|").map((s) => s.trim()).filter(Boolean);
+      const sourceBadge = priceSources.length
+        ? `<span class="price-source-wrap">
+            <span class="price-source-badge">sources</span>
+            <span class="price-source-popover">
+              ${priceSources
+                .map((url) => `<a href="${escapeAttribute(url)}" target="_blank" rel="noopener">${formatSourceLabel(url)}</a>`)
+                .join("")}
+            </span>
+          </span>`
+        : "";
+      const inPartnerships = !!row.in_partnerships;
+      const inBothCell = inPartnerships ? '<span class="in-both-check">✓</span>' : "";
       const rowRank = parseRank(getQsRank(row));
       if (sortKey === "qs_rank" && !ippMarkerInserted && rowRank !== null) {
         const shouldInsert = sortAsc ? rowRank >= IPP_QS_RANK : rowRank <= IPP_QS_RANK;
@@ -541,7 +670,12 @@ function renderTable() {
           <td>${row.qs_university || ""}</td>
           <td>${getQsRank(row)}</td>
           <td class="in-both-cell">${inBothCell}</td>
-          <td class="${priceClass}">${formattedPrice}</td>
+          <td class="${priceClass} price-cell">
+            <span class="price-layout">
+              <span class="price-main">${formattedPrice}</span>
+              <span class="price-meta">${sourceBadge}${priceInfo}</span>
+            </span>
+          </td>
         </tr>
       `;
         }
@@ -556,7 +690,12 @@ function renderTable() {
           <td>${row.qs_university || ""}</td>
           <td>${getQsRank(row)}</td>
           <td class="in-both-cell">${inBothCell}</td>
-          <td class="${priceClass}">${formattedPrice}</td>
+          <td class="${priceClass} price-cell">
+            <span class="price-layout">
+              <span class="price-main">${formattedPrice}</span>
+              <span class="price-meta">${sourceBadge}${priceInfo}</span>
+            </span>
+          </td>
         </tr>
       `;
     })

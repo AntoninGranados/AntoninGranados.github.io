@@ -56,44 +56,64 @@
         <div id="trackFilter" class="track-list" role="group" aria-label="Track filter"></div>
       </div>
       <div class="control">
-        <label for="bothPagesToggle">Both Pages</label>
+        <label for="bothPagesToggle">Partnerships</label>
         <div class="toggle">
           <input id="bothPagesToggle" type="checkbox" />
-          <span>Only show formations listed on both pages</span>
+          <span>Only show formations listed in partnerships</span>
         </div>
       </div>
     </section>
 
     <section class="table-wrap">
+      <div class="section-header">
+        <h2>FAE Formations</h2>
+        <div class="section-links">
+          <p>
+            Source:
+            <a href="https://synapses.telecom-paris.fr/catalogue/2026-2027/parcours/1460/3A-FAE-formation-a-l-etranger-en-3e-annee?from=D4" target="_blank" rel="noopener">
+              SynapseS Telecom Paris
+            </a>
+          </p>
+          <p>
+            QS data:
+            <a href="https://www.topuniversities.com/world-university-rankings" target="_blank" rel="noopener">
+              QS World University Rankings <span id="qsYearFooter">—</span>
+            </a>
+          </p>
+        </div>
+      </div>
       <table>
         <thead>
           <tr>
             <th data-key="code">Code <span class="sort-arrow"></span></th>
             <th data-key="formation_title">
               <span>Formation</span>
-              <span
-                class="price-warning"
-                aria-label="Formation warning"
-                data-tooltip="Formation links are best-effort matches and may not point to the exact program page."
-                >⚠</span
-              >
               <span class="sort-arrow"></span>
             </th>
             <th data-key="country">Country <span class="sort-arrow"></span></th>
             <th data-key="continent">Continent <span class="sort-arrow"></span></th>
-            <th data-key="related_tracks">Tracks <span class="sort-arrow"></span></th>
+            <th data-key="related_tracks">
+              <span>Tracks</span>
+              <span
+                class="price-warning"
+                aria-label="Tracks warning"
+                data-tooltip="Track suggestions are AI estimations. Please validate with additional research."
+                >⚠</span
+              >
+              <span class="sort-arrow"></span>
+            </th>
             <th data-key="qs_university">QS University <span class="sort-arrow"></span></th>
             <th data-key="qs_rank">
               <span>QS</span>
               <span id="qsYearLabel">—</span>
               <span class="sort-arrow"></span>
             </th>
-            <th data-key="in_both_pages">
-              <span>Both</span>
+            <th data-key="in_partnerships">
+              <span>Partner</span>
               <span
                 class="info-icon"
-                aria-label="Both pages info"
-                data-tooltip="Shows whether a formation appears on both SynapseS pages (base page and the ?from=D4 page)."
+                aria-label="Partnerships info"
+                data-tooltip="Shows whether a formation matches a partnership (university + type) from the Telecom Paris partnerships page."
                 >?</span
               >
               <span class="sort-arrow"></span>
@@ -147,20 +167,7 @@
       </table>
     </section>
 
-    <footer class="footer">
-      <div>
-        Data source:
-        <a href="https://synapses.telecom-paris.fr/catalogue/2026-2027/parcours/1460/3A-FAE-formation-a-l-etranger-en-3e-annee?from=D4" target="_blank" rel="noopener">
-          SynapseS Telecom Paris
-        </a>
-      </div>
-      <div>
-        QS data:
-        <a href="https://www.topuniversities.com/world-university-rankings" target="_blank" rel="noopener">
-          QS World University Rankings <span id="qsYearFooter">—</span>
-        </a>
-      </div>
-    </footer>
+    <footer class="footer"></footer>
 
     <script src="app.js?v=14"></script>
   </body>
