@@ -26,6 +26,7 @@
   --space-md: 20px;
   --space-sm: 14px;
   --space-xs: 10px;
+  --page-max: 1760px;
 }
 
 * {
@@ -51,7 +52,7 @@ body {
 }
 
 .hero {
-  max-width: 1400px;
+  max-width: var(--page-max);
   margin: 0 auto;
   padding: var(--space-xl) var(--space-lg) var(--space-md);
   display: grid;
@@ -146,7 +147,7 @@ body {
 }
 
 .controls {
-  max-width: 1400px;
+  max-width: var(--page-max);
   margin: 0 auto;
   padding: 0 var(--space-lg) var(--space-md);
   display: grid;
@@ -187,8 +188,9 @@ select {
   border: 1px solid var(--border);
   background: var(--surface-strong);
   max-height: 160px;
-  overflow-y: scroll;
+  overflow: auto;
   scrollbar-gutter: stable;
+  clip-path: inset(0 round var(--radius-card));
 }
 
 .track-list::-webkit-scrollbar {
@@ -218,6 +220,23 @@ select {
   font-size: var(--fs-body);
 }
 
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--text);
+  font-size: var(--fs-body);
+}
+
+.toggle input {
+  accent-color: var(--accent);
+  transform: scale(1.1);
+}
+
 .flag {
   width: 1.2em;
   text-align: center;
@@ -235,6 +254,22 @@ select {
   position: relative;
   display: inline-flex;
   align-items: center;
+}
+
+.info-icon {
+  margin-left: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 233, 253, 0.7);
+  color: #8be9fd;
+  font-size: 0.7em;
+  font-weight: 700;
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .price-tooltip {
@@ -269,33 +304,57 @@ select {
 
 
 .table-wrap {
-  max-width: 1400px;
+  max-width: var(--page-max);
   margin: 0 auto;
   padding: var(--space-md) var(--space-lg) var(--space-xl);
   overflow-x: auto;
   overflow-y: visible;
 }
 
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 28px);
+}
+
+.section-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-body);
+}
+
 table {
-  width: min(1400px, 100%);
+  width: min(var(--page-max), 100%);
 }
 
 table {
   border-collapse: collapse;
   background: var(--surface-strong);
   border-radius: var(--radius-card);
-  overflow: visible;
+  overflow: hidden;
   box-shadow: var(--shadow-card);
 }
 
 table th:nth-child(4),
 table td:nth-child(4) {
-  min-width: 180px;
+  min-width: 140px;
 }
 
 table th:nth-child(2),
 table td:nth-child(2) {
   min-width: 360px;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+  min-width: 220px;
 }
 
 table th:nth-child(5),
@@ -318,6 +377,53 @@ table td:nth-child(8) {
   min-width: 120px;
 }
 
+table th:nth-child(9),
+table td:nth-child(9) {
+  min-width: 72px;
+  text-align: center;
+}
+
+.partner-table th:nth-child(1),
+.partner-table td:nth-child(1) {
+  min-width: 320px;
+}
+
+.partner-table th:nth-child(2),
+.partner-table td:nth-child(2) {
+  min-width: 200px;
+}
+
+.partner-table th:nth-child(3),
+.partner-table td:nth-child(3) {
+  min-width: 180px;
+}
+
+.partner-table th:nth-child(4),
+.partner-table td:nth-child(4) {
+  min-width: 220px;
+}
+
+.partner-table th:nth-child(5),
+.partner-table td:nth-child(5) {
+  min-width: 120px;
+}
+
+.partner-table th:nth-child(6),
+.partner-table td:nth-child(6) {
+  min-width: 260px;
+}
+
+.in-both-cell {
+  text-align: center;
+}
+
+.in-both-check {
+  color: var(--green);
+  font-size: 1.15em;
+  font-weight: 700;
+  display: inline-block;
+}
+
 th,
 td {
   padding: 14px 16px;
@@ -334,6 +440,7 @@ th {
   top: 0;
   user-select: none;
   overflow: visible;
+  white-space: nowrap;
 }
 
 th.active {
@@ -400,7 +507,7 @@ table a:hover {
 }
 
 .footer {
-  max-width: 1400px;
+  max-width: var(--page-max);
   margin: 0 auto;
   padding: 0 var(--space-lg) var(--space-lg);
   color: var(--muted);
@@ -414,6 +521,11 @@ table a:hover {
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

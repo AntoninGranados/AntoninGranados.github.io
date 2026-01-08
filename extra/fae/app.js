@@ -1,7 +1,8 @@
 const CSV_PATH = "abroad_formations.csv";
 const TRACKS_PATH = "abroad_formations_tracks.csv";
 const LINKS_PATH = "abroad_formations_links.csv";
-const PRICES_PATH = "abroad_formations_prices.csv";
+const PRICES_PATH = "abroad_formations_price.csv";
+const PARTNERSHIPS_PATH = "partnerships.csv";
 
 const tableBody = document.getElementById("tableBody");
 const searchInput = document.getElementById("searchInput");
@@ -9,13 +10,23 @@ const continentFilter = document.getElementById("continentFilter");
 const countryFilter = document.getElementById("countryFilter");
 const typeFilter = document.getElementById("typeFilter");
 const trackFilter = document.getElementById("trackFilter");
+const bothPagesToggle = document.getElementById("bothPagesToggle");
 const statTotal = document.getElementById("statTotal");
 const statFiltered = document.getElementById("statFiltered");
+const qsYearLabel = document.getElementById("qsYearLabel");
+const qsYearFooter = document.getElementById("qsYearFooter");
+const partnerTableBody = document.getElementById("partnerTableBody");
+const qsYearLabelPartners = document.getElementById("qsYearLabelPartners");
 
 let rows = [];
 let filtered = [];
 let sortKey = "formation_title";
 let sortAsc = true;
+let qsYear = "2025";
+let partnerRows = [];
+let partnerFiltered = [];
+let partnerSortKey = "country";
+let partnerSortAsc = true;
 
 const IPP_QS_RANK = 46;
 const tooltip = createTooltip();
@@ -34,20 +45,30 @@ const COUNTRY_CODES = {
   Belgium: "BE",
   Brazil: "BR",
   Canada: "CA",
+  Cameroon: "CM",
   China: "CN",
+  Chile: "CL",
   Colombia: "CO",
   Croatia: "HR",
   "Czech Republic": "CZ",
+  Denmark: "DK",
+  Estonia: "EE",
   Finland: "FI",
   Germany: "DE",
   Greece: "GR",
+  Hungary: "HU",
   India: "IN",
+  Indonesia: "ID",
+  Iran: "IR",
   Ireland: "IE",
+  Lebanon: "LB",
   Italy: "IT",
   Japan: "JP",
+  Morocco: "MA",
   Mexico: "MX",
   Netherlands: "NL",
   Norway: "NO",
+  Peru: "PE",
   Poland: "PL",
   Portugal: "PT",
   Romania: "RO",
@@ -59,11 +80,13 @@ const COUNTRY_CODES = {
   Sweden: "SE",
   Switzerland: "CH",
   Taiwan: "TW",
+  Tunisia: "TN",
   Turkey: "TR",
   "United Kingdom": "GB",
   "United States": "US",
   Uruguay: "UY",
   Vietnam: "VN",
+  "Việt Nam": "VN",
 };
 
 function flagFromCountry(country) {
@@ -107,6 +130,27 @@ function parseRank(raw) {
   return Number.isFinite(value) ? value : null;
 }
 
+function getQsRank(row) {
+  return row.qs_rank || row.qs_rank_2025 || "";
+}
+
+function getPartnerTypes(details) {
+  if (!details) return [];
+  const normalized = details.toLowerCase();
+  const types = new Set();
+  if (normalized.includes("double dipl")) types.add("DD");
+  if (normalized.includes("echange") || normalized.includes("exchange") || normalized.includes("erasmus")) {
+    types.add("Ex");
+  }
+  if (normalized.includes("master")) types.add("Mx");
+  return Array.from(types);
+}
+
+function resolveQsYear(data) {
+  const withYear = data.find((row) => row.qs_year || row.qs_year_2025);
+  return (withYear && (withYear.qs_year || withYear.qs_year_2025)) || "2025";
+}
+
 function formatPrice(raw) {
   if (!raw) return "N/A";
   const trimmed = raw.trim();
@@ -122,7 +166,7 @@ function formatPrice(raw) {
 }
 
 function attachWarningTooltips() {
-  const warnings = document.querySelectorAll(".price-warning");
+  const warnings = document.querySelectorAll(".price-warning, .info-icon");
   if (!warnings.length) return;
 
   const show = (event) => {
@@ -191,14 +235,19 @@ function loadCSV() {
     .then(([formationsText, tracksText, linksText, pricesText]) => {
       const formationRows = parseCSV(formationsText);
       const trackRows = parseCSV(tracksText);
-      const trackMap = new Map(trackRows.map((row) => [row.code, row.related_tracks || row.tracks || ""]));
+      const trackMap = new Map(
+        trackRows.map((row) => [row.code, row.related_tracks || row.tracks || row.related_filieres || ""]),
+      );
       const linksRows = parseCSV(linksText);
       const linksMap = new Map(linksRows.map((row) => [row.code, row.links || row.link || ""]));
       const pricesRows = parseCSV(pricesText);
       const pricesMap = new Map(
         pricesRows.map((row) => [
           row.code,
-          { price: row.price || "", basis: row.basis || "" },
+          {
+            price: row.price || row.estimated_price || "",
+            basis: row.basis || row.estimation_basis || "",
+          },
         ]),
       );
       rows = formationRows.map((row) => ({
@@ -208,13 +257,74 @@ function loadCSV() {
         price: (pricesMap.get(row.code) || {}).price || "",
         price_basis: (pricesMap.get(row.code) || {}).basis || "",
       }));
+      qsYear = resolveQsYear(rows);
+      if (qsYearLabel) qsYearLabel.textContent = qsYear;
+      if (qsYearFooter) qsYearFooter.textContent = qsYear;
       populateFilters(rows);
       applyFilters();
       updateSortIndicators();
     })
     .catch(() => {
-      tableBody.innerHTML = '<tr><td colspan="8" class="empty">Failed to load CSV.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="9" class="empty">Failed to load CSV.</td></tr>';
     });
+}
+
+function loadPartnerships() {
+  if (!partnerTableBody) return;
+  fetch(`${PARTNERSHIPS_PATH}?cache=${Date.now()}`)
+    .then((res) => res.text())
+    .then((text) => {
+      partnerRows = parseCSV(text);
+      if (qsYearLabelPartners) {
+        qsYearLabelPartners.textContent = resolveQsYear(partnerRows);
+      }
+      applyFilters();
+    })
+    .catch(() => {
+      partnerTableBody.innerHTML = '<tr><td colspan="6" class="empty">Failed to load CSV.</td></tr>';
+    });
+}
+
+function renderPartnerTable() {
+  if (!partnerTableBody) return;
+  const data = [...partnerFiltered].sort((a, b) => {
+    const valA = (a[partnerSortKey] || "").toString();
+    const valB = (b[partnerSortKey] || "").toString();
+    if (!valA && !valB) return 0;
+    if (!valA) return 1;
+    if (!valB) return -1;
+    if (partnerSortKey === "qs_rank") {
+      const numA = parseRank(getQsRank(a)) ?? 9999;
+      const numB = parseRank(getQsRank(b)) ?? 9999;
+      return partnerSortAsc ? numA - numB : numB - numA;
+    }
+    return partnerSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+  });
+  if (!data.length) {
+    partnerTableBody.innerHTML = '<tr><td colspan="6" class="empty">No partnerships match your filters.</td></tr>';
+    return;
+  }
+  updatePartnerSortIndicators();
+  partnerTableBody.innerHTML = data
+    .map((row) => {
+      const link = row.url || "";
+      const name = row.institution || "";
+      const nameCell = link ? `<a href="${link}" target="_blank" rel="noopener">${name}</a>` : name;
+      const country = row.country || "";
+      const countryFlag = flagFromCountry(country);
+      const countryCell = countryFlag ? `${countryFlag} ${country}` : country;
+      return `
+        <tr>
+          <td>${nameCell}</td>
+          <td>${countryCell}</td>
+          <td>${row.continent || ""}</td>
+          <td>${row.qs_university || ""}</td>
+          <td>${getQsRank(row)}</td>
+          <td>${row.details || ""}</td>
+        </tr>
+      `;
+    })
+    .join("");
 }
 
 function populateFilters(data) {
@@ -321,6 +431,7 @@ function applyFilters() {
   const selectedCountries = getSelectedValues(countryFilter);
   const selectedTypes = getSelectedValues(typeFilter);
   const selectedTracks = getSelectedValues(trackFilter);
+  const onlyBothPages = bothPagesToggle && bothPagesToggle.checked;
 
   filtered = rows.filter((row) => {
     const matchesQuery = !query || Object.values(row).some((val) => (val || "").toLowerCase().includes(query));
@@ -333,11 +444,27 @@ function applyFilters() {
     const relatedTracks = parseTracks(row.related_tracks);
     const matchesTrack =
       !selectedTracks.length || selectedTracks.some((track) => relatedTracks.includes(track));
-    return matchesQuery && matchesContinent && matchesCountry && matchesType && matchesTrack;
+    const inBoth = (row.in_both_pages || "").toLowerCase() === "yes";
+    const matchesBoth = !onlyBothPages || inBoth;
+    return matchesQuery && matchesContinent && matchesCountry && matchesType && matchesTrack && matchesBoth;
+  });
+
+  partnerFiltered = partnerRows.filter((row) => {
+    const matchesQuery =
+      !query || Object.values(row).some((val) => (val || "").toLowerCase().includes(query));
+    const matchesContinent =
+      !selectedContinents.length || selectedContinents.includes(row.continent);
+    const matchesCountry =
+      !selectedCountries.length || selectedCountries.includes(row.country);
+    const partnerTypes = getPartnerTypes(row.details || "");
+    const matchesType =
+      !selectedTypes.length || selectedTypes.some((type) => partnerTypes.includes(type));
+    return matchesQuery && matchesContinent && matchesCountry && matchesType;
   });
 
   statFiltered.textContent = filtered.length;
   renderTable();
+  renderPartnerTable();
 }
 
 function renderTable() {
@@ -347,9 +474,9 @@ function renderTable() {
     if (!valA && !valB) return 0;
     if (!valA) return 1;
     if (!valB) return -1;
-    if (sortKey === "qs_rank_2025") {
-      const numA = parseRank(valA) ?? 9999;
-      const numB = parseRank(valB) ?? 9999;
+    if (sortKey === "qs_rank") {
+      const numA = parseRank(getQsRank(a)) ?? 9999;
+      const numB = parseRank(getQsRank(b)) ?? 9999;
       return sortAsc ? numA - numB : numB - numA;
     }
     if (sortKey === "price") {
@@ -365,15 +492,15 @@ function renderTable() {
   });
 
   if (!data.length) {
-    tableBody.innerHTML = '<tr><td colspan="8" class="empty">No formations match your filters.</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="9" class="empty">No formations match your filters.</td></tr>';
     return;
   }
 
   let ippMarkerInserted = false;
   const ippMarkerRow = `
         <tr class="ipp-marker">
-          <td colspan="8">
-            <span>IPP QS 2025 rank: ${IPP_QS_RANK}</span>
+          <td colspan="9">
+            <span>IPP QS ${qsYear} rank: ${IPP_QS_RANK}</span>
           </td>
         </tr>
       `;
@@ -394,10 +521,13 @@ function renderTable() {
       const relatedTracks = parseTracks(row.related_tracks).join(", ");
       const rawPrice = row.price || row.price_basis || "";
       const formattedPrice = formatPrice(rawPrice);
-      const isHeuristic = (row.price_basis || "").toLowerCase().includes("heuristic");
+      const priceBasis = (row.price_basis || "").toLowerCase();
+      const isHeuristic = priceBasis.includes("heuristic") || priceBasis.includes("supposition");
       const priceClass = isHeuristic ? "price-heuristic" : "";
-      const rowRank = parseRank(row.qs_rank_2025);
-      if (sortKey === "qs_rank_2025" && !ippMarkerInserted && rowRank !== null) {
+      const inBoth = (row.in_both_pages || "").toLowerCase() === "yes";
+      const inBothCell = inBoth ? '<span class="in-both-check">✓</span>' : "";
+      const rowRank = parseRank(getQsRank(row));
+      if (sortKey === "qs_rank" && !ippMarkerInserted && rowRank !== null) {
         const shouldInsert = sortAsc ? rowRank >= IPP_QS_RANK : rowRank <= IPP_QS_RANK;
         if (shouldInsert) {
           ippMarkerInserted = true;
@@ -409,7 +539,8 @@ function renderTable() {
           <td>${row.continent || ""}</td>
           <td>${relatedTracks}</td>
           <td>${row.qs_university || ""}</td>
-          <td>${row.qs_rank_2025 || ""}</td>
+          <td>${getQsRank(row)}</td>
+          <td class="in-both-cell">${inBothCell}</td>
           <td class="${priceClass}">${formattedPrice}</td>
         </tr>
       `;
@@ -423,14 +554,15 @@ function renderTable() {
           <td>${row.continent || ""}</td>
           <td>${relatedTracks}</td>
           <td>${row.qs_university || ""}</td>
-          <td>${row.qs_rank_2025 || ""}</td>
+          <td>${getQsRank(row)}</td>
+          <td class="in-both-cell">${inBothCell}</td>
           <td class="${priceClass}">${formattedPrice}</td>
         </tr>
       `;
     })
     .join("");
 
-  if (sortKey === "qs_rank_2025" && !ippMarkerInserted) {
+  if (sortKey === "qs_rank" && !ippMarkerInserted) {
     tableBody.innerHTML = rowsHtml + ippMarkerRow;
     attachWarningTooltips();
     return;
@@ -462,13 +594,27 @@ function handleSort(e) {
 }
 
 function updateSortIndicators() {
-  document.querySelectorAll("th[data-key]").forEach((th) => {
+  document.querySelectorAll("table:not(.partner-table) th[data-key]").forEach((th) => {
     const arrow = th.querySelector(".sort-arrow");
     if (!arrow) return;
     if (th.getAttribute("data-key") === sortKey) {
       arrow.textContent = sortAsc ? "↑" : "↓";
     } else {
       arrow.textContent = "";
+    }
+  });
+}
+
+function updatePartnerSortIndicators() {
+  document.querySelectorAll(".partner-table th[data-key]").forEach((th) => {
+    const arrow = th.querySelector(".sort-arrow");
+    if (!arrow) return;
+    if (th.getAttribute("data-key") === partnerSortKey) {
+      arrow.textContent = partnerSortAsc ? "↑" : "↓";
+      th.classList.add("active");
+    } else {
+      arrow.textContent = "";
+      th.classList.remove("active");
     }
   });
 }
@@ -481,7 +627,28 @@ continentFilter.addEventListener("change", () => {
 countryFilter.addEventListener("change", applyFilters);
 typeFilter.addEventListener("change", applyFilters);
 trackFilter.addEventListener("change", applyFilters);
+if (bothPagesToggle) {
+  bothPagesToggle.addEventListener("change", applyFilters);
+}
 document.querySelector("thead").addEventListener("click", handleSort);
+const partnerHeader = document.querySelector(".partner-table thead");
+if (partnerHeader) {
+  partnerHeader.addEventListener("click", (event) => {
+    const th = event.target.closest("th[data-key]");
+    if (!th) return;
+    const key = th.getAttribute("data-key");
+    if (!key) return;
+    if (partnerSortKey === key) {
+      partnerSortAsc = !partnerSortAsc;
+    } else {
+      partnerSortKey = key;
+      partnerSortAsc = true;
+    }
+    updatePartnerSortIndicators();
+    renderPartnerTable();
+  });
+}
 
 renderTypeOptions();
 loadCSV();
+loadPartnerships();
