@@ -20,14 +20,13 @@ const qsYearLabelPartners = document.getElementById("qsYearLabelPartners");
 
 let rows = [];
 let filtered = [];
-let sortKey = "formation_title";
+let sortKey = "qs_rank";
 let sortAsc = true;
 let qsYear = "2025";
 let partnerRows = [];
 let partnerFiltered = [];
-let partnerSortKey = "country";
+let partnerSortKey = "qs_rank";
 let partnerSortAsc = true;
-let partnershipIndex = [];
 
 const IPP_QS_RANK = 46;
 const tooltip = createTooltip();
@@ -189,35 +188,10 @@ function getFormationType(code) {
   return match ? match[1] : "";
 }
 
-function buildPartnershipIndex(rowsData) {
-  return rowsData.flatMap((row) => {
-    const name = normalizeText(row.institution || "");
-    if (!name) return [];
-    const types = getPartnerTypes(row.details || "");
-    if (!types.length) return [{ name, type: "any" }];
-    return types.map((type) => ({ name, type }));
-  });
-}
-
 function isFormationInPartnership(row) {
-  if (!partnershipIndex.length) return false;
-  const type = getFormationType(row.code || "");
-  const candidates = [extractUniversityCandidate(row.formation_title || "")];
-  if (row.qs_university) candidates.push(normalizeText(row.qs_university));
-  const formationName = normalizeText(row.formation_title || "");
-  for (const entry of partnershipIndex) {
-    if (entry.type !== "any" && entry.type !== type) continue;
-    if (formationName.includes(entry.name)) {
-      return true;
-    }
-    for (const candidate of candidates) {
-      if (!candidate) continue;
-      if (candidate.includes(entry.name) || entry.name.includes(candidate)) {
-        return true;
-      }
-    }
-  }
-  return false;
+  const title = normalizeText(row.formation_title || "");
+  if (!title) return false;
+  return !title.includes("hors partenariat ecole");
 }
 
 function getPartnerTypes(details) {
@@ -362,12 +336,9 @@ function loadCSV() {
         price_notes: (pricesMap.get(row.code) || {}).notes || "",
         in_partnerships: false,
       }));
-      if (partnerRows.length) {
-        partnershipIndex = buildPartnershipIndex(partnerRows);
-        rows.forEach((row) => {
-          row.in_partnerships = isFormationInPartnership(row);
-        });
-      }
+      rows.forEach((row) => {
+        row.in_partnerships = isFormationInPartnership(row);
+      });
       qsYear = resolveQsYear(rows);
       if (qsYearLabel) qsYearLabel.textContent = qsYear;
       if (qsYearFooter) qsYearFooter.textContent = qsYear;
@@ -386,10 +357,6 @@ function loadPartnerships() {
     .then((res) => res.text())
     .then((text) => {
       partnerRows = parseCSV(text);
-      partnershipIndex = buildPartnershipIndex(partnerRows);
-      rows.forEach((row) => {
-        row.in_partnerships = isFormationInPartnership(row);
-      });
       if (qsYearLabelPartners) {
         qsYearLabelPartners.textContent = resolveQsYear(partnerRows);
       }
@@ -559,7 +526,7 @@ function applyFilters() {
     const relatedTracks = parseTracks(row.related_tracks);
     const matchesTrack =
       !selectedTracks.length || selectedTracks.some((track) => relatedTracks.includes(track));
-    const matchesBoth = !onlyBothPages || !partnershipIndex.length || row.in_partnerships;
+    const matchesBoth = !onlyBothPages || row.in_partnerships;
     return matchesQuery && matchesContinent && matchesCountry && matchesType && matchesTrack && matchesBoth;
   });
 
@@ -738,8 +705,14 @@ function updateSortIndicators() {
     if (!arrow) return;
     if (th.getAttribute("data-key") === sortKey) {
       arrow.textContent = sortAsc ? "↑" : "↓";
+      if (sortKey === "qs_rank" && sortAsc) {
+        th.classList.remove("active");
+      } else {
+        th.classList.add("active");
+      }
     } else {
       arrow.textContent = "";
+      th.classList.remove("active");
     }
   });
 }
@@ -750,7 +723,11 @@ function updatePartnerSortIndicators() {
     if (!arrow) return;
     if (th.getAttribute("data-key") === partnerSortKey) {
       arrow.textContent = partnerSortAsc ? "↑" : "↓";
-      th.classList.add("active");
+      if (partnerSortKey === "qs_rank" && partnerSortAsc) {
+        th.classList.remove("active");
+      } else {
+        th.classList.add("active");
+      }
     } else {
       arrow.textContent = "";
       th.classList.remove("active");

@@ -484,6 +484,7 @@ table td:nth-child(6) {
 table th:nth-child(7),
 table td:nth-child(7) {
   min-width: 120px;
+  text-align: center;
 }
 
 table th:nth-child(8),
