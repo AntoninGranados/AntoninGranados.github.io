@@ -704,7 +704,7 @@ function updateSortIndicators() {
     const arrow = th.querySelector(".sort-arrow");
     if (!arrow) return;
     if (th.getAttribute("data-key") === sortKey) {
-      arrow.textContent = sortAsc ? "↑" : "↓";
+      arrow.textContent = sortAsc ? "▲" : "▼";
       if (sortKey === "qs_rank" && sortAsc) {
         th.classList.remove("active");
       } else {
@@ -722,7 +722,7 @@ function updatePartnerSortIndicators() {
     const arrow = th.querySelector(".sort-arrow");
     if (!arrow) return;
     if (th.getAttribute("data-key") === partnerSortKey) {
-      arrow.textContent = partnerSortAsc ? "↑" : "↓";
+      arrow.textContent = partnerSortAsc ? "▲" : "▼";
       if (partnerSortKey === "qs_rank" && partnerSortAsc) {
         th.classList.remove("active");
       } else {
@@ -768,3 +768,17 @@ if (partnerHeader) {
 renderTypeOptions();
 loadCSV();
 loadPartnerships();
+
+document.querySelectorAll(".section-toggle").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const targetId = btn.getAttribute("data-target");
+    const target = targetId ? document.getElementById(targetId) : null;
+    if (!target) return;
+    const collapsed = target.classList.toggle("is-collapsed");
+    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    const arrow = btn.querySelector(".section-arrow");
+    if (arrow) {
+      arrow.textContent = collapsed ? "▶" : "▼";
+    }
+  });
+});
