@@ -160,7 +160,12 @@ def main():
         country = normalize_country(row.get("country", ""))
         continent = CONTINENT_BY_COUNTRY.get(country, "")
         institution = row.get("institution", "")
-        qs_rec = ga.match_qs_record(institution, qs_name_to_record, qs_names_sorted)
+        qs_rec = None
+        inst_norm = ga.normalize(institution)
+        if "universite catholique de louvain" in inst_norm:
+            qs_rec = qs_name_to_record.get(ga.normalize("Université catholique de Louvain (UCLouvain)"))
+        if qs_rec is None:
+            qs_rec = ga.match_qs_record(institution, qs_name_to_record, qs_names_sorted)
         if qs_rec is None:
             normalized = ga.normalize(institution)
             if len(normalized) >= 8:

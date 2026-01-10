@@ -208,7 +208,7 @@ function getPartnerTypes(details) {
 
 function resolveQsYear(data) {
   const withYear = data.find((row) => row.qs_year || row.qs_year_2025);
-  return (withYear && (withYear.qs_year || withYear.qs_year_2025)) || "2025";
+  return (withYear && (withYear.qs_year || withYear.qs_year_2025)) || "";
 }
 
 function buildPriceTooltip(row) {
@@ -340,8 +340,6 @@ function loadCSV() {
         row.in_partnerships = isFormationInPartnership(row);
       });
       qsYear = resolveQsYear(rows);
-      if (qsYearLabel) qsYearLabel.textContent = qsYear;
-      if (qsYearFooter) qsYearFooter.textContent = qsYear;
       populateFilters(rows);
       applyFilters();
       updateSortIndicators();
@@ -357,9 +355,6 @@ function loadPartnerships() {
     .then((res) => res.text())
     .then((text) => {
       partnerRows = parseCSV(text);
-      if (qsYearLabelPartners) {
-        qsYearLabelPartners.textContent = resolveQsYear(partnerRows);
-      }
       applyFilters();
     })
     .catch(() => {

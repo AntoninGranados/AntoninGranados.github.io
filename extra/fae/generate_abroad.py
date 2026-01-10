@@ -27,12 +27,7 @@ SYNAPSES_URL_FULL = (
     "3A-FAE-formation-a-l-etranger-en-3e-annee?from=D4"
 )
 
-QS_YEAR_PRIMARY = 2026
-QS_YEAR_FALLBACK = 2025
-QS_WUR_URL_TEMPLATE = "https://www.topuniversities.com/world-university-rankings/{year}"
-QS_WUR_FALLBACK_NIDS = {
-    2025: "3990755",
-}
+QS_WUR_LATEST_URL = "https://www.topuniversities.com/world-university-rankings"
 QS_ENDPOINT = "https://www.topuniversities.com/rankings/endpoint"
 
 OUT_PATH = "abroad_formations.csv"
@@ -384,21 +379,13 @@ def extract_qs_nid(html):
 
 
 def resolve_qs_source():
-    for year in (QS_YEAR_PRIMARY, QS_YEAR_FALLBACK):
-        url = QS_WUR_URL_TEMPLATE.format(year=year)
-        try:
-            html = fetch_url(url, timeout=20, retries=2)
-        except Exception:
-            nid = QS_WUR_FALLBACK_NIDS.get(year)
-            if nid:
-                return year, url, nid
-            continue
-        nid = extract_qs_nid(html)
-        if nid:
-            return year, url, nid
-        nid = QS_WUR_FALLBACK_NIDS.get(year)
-        if nid:
-            return year, url, nid
+    try:
+        html = fetch_url(QS_WUR_LATEST_URL, timeout=20, retries=2)
+    except Exception:
+        return None, None, None
+    nid = extract_qs_nid(html)
+    if nid:
+        return "latest", QS_WUR_LATEST_URL, nid
     return None, None, None
 
 
