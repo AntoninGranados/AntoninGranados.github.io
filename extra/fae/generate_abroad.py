@@ -225,6 +225,10 @@ SPECIAL_QS_BY_CODE = {
         "qs_university": "Ecole Polytechnique de Montreal",
         "qs_rank": "",
     },
+    "MOB_5DD07_CM": {
+        "qs_university": "",
+        "qs_rank": "",
+    },
 }
 
 
