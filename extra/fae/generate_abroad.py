@@ -221,10 +221,6 @@ SPECIAL_COUNTRY_BY_CODE = {
 }
 
 SPECIAL_QS_BY_CODE = {
-    "MOB_5Ex14_CA": {
-        "qs_university": "Ecole Polytechnique de Montreal",
-        "qs_rank": "",
-    },
     "MOB_5DD07_CM": {
         "qs_university": "",
         "qs_rank": "",
