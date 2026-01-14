@@ -674,7 +674,7 @@ function renderTable() {
 }
 
 function stripCountryParen(title) {
-  return title.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  return title.replace(/(\s*,?\s*\([^)]*\)\s*)+$/, "").trim();
 }
 
 function handleSort(e) {

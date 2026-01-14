@@ -164,6 +164,10 @@ def main():
         inst_norm = ga.normalize(institution)
         if "universite catholique de louvain" in inst_norm:
             qs_rec = qs_name_to_record.get(ga.normalize("Université catholique de Louvain (UCLouvain)"))
+        elif "ecole polytechnique de montreal" in inst_norm:
+            qs_rec = qs_name_to_record.get(ga.normalize("Université de Montréal"))
+        elif "ecole polytechnique de tunisie" in inst_norm or "ept" in inst_norm:
+            qs_rec = None
         if qs_rec is None:
             qs_rec = ga.match_qs_record(institution, qs_name_to_record, qs_names_sorted)
         if qs_rec is None:
