@@ -24,6 +24,7 @@ layout: project
 </style>
 <div class="container">
     <ul class="social-links week-links">
+        <li><a href="#week-18-01-2026" data-target="week-08-12-2025">Week 18/01/2026</a></li>
         <li><a href="#week-15-12-2025" data-target="week-08-12-2025">Week 15/12/2025</a></li>
         <li><a href="#week-08-12-2025" data-target="week-08-12-2025">Week 08/12/2025</a></li>
         <li><a href="#week-01-12-2025" data-target="week-01-12-2025">Week 01/12/2025</a></li>
@@ -45,14 +46,32 @@ layout: project
 </div>
 
 
-<div class="pdf-embed" markdown="0">
+<div class="pdf-embed" markdown="0"> <a id="sota-report"></a>
     <object data="/assets/docs/projects/cloth_dl/sota-report.pdf" type="application/pdf">
         <p>Your browser doesn't support embedded PDFs.
-        <a href="/assets/docs/projects/cloth_dl/sota-report.pdf">Download the PDF report</a> instead.</p>
+        <a href="/assets/docs/projects/cloth_dl/sota-report.pdf">Download the PDF report instead</a></p>
     </object>
 </div>
 
 ## Week
+
+## <a id="week-18-01-2026"></a> Week 18/01/2026
+During the past few weeks, I managed to make my MeshGraphNets implementation (with some additions) work again on the school's computers. Sadly, the most recent ones are not available, so I needed to make it work with older CUDA versions (and by extension an older PyTorch version). After adding a compatibility layer on top of PyTorch for some of the newer functions I needed, the code was able to run on the GPUs. It is slightly faster than my laptop and should keep working when I try new algorithms.
+
+I also finished the [report](#sota-report) (due for 15/01/2026) and mostly reworked the limitations section. The two challenges that seem the most interesting and promising are the scalability issue and collision handling. I started to research recent papers that propose solutions in the domain of GNNs or neural operators (NOs).
+
+The first idea discussed was the use of a _NO_ similar to the one described in [FNOpt](#fnopt); this would solve the scale issue but at the cost of a very limited cloth mesh (grid vertex distribution and rectangular domain). Another idea I had was to use _attention blocks_ to help select important edges for the collision computation, possibly allowing for longer connections without more complexity (only relevant edges are kept). It would also allow for the generation of higher/lower resolution meshes, and this is what [MultiGrid GNN](#multigrid-gnn) proposes.
+
+I also found a paper that seems to solve the domain restriction of the FNO by using a "Mesh-Informed Neural Operator" ([MINO](#mino)). I didn't have time to fully look into it, but it looked promising.
+
+I had the idea of looking into KANs, as replacing the MLPs in the MGN architecture with them could allow for more complex curricula because of their memory during training. But I didn't find articles using KANs inside a GNN, as they are still very new.
+
+The last thing I thought about (and later found that [FNOpt](#fnopt) mentioned it) is that we could reduce the dataset even further by introducing the model's outputs as inputs when we use a self-supervised procedure. This paper also talks about meta-learning, and mentions an iterative process to predict the acceleration instead of doing it in one-shot.
+
+### Bibliography
+1. **Multi-Grid Graph Neural Networks with Self-Attention for Computational Mechanics**<a id="multigrid-gnn"></a>, P. Garnier, J. Viquerat, E. Hachem, 2024, [[PDF ArXive](https://arxiv.org/pdf/2409.11899)]
+2. **FNOPT: Resolution-Agnostic, Self-Supervised Cloth Simulation using Meta-Optimization with Fourier Neural Operators**<a id="fnopt"></a>, R. Chen, T. Tran, S. Parashar, 2025, [[PDF ArXiv](https://arxiv.org/pdf/2512.05762)]
+3. **Mesh-Informed Neural Operator : A Transformer Generative Approach**<a id="mino"></a>, Y. Shi, Z. E. Ross, D. Asimaki, K. Azizzadenesheli, 2025, _Transactions on Machine Learning Research_, [[PDF ArXive](https://arxiv.org/pdf/2506.16656)]
 
 ## <a id="week-15-12-2025"></a> Week 15/12/2025
 I rewrote the report on Overleaf and made some modifications to add more details (especially when notations were not clear enough).
@@ -75,9 +94,6 @@ After fixing this, I did an overfit test using 10 random samples from my custom 
 
 After this, I tried with the unsupervised loss; the results also looked satisfying. They were much slower (1000 steps on the graph below) but this was expected. I also displayed each of the loss terms separately under the total graph (from left to right: Inertia, Gravity, Bending, Stretching). Be aware that each graph is not to scale; for instance the gravity practically didn't decrease while the stretching did most of the work.
 <img src="/assets/imgs/projects/cloth_dl/overfit_unsup.png" alt="Overfit Unsupervised" width="100%"><a id="overfit-unsupervised"></a>
-
-### Bibliography
-1. **FNOPT: Resolution-Agnostic, Self-Supervised Cloth Simulation using Meta-Optimization with Fourier Neural Operators**<a id="FNOpt"></a>, R. Chen, T. Tran, S. Parashar, 2025, [[PDF ArXiv](https://arxiv.org/pdf/2512.05762)]
 
 ## <a id="week-24-11-2025"></a> <a id="week-01-12-2025"></a> Week 24/11/2025 - 01/12/2025
 During these weeks, I finished the first version of the State of the Art Report.
