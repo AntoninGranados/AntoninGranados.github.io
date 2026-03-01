@@ -4,9 +4,29 @@ layout: project
 ---
 # Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
 
-<!-- Week quick navigation (uses .social-links from style.css) -->
+<!-- Section and week quick navigation (reuses .social-links styles) -->
 <style>
-    /* Week links grid: reuse .social-links visuals, but display as responsive grid */
+    .section-selector {
+        max-width: var(--max-width);
+        margin: 1rem auto 1.75rem auto;
+        padding: 0.9rem 1rem 0.5rem 1rem;
+        background: var(--card-grad);
+        border: var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .section-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        gap: 0.75rem;
+        padding: 0;
+        margin: 0.25rem auto 0.75rem auto;
+        max-width: 420px;
+    }
+    .section-links li { list-style: none; margin: 0; }
+    .section-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
+
     .week-links {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -21,39 +41,47 @@ layout: project
     @media (min-width: 900px) {
         .week-links { grid-template-columns: repeat(4, minmax(180px, 1fr)); }
     }
+
+    .section-divider {
+        height: 1px;
+        max-width: var(--max-width);
+        margin: 2rem auto 2.25rem auto;
+        background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+        opacity: 0.45;
+    }
 </style>
-<div class="container">
-    <ul class="social-links week-links">
-        <li><a href="#week-18-01-2026" data-target="week-08-12-2025">Week 18/01/2026</a></li>
-        <li><a href="#week-15-12-2025" data-target="week-08-12-2025">Week 15/12/2025</a></li>
-        <li><a href="#week-08-12-2025" data-target="week-08-12-2025">Week 08/12/2025</a></li>
-        <li><a href="#week-01-12-2025" data-target="week-01-12-2025">Week 01/12/2025</a></li>
-        <li><a href="#week-24-11-2025" data-target="week-24-11-2025">Week 24/11/2025</a></li>
-        <li><a href="#week-17-11-2025" data-target="week-17-11-2025">Week 17/11/2025</a></li>
-        <li><a href="#week-10-11-2025" data-target="week-10-11-2025">Week 10/11/2025</a></li>
-        <li><a href="#week-03-11-2025" data-target="week-03-11-2025">Week 03/11/2025</a></li>
-        <li><a href="#week-27-10-2025" data-target="week-27-10-2025">Week 27/10/2025</a></li>
-        <li><a href="#week-20-10-2025" data-target="week-20-10-2025">Week 20/10/2025</a></li>
-        <li><a href="#week-13-10-2025" data-target="week-13-10-2025">Week 13/10/2025</a></li>
-        <li><a href="#week-06-10-2025" data-target="week-06-10-2025">Week 06/10/2025</a></li>
-        <li><a href="#week-03-10-2025" data-target="week-03-10-2025">Week 03/10/2025</a></li>
-        <li><a href="#week-29-09-2025" data-target="week-29-09-2025">Week 29/09/2025</a></li>
-        <li><a href="#week-26-09-2025" data-target="week-26-09-2025">Week 26/09/2025</a></li>
-        <li><a href="#week-22-09-2025" data-target="week-22-09-2025">Week 22/09/2025</a></li>
-        <li><a href="#week-18-09-2025" data-target="week-18-09-2025">Week 18/09/2025</a></li>
-        <li><a href="#week-15-09-2025" data-target="week-15-09-2025">Week 15/09/2025</a></li>
+<div class="container section-selector">
+    <ul class="social-links section-links">
+        <li><a href="#research-section">Research (2nd semester)</a></li>
+        <li><a href="#sota-section">SOTA (1st semester)</a></li>
     </ul>
 </div>
 
+<div class="section-divider" aria-hidden="true"></div>
 
-<div class="pdf-embed" markdown="0"> <a id="sota-report"></a>
-    <object data="/assets/docs/projects/cloth_dl/sota-report.pdf" type="application/pdf">
-        <p>Your browser doesn't support embedded PDFs.
-        <a href="/assets/docs/projects/cloth_dl/sota-report.pdf">Download the PDF report instead</a></p>
-    </object>
+## <a id="research-section"></a> Research Section
+
+### Weeks
+<div class="container">
+    <ul class="social-links week-links">
+        <li><a href="#week-22-02-2026">Week 15/02/2026</a></li>
+        <li><a href="#week-18-01-2026">Week 18/01/2026</a></li>
+    </ul>
 </div>
 
-## Week
+## <a id="week-22-02-2026"></a> Week 15/02/2026
+We discussed the idea of using neural representations for clothing. The motivation is that working in a continuous space instead of mesh space could potentially remove some of the scaling issues.
+
+To explore this, I implemented a very simple setup to better understand how such a representation could work in practice. I take UV coordinates as input and train a small MLP to output the corresponding 3D position. The supervision comes from a single ground-truth frame: I sample points from the mesh to train the network and evaluate it on a uniform UV grid.
+
+When trained on a single frame, the network fits the overall shape quite well. The predicted mesh closely matches the ground truth, both visually and in terms of MSE. The UV-coordinate maps (<a href="#cloth_neural_repr">Result image</a>: GT on top with nearest-neighbor interpolation, prediction below) also show that the global structure is captured correctly.
+
+<a id="cloth_neural_repr"></a><img src="/assets/imgs/projects/cloth_dl/cloth_neural_repr.png" alt="Cloth Neural Representation" width="80%">
+
+However, I encountered a limitation with a plain MLP (the results above were obtained after addressing this issue). Without any modification, the network tends to over-smooth the output, effectively removing most of the wrinkles in the cloth. To mitigate this, I introduced Fourier features on the UV inputs. With positional encoding, the network is able to represent higher-frequency details, and the wrinkles reappear much more faithfully. The architecture itself remains very small, so the improvement comes purely from the input encoding.
+
+I am still unsure how this formulation can be integrated into a full simulation framework as this simply extends the discrete sampling to continuous outputs by learning from an already simulated temporal data point.
+
 
 ## <a id="week-18-01-2026"></a> Week 18/01/2026
 During the past few weeks, I managed to make my MeshGraphNets implementation (with some additions) work again on the school's computers. Sadly, the most recent ones are not available, so I needed to make it work with older CUDA versions (and by extension an older PyTorch version). After adding a compatibility layer on top of PyTorch for some of the newer functions I needed, the code was able to run on the GPUs. It is slightly faster than my laptop and should keep working when I try new algorithms.
@@ -72,6 +100,40 @@ The last thing I thought about (and later found that [FNOpt](#fnopt) mentioned i
 1. **Multi-Grid Graph Neural Networks with Self-Attention for Computational Mechanics**<a id="multigrid-gnn"></a>, P. Garnier, J. Viquerat, E. Hachem, 2024, [[PDF ArXive](https://arxiv.org/pdf/2409.11899)]
 2. **FNOPT: Resolution-Agnostic, Self-Supervised Cloth Simulation using Meta-Optimization with Fourier Neural Operators**<a id="fnopt"></a>, R. Chen, T. Tran, S. Parashar, 2025, [[PDF ArXiv](https://arxiv.org/pdf/2512.05762)]
 3. **Mesh-Informed Neural Operator : A Transformer Generative Approach**<a id="mino"></a>, Y. Shi, Z. E. Ross, D. Asimaki, K. Azizzadenesheli, 2025, _Transactions on Machine Learning Research_, [[PDF ArXive](https://arxiv.org/pdf/2506.16656)]
+
+<div class="section-divider" aria-hidden="true"></div>
+
+## <a id="sota-section"></a> SOTA Section
+
+### Weeks
+<div class="container">
+    <ul class="social-links week-links">
+        <li><a href="#week-15-12-2025">Week 15/12/2025</a></li>
+        <li><a href="#week-08-12-2025">Week 08/12/2025</a></li>
+        <li><a href="#week-01-12-2025">Week 01/12/2025</a></li>
+        <li><a href="#week-24-11-2025">Week 24/11/2025</a></li>
+        <li><a href="#week-17-11-2025">Week 17/11/2025</a></li>
+        <li><a href="#week-10-11-2025">Week 10/11/2025</a></li>
+        <li><a href="#week-03-11-2025">Week 03/11/2025</a></li>
+        <li><a href="#week-27-10-2025">Week 27/10/2025</a></li>
+        <li><a href="#week-20-10-2025">Week 20/10/2025</a></li>
+        <li><a href="#week-13-10-2025">Week 13/10/2025</a></li>
+        <li><a href="#week-06-10-2025">Week 06/10/2025</a></li>
+        <li><a href="#week-03-10-2025">Week 03/10/2025</a></li>
+        <li><a href="#week-29-09-2025">Week 29/09/2025</a></li>
+        <li><a href="#week-26-09-2025">Week 26/09/2025</a></li>
+        <li><a href="#week-22-09-2025">Week 22/09/2025</a></li>
+        <li><a href="#week-18-09-2025">Week 18/09/2025</a></li>
+        <li><a href="#week-15-09-2025">Week 15/09/2025</a></li>
+    </ul>
+</div>
+
+<div class="pdf-embed" markdown="0"> <a id="sota-report"></a>
+    <object data="/assets/docs/projects/cloth_dl/sota-report.pdf" type="application/pdf">
+        <p>Your browser doesn't support embedded PDFs.
+        <a href="/assets/docs/projects/cloth_dl/sota-report.pdf">Download the PDF report instead</a></p>
+    </object>
+</div>
 
 ## <a id="week-15-12-2025"></a> Week 15/12/2025
 I rewrote the report on Overleaf and made some modifications to add more details (especially when notations were not clear enough).
