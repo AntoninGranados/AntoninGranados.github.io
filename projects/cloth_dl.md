@@ -64,19 +64,43 @@ layout: project
 ### Weeks
 <div class="container">
     <ul class="social-links week-links">
-        <li><a href="#week-22-02-2026">Week 15/02/2026</a></li>
+        <li><a href="#week-22-02-2026">Week 22/02/2026</a></li>
+        <li><a href="#week-15-02-2026">Week 15/02/2026</a></li>
         <li><a href="#week-18-01-2026">Week 18/01/2026</a></li>
     </ul>
 </div>
 
-## <a id="week-22-02-2026"></a> Week 15/02/2026
+## <a id="week-22-02-2026"></a> Week 22/02/2026
+
+This week I found a paper that aligns with the neural-representation direction I started exploring: **NeuralClothSim**<a id="neuralclothsim"></a>. Their approach represents cloth as a continuous neural deformation field. However, the objective is to predict static equilibrium configurations conditioned on control parameters (e.g. body pose), rather than learning an explicit time integration scheme. It is therefore closer to a learned deformation model than to a learned simulator.
+
+In parallel, I experimented with a different idea. Instead of operating directly on the mesh, I converted the cloth geometry into a UV pose map using barycentric interpolation. The goal is to move to a structured 2D representation and encode the cloth state into a latent space.
+
+I built a model that compresses the UV pose map into a global latent vector of size 2048 together with a local feature map. The decoder reconstructs 3D positions by conditioning on the latent code, locally sampled features, and Fourier-encoded UV coordinates. At this stage, I only evaluated the encoding/decoding capacity to verify that the representation is expressive enough.
+
+The reconstruction results are shown below (<a href="#continuous-encode-decode">see video</a>).
+
+<div class="video-container" style="max-width: 85%;"><a id="continuous-encode-decode"></a>
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl/continuous_encode_decode.mp4" type="video/mp4">
+</video>
+</div>
+
+The slightly blocky appearance comes from a technical limitation on my MacOS setup (MPS) which I had to approximate manually. Using the school's computers should fix the issue.
+
+The next step is to evolve the latent representation over time instead of reconstructing frames independently.
+
+### Bibliography
+1. **NeuralClothSim: Neural Deformation Fields for Cloth Simulation**<a id="neuralclothsim"></a>, N. Kairanda, M. Habermann, C. Theobalt, V. Golyanik, 2024, [[PDF ArXiv](https://arxiv.org/pdf/2308.12970)]
+
+## <a id="week-15-02-2026"></a> Week 15/02/2026
 We discussed the idea of using neural representations for clothing. The motivation is that working in a continuous space instead of mesh space could potentially remove some of the scaling issues.
 
 To explore this, I implemented a very simple setup to better understand how such a representation could work in practice. I take UV coordinates as input and train a small MLP to output the corresponding 3D position. The supervision comes from a single ground-truth frame: I sample points from the mesh to train the network and evaluate it on a uniform UV grid.
 
-When trained on a single frame, the network fits the overall shape quite well. The predicted mesh closely matches the ground truth, both visually and in terms of MSE. The UV-coordinate maps (<a href="#cloth_neural_repr">Result image</a>: GT on top with nearest-neighbor interpolation, prediction below) also show that the global structure is captured correctly.
+When trained on a single frame, the network fits the overall shape quite well. The predicted mesh closely matches the ground truth, both visually and in terms of MSE. The UV-coordinate maps (<a href="#cloth-neural-repr">Result image</a>: GT on top with nearest-neighbor interpolation, prediction below) also show that the global structure is captured correctly.
 
-<a id="cloth_neural_repr"></a><img src="/assets/imgs/projects/cloth_dl/cloth_neural_repr.png" alt="Cloth Neural Representation" width="80%">
+<a id="cloth-neural-repr"></a><img src="/assets/imgs/projects/cloth_dl/cloth_neural_repr.png" alt="Cloth Neural Representation" width="80%">
 
 However, I encountered a limitation with a plain MLP (the results above were obtained after addressing this issue). Without any modification, the network tends to over-smooth the output, effectively removing most of the wrinkles in the cloth. To mitigate this, I introduced Fourier features on the UV inputs. With positional encoding, the network is able to represent higher-frequency details, and the wrinkles reappear much more faithfully. The architecture itself remains very small, so the improvement comes purely from the input encoding.
 
