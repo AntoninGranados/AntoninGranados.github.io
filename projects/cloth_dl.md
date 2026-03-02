@@ -52,8 +52,8 @@ layout: project
 </style>
 <div class="container section-selector">
     <ul class="social-links section-links">
-        <li><a href="#research-section">Research (2nd semester)</a></li>
-        <li><a href="#sota-section">SOTA (1st semester)</a></li>
+        <li><a href="#research-section">Research</a></li>
+        <li><a href="#sota-section">SOTA</a></li>
     </ul>
 </div>
 
@@ -64,14 +64,39 @@ layout: project
 ### Weeks
 <div class="container">
     <ul class="social-links week-links">
+        <li><a href="#week-02-03-2026">Week 02/03/2026</a></li>
         <li><a href="#week-22-02-2026">Week 22/02/2026</a></li>
         <li><a href="#week-15-02-2026">Week 15/02/2026</a></li>
         <li><a href="#week-18-01-2026">Week 18/01/2026</a></li>
     </ul>
 </div>
 
-## <a id="week-22-02-2026"></a> Week 22/02/2026
+## <a id="week-02-03-2026"></a> Week 02/03/2026
+I managed to resolve the "blockiness" issue by improving the function I used to replace the unsupported one (<a href="#smooth-continuous-encode-decode">see video</a>). With this fix, I ran a few experiments to better understand the capabilities and limits of this architecture.
 
+<div class="video-container" style="max-width: 85%;"><a id="smooth-continuous-encode-decode"></a>
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl/simulation_uv_maps_gt_vs_pred.mp4" type="video/mp4">
+</video>
+</div>
+
+The first thing I tested was the continuous nature of the model. I compared the ground truth mesh with an oversampled prediction generated from the decoder. The results are promising (<a href="#oversampling-prediction">see video</a>): the geometry remains coherent even at higher sampling density. However, some visible lines appear, which seem to come from the high-frequency Fourier features being active even where they are not strictly necessary. This could likely be mitigated by reducing the number of Fourier features and training longer.
+
+<div class="video-container" style="max-width: 85%;"><a id="oversampling-prediction"></a>
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl/simulation_gt_vs_dense_pred_mesh.mp4" type="video/mp4">
+</video>
+</div>
+
+I also experimented with frame interpolation. The idea is simple: encode two frames, linearly interpolate their latent vectors, and decode the intermediate states. Despite its simplicity, this produces surprisingly smooth and visually consistent transitions (<a href="#frame-interpolation">see video</a>).
+
+<div class="video-container" style="max-width: 85%;"><a id="frame-interpolation"></a>
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl/simulation_decoder_interp_consecutive_mesh_100_150.mp4" type="video/mp4">
+</video>
+</div>
+
+## <a id="week-22-02-2026"></a> Week 22/02/2026
 This week I found a paper that aligns with the neural-representation direction I started exploring: **NeuralClothSim**<a id="neuralclothsim"></a>. Their approach represents cloth as a continuous neural deformation field. However, the objective is to predict static equilibrium configurations conditioned on control parameters (e.g. body pose), rather than learning an explicit time integration scheme. It is therefore closer to a learned deformation model than to a learned simulator.
 
 In parallel, I experimented with a different idea. Instead of operating directly on the mesh, I converted the cloth geometry into a UV pose map using barycentric interpolation. The goal is to move to a structured 2D representation and encode the cloth state into a latent space.
