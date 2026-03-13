@@ -64,12 +64,37 @@ layout: project
 ### Weeks
 <div class="container">
     <ul class="social-links week-links">
+        <li><a href="#week-02-03-2026">Week 09/03/2026</a></li>
         <li><a href="#week-02-03-2026">Week 02/03/2026</a></li>
         <li><a href="#week-22-02-2026">Week 22/02/2026</a></li>
         <li><a href="#week-15-02-2026">Week 15/02/2026</a></li>
         <li><a href="#week-18-01-2026">Week 18/01/2026</a></li>
     </ul>
 </div>
+
+## <a id="week-09-03-2026"></a> Week 09/03/2026
+This week I implemented a new surface-based model to replace the previous one based on UV maps. Instead of relying on a regular 2D parameterization, the model now works directly on the cloth mesh using a geometry-aware encoder based on **DiffusionNet**<a id="diffusionnet"></a>.
+
+For now, the model is still trained as an autoencoder: it encodes one frame into a latent representation on the surface, extracts a global latent, and decodes 3D positions from arbitrary barycentric queries on the mesh. The important point is that the continuous aspect is preserved, but without depending on UV coordinates anymore.
+
+This directly addresses one of the main limitations of the previous approach: complex or discontinuous UV spaces. To test this, I tried the model on a T-shirt example, which is much less convenient to handle with the old UV-based setup. The first results are encouraging (<a href="#tshirt-new-model-gt-vs-pred">see video</a>, <a href="#tshirt-new-model-oversampled">see video</a>).
+
+<div class="video-container" style="max-width: 85%;"><a id="tshirt-new-model-gt-vs-pred"></a>
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl/surface_diffusion_tshirt_uv_rollout.mp4" type="video/mp4">
+</video>
+</div>
+
+<div class="video-container" style="max-width: 85%;"><a id="tshirt-new-model-oversampled"></a>
+<video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/cloth_dl/surface_diffusion_tshirt_interp_rollout.mp4" type="video/mp4">
+</video>
+</div>
+
+At this stage, this mainly solves the representation issue rather than the full simulation problem, but it seems like a much more natural direction for handling arbitrary garments at any resolution.
+
+### Bibliography
+1. **DiffusionNet: Discretization Agnostic Learning on Surfaces**<a id="diffusionnet"></a>, N. Sharp, S. Attaiki, K Crane, M. Ovsjanikov, 2022, [[PDF LIX](https://www.lix.polytechnique.fr/Labo/Ovsjanikov.Maks/papers/DiffusionNet_final.pdf)]
 
 ## <a id="week-02-03-2026"></a> Week 02/03/2026
 I managed to resolve the "blockiness" issue by improving the function I used to replace the unsupported one (<a href="#smooth-continuous-encode-decode">see video</a>). With this fix, I ran a few experiments to better understand the capabilities and limits of this architecture.
