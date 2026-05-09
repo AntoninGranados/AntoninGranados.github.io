@@ -3,56 +3,125 @@ title: VkRay
 layout: project
 ---
 
-# VkRay: a Vulkan Raytracer
+# VkRay: Interactive Vulkan Path Tracing Engine
 
-Custom path tracer built directly on Vulkan (no ray-tracing extensions), with an in-app scene editor using ImGui + ImGuizmo.
+<figure class="project-hero-media">
+  <img src="/assets/imgs/projects/vk_ray/vkray-logo.png" alt="VkRay 1.0 logo rendered inside the engine">
+</figure>
 
-## The User Interface
-<img src="/assets/imgs/projects/vk_ray/ui.png" alt="User Interface" width="90%">
+VkRay is a physically based rendering application written in C++ with Vulkan. It is built on top of my lightweight Vulkan framework, [VkSmol](https://github.com/AntoninGranados/VkSmol), and implements its path tracing pipeline in shaders instead of relying on Vulkan ray tracing extensions.
 
-## What it does
-- Progressive path tracer running entirely on fragment shaders; two floating-point render targets ping-pong to accumulate samples frame after frame.
-- Interactive scene editing: add/select spheres, planes, and boxes; move/rotate/scale them with gizmos.
-- Material system: lambertian, metal (with fuzz), dielectric glass, emissive lights.
-- Lighting: emissive geometry and configurable skylight presets (Day / Sunset / Night / Empty).
-- Built-in console/notification window with commands (`clear`, `help`, `reload` shaders, toggle `render`-only, `exit`).
+The project combines a renderer, a small rigid body simulation system, mesh processing tools, and an interactive editor. The common data model is a custom Entity Component System (ECS), which keeps transforms, materials, geometry, animation, physics, and GPU packing connected without coupling every subsystem directly.
 
-## How it works
-- Scene data is packed into storage buffers (per-primitive buffers + an indirection/object buffer for selection) and consumed by the fragment shader for ray/primitive intersections.
-- A small Vulkan engine (`VkSmol`) handles descriptor set updates, dynamic rendering, and shader hot-reload .
-- The renderer keeps two RGBA32F images: one is read as the previous accumulation while the other is written, then they swap each frame.
-- Camera uses a fly setup (right-click to unlock look; WASD + Space/Shift to move; scroll to change FOV). Any movement or UI change bumps the frame counter back to zero to keep accumulation clean.
-
-## Demos
-### Material experiments
-Different surface responses, same lighting. These tests focus on roughness, metalness, and glass to verify energy conservation and bounce behavior.
-<div style="display: flex; gap: 12px; flex-wrap: nowrap;">
-  <img src="/assets/imgs/projects/vk_ray/material1.png" alt="Material Test 1" style="width: 49%; height: auto;">
-  <img src="/assets/imgs/projects/vk_ray/material2.png" alt="Material Test 2" style="width: 49%; height: auto;">
+<div class="project-link-row" markdown="0">
+  <a href="https://github.com/AntoninGranados/VkRay/" target="_blank" rel="noopener">Source code</a>
+  <a href="/assets/docs/projects/vk_ray_report.pdf" target="_blank" rel="noopener">Technical report</a>
 </div>
 
-### Suzanne material variations
-The classic Suzanne model pushed through multiple shader setups to compare shading models and accumulation behavior side by side.
-<div style="display: flex; flex-wrap: nowrap; gap: 12px;">
-  <img src="/assets/imgs/projects/vk_ray/suzanne1.png" alt="Suzanne 1" style="width: 32%; height: auto;">
-  <img src="/assets/imgs/projects/vk_ray/suzanne2.png" alt="Suzanne 2" style="width: 32%; height: auto;">
-  <img src="/assets/imgs/projects/vk_ray/suzanne3.png" alt="Suzanne 3" style="width: 32%; height: auto;">
+## Overview
+
+<div class="project-feature-grid" markdown="0">
+  <section>
+    <h3>Simulation</h3>
+    <p>Rigid bodies are baked with a fixed internal timestep, then cached per animation frame for deterministic playback and scrubbing.</p>
+  </section>
+  <section>
+    <h3>Geometry</h3>
+    <p>OBJ meshes, primitives, materials, lights, and BVH nodes are packed explicitly into GPU buffers consumed by GLSL shaders.</p>
+  </section>
+  <section>
+    <h3>Rendering</h3>
+    <p>The renderer is a shader path tracer with HDR accumulation, physically based materials, direct light sampling, MIS, denoising, and post effects.</p>
+  </section>
+  <section>
+    <h3>Editor</h3>
+    <p>The ImGui and ImGuizmo interface supports scene editing, object selection, material control, camera tools, shader reload, baking, and export commands.</p>
+  </section>
 </div>
 
-### Cornell box lighting study
-A compact scene used to sanity-check indirect lighting, color bleed, and emissive contribution.
-<div style="display: flex; flex-wrap: nowrap; gap: 12px;">
-  <img src="/assets/imgs/projects/vk_ray/cornell1.png" alt="Cornell 1" style="width: 49%; height: auto;">
-  <img src="/assets/imgs/projects/vk_ray/cornell2.png" alt="Cornell 2" style="width: 49%; height: auto;">
+## Path Tracing
+
+The renderer runs as a fullscreen raster pass that generates one camera ray per pixel and iteratively traces light transport in GLSL. Scene data is stored in Shader Storage Buffer Objects: analytic primitives are grouped by type, mesh handles reference flattened BVH nodes, and a separate light buffer supports importance sampling of emissive geometry.
+
+Materials include Lambertian diffuse, emissive surfaces, GGX metal, GGX glossy/plastic, dielectric glass, and programmable procedural materials. The microfacet materials use Cook-Torrance shading, GGX visible-normal sampling, and Schlick Fresnel. Direct light sampling is combined with BSDF sampling through Multiple Importance Sampling to reduce variance around bright or small light sources.
+
+<figure class="project-hero-media">
+  <img src="/assets/imgs/projects/vk_ray/render-1.png" alt="VkRay render showing a grid of glossy, metallic, and diffuse green spheres">
+  <figcaption>Material sweep rendered in VkRay, showing diffuse, glossy, and metallic responses under the same lighting.</figcaption>
+</figure>
+
+<div class="project-media-grid two" markdown="0">
+  <figure>
+    <img src="/assets/imgs/projects/vk_ray/material1.png" alt="VkRay material test scene with several spheres">
+    <figcaption>Material response comparison.</figcaption>
+  </figure>
+  <figure>
+    <img src="/assets/imgs/projects/vk_ray/material2.png" alt="VkRay second material test scene">
+    <figcaption>Roughness and reflection variation.</figcaption>
+  </figure>
 </div>
 
-### Stanford dragon scan
-The iconic Stanford 3D scan dragon sculpture, rendered to check fine detail, silhouette stability, and sampling noise.
-<div style="display: flex; flex-wrap: nowrap; gap: 12px;">
-  <img src="/assets/imgs/projects/vk_ray/dragon1.png" alt="Dragon 1" style="width: 49%; height: auto;">
-  <img src="/assets/imgs/projects/vk_ray/dragon2.png" alt="Dragon 2" style="width: 49%; height: auto;">
+## Simulation and Animation
+
+The simulation system is scheduled through the ECS and updates transform and rigid body components. Physics is computed offline with a fixed timestep of `1e-4` seconds, then stored as snapshots per animation frame. This makes playback deterministic and avoids re-simulating when scrubbing through the timeline.
+
+Collisions are impulse-based. Planes, spheres, and boxes are supported as colliders, while rigid bodies store mass, inertia, linear momentum, and angular momentum. Boxes are sampled on their surface for contacts; spheres use a Fibonacci distribution.
+
+<div class="project-media-grid two" markdown="0">
+  <figure class="video-container">
+    <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+      <source src="/assets/videos/vk_ray/ball-ramp.mp4" type="video/mp4">
+    </video>
+    <figcaption>Baked sphere simulation running through ramps and blockers.</figcaption>
+  </figure>
+  <figure class="video-container">
+    <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+      <source src="/assets/videos/vk_ray/pyramid.mp4" type="video/mp4">
+    </video>
+    <figcaption>A sphere collider breaking through a pyramid of rigid boxes.</figcaption>
+  </figure>
 </div>
 
-### Sponza stress test (BVH)
-Heavy geometry, lots of bounces. This scene validates BVH traversal performance and robustness under real-world mesh complexity.
-<img src="/assets/imgs/projects/vk_ray/sponza.png" alt="Sponza" style="width: 90%; height: auto;">
+## Meshes and Acceleration
+
+Meshes are imported from OBJ files and converted into internal vertex and index buffers. Because the ray tracer is implemented manually, acceleration structures are also explicit: each mesh builds a CPU-side BVH with median splits over triangle centroids, then uploads a flattened node array to the GPU for iterative GLSL traversal.
+
+VkRay also includes Quadric Error Metrics mesh simplification. The simplifier collapses low-cost edges, removes degenerate faces, remaps indices, and rebuilds the mesh before upload. The simplification ratio is exposed in the editor and can be adjusted interactively on meshes of moderate complexity.
+
+<figure class="video-container project-wide-video">
+  <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+    <source src="/assets/videos/vk_ray/lucy-low-res.mp4" type="video/mp4">
+  </video>
+  <figcaption>Low-resolution Stanford Lucy render used to validate mesh simplification, BVH traversal, and material editing.</figcaption>
+</figure>
+
+<div class="project-media-grid two" markdown="0">
+  <figure>
+    <img src="/assets/imgs/projects/vk_ray/dragon1.png" alt="Stanford Dragon rendered in VkRay">
+    <figcaption>High-detail mesh rendering.</figcaption>
+  </figure>
+  <figure>
+    <img src="/assets/imgs/projects/vk_ray/sponza.png" alt="Sponza scene rendered in VkRay">
+    <figcaption>Sponza stress test for mesh traversal.</figcaption>
+  </figure>
+</div>
+
+## Editor
+
+The application is an editor, not just an offline renderer. Objects can be selected with CPU raycasts against scene geometry, then transformed with gizmos. The side panels expose entities, materials, mesh assets, path tracer settings, lighting modes, and physics baking controls. A command panel handles shader hot reloads, single frame rendering, animation rendering, and debugging commands.
+
+<figure class="project-hero-media">
+  <img src="/assets/imgs/projects/vk_ray/ui.png" alt="VkRay editor interface with selected Lucy mesh, material controls, and path tracing settings">
+  <figcaption>Interactive VkRay editor with ECS panels, material controls, selection outlines, gizmos, and physics baking timeline.</figcaption>
+</figure>
+
+## Report
+
+For implementation details, including the simulation solver, GPU packing, QEM simplification, BVH construction, path tracing loop, material BSDFs, MIS, denoising, ECS architecture, and future work, the full report is embedded below.
+
+<div class="pdf-embed" markdown="0">
+  <object data="/assets/docs/projects/vk_ray_report.pdf" type="application/pdf">
+    <p>Your browser doesn't support embedded PDFs.
+    <a href="/assets/docs/projects/vk_ray_report.pdf">Download the PDF report</a> instead.</p>
+  </object>
+</div>
