@@ -1,6 +1,9 @@
 ---
 title: TIPE - Neuroevolution for Autonomous Driving
 layout: project
+image: /assets/imgs/projects/tipe_preview.png
+image_position: 62% 42%
+subtitle: Evolving Neural Network Controllers with NEAT for a 2D Racing Simulation
 ---
 
 # TIPE: Neuroevolution for Autonomous Driving

@@ -1,6 +1,9 @@
 ---
 title: Smoke on the GPU
 layout: project
+image: /assets/imgs/projects/gpu_smoke_preview.png
+image_position: 68% 50%
+subtitle: Volumetric Smoke Simulation and Rendering in Godot with Lattice-Boltzmann and Ray Marching
 ---
 
 # 3D Smoke Simulation and Rendering in Godot

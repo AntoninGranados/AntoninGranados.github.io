@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page.title }} — Antonin Granados</title>
+  <title>{{ page.title }} - Antonin Granados</title>
   <link rel="icon" href="../assets/img/icon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,15 +71,24 @@
     </div>
   </header>
 
-  <main>
+  <main{% if page.image %} class="has-hero"{% endif %}>
+    {% if page.image %}
+    <div class="project-hero-banner" style="--hero-img: url('{{ page.image }}'){% if page.image_position %}; --hero-pos: {{ page.image_position }}{% endif %}">
+      <div class="project-hero-text">
+        <h1>{{ page.title }}</h1>
+        {% if page.subtitle %}<p>{{ page.subtitle }}</p>{% endif %}
+      </div>
+    </div>
+    {% endif %}
     <div class="markdown-content">
       {{ content }}
     </div>
   </main>
+  <aside id="toc-sidebar" class="toc-sidebar" aria-label="Table of contents"></aside>
 
   <footer class="site-footer">
     <div class="container">
-      <p>&copy; {{ 'now' | date: "%Y" }} Antonin Granados — <a href="/">antoningranados.github.io</a> — Using the <a href="https://draculatheme.com" target="_blank" rel="noopener">Dracula Theme</a></p>
+      <p>&copy; {{ 'now' | date: "%Y" }} Antonin Granados - <a href="/">antoningranados.github.io</a> - Using the <a href="https://draculatheme.com" target="_blank" rel="noopener">Dracula Theme</a></p>
     </div>
   </footer>
 
@@ -156,9 +165,11 @@
       overlay.innerHTML = '<button class="lightbox-close" aria-label="Close">✕</button>';
       document.body.appendChild(overlay);
       var lbMedia = null;
+      var lbWrap = null;
 
       function openLightbox(el) {
-        if (lbMedia) lbMedia.remove();
+        if (lbWrap) { lbWrap.remove(); lbWrap = null; }
+        if (lbMedia) { lbMedia.remove(); lbMedia = null; }
         var isVideo = el.tagName === 'VIDEO';
         if (isVideo) {
           lbMedia = document.createElement('video');
@@ -167,29 +178,47 @@
           lbMedia.loop = true;
           lbMedia.muted = true;
           lbMedia.playsInline = true;
+          var progress = document.createElement('div');
+          progress.className = 'lightbox-progress';
+          var fill = document.createElement('div');
+          fill.className = 'lightbox-progress-fill';
+          progress.appendChild(fill);
+          lbMedia.addEventListener('timeupdate', function () {
+            if (lbMedia.duration) fill.style.width = (lbMedia.currentTime / lbMedia.duration * 100) + '%';
+          });
+          progress.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var rect = progress.getBoundingClientRect();
+            lbMedia.currentTime = ((e.clientX - rect.left) / rect.width) * lbMedia.duration;
+          });
+          lbWrap = document.createElement('div');
+          lbWrap.className = 'lightbox-video-wrap';
+          lbWrap.appendChild(lbMedia);
+          lbWrap.appendChild(progress);
+          overlay.appendChild(lbWrap);
         } else {
           lbMedia = document.createElement('img');
           lbMedia.src = el.src;
           lbMedia.alt = el.alt || '';
+          overlay.appendChild(lbMedia);
         }
-        overlay.appendChild(lbMedia);
         overlay.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
       function closeLightbox() {
         overlay.classList.remove('open');
         document.body.style.overflow = '';
-        if (lbMedia) {
-          if (lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
-          lbMedia.remove();
-          lbMedia = null;
-        }
+        if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
+        if (lbWrap) { lbWrap.remove(); lbWrap = null; }
+        if (lbMedia) { lbMedia.remove(); lbMedia = null; }
       }
 
       document.querySelectorAll('.markdown-content img').forEach(function (img) {
         img.addEventListener('click', function () { openLightbox(img); });
       });
-      document.querySelectorAll('.markdown-content .video-container video').forEach(function (vid) {
+      document.querySelectorAll('.markdown-content .video-container').forEach(function (container) {
+        var vid = container.querySelector('video');
+        if (!vid) return;
         vid.addEventListener('click', function (e) { e.stopPropagation(); openLightbox(vid); });
       });
       overlay.addEventListener('click', function (e) {
@@ -265,6 +294,190 @@
         var id = (a.getAttribute('href') || '').split('#')[1];
         if (id) expandForEl(document.getElementById(id));
       });
+
+      /* ── Citation tooltips ── */
+      var citeTooltip = document.createElement('div');
+      citeTooltip.className = 'cite-tooltip';
+      document.body.appendChild(citeTooltip);
+
+      var hideTimer = null;
+      function showTooltip(text, anchorEl) {
+        clearTimeout(hideTimer);
+        citeTooltip.textContent = text;
+        citeTooltip.classList.add('visible');
+        positionTooltip(anchorEl);
+      }
+      function hideTooltip() {
+        hideTimer = setTimeout(function () { citeTooltip.classList.remove('visible'); }, 80);
+      }
+      function positionTooltip(el) {
+        var rect = el.getBoundingClientRect();
+        var vw = window.innerWidth;
+        var vh = window.innerHeight;
+        var tw = Math.min(360, vw - 24);
+        citeTooltip.style.maxWidth = tw + 'px';
+        /* Prefer above the link, fall back to below */
+        var top = rect.top - citeTooltip.offsetHeight - 10;
+        if (top < 8) top = rect.bottom + 10;
+        var left = rect.left + rect.width / 2 - tw / 2;
+        left = Math.max(12, Math.min(left, vw - tw - 12));
+        citeTooltip.style.top = top + 'px';
+        citeTooltip.style.left = left + 'px';
+      }
+
+      document.querySelectorAll('.markdown-content a[href^="#"]').forEach(function (a) {
+        var id = a.getAttribute('href').slice(1);
+        if (!id) return;
+        var target = document.getElementById(id);
+        if (!target) return;
+        var li = target.closest('li');
+        if (!li) return;
+        /* Only attach if the li is inside a bibliography-like section */
+        var heading = (function findPrevH3(el) {
+          var prev = el.parentElement;
+          while (prev) {
+            var sib = prev.previousElementSibling;
+            while (sib) {
+              if (sib.tagName === 'H3') return sib;
+              if (sib.tagName === 'H2') return null;
+              sib = sib.previousElementSibling;
+            }
+            prev = prev.parentElement;
+          }
+          return null;
+        })(li);
+        if (!heading || !/bibliography/i.test(heading.textContent)) return;
+
+        var clone = li.cloneNode(true);
+        clone.querySelectorAll('a[id]').forEach(function (el) { if (!el.textContent.trim()) el.remove(); });
+        var citation = clone.textContent.replace(/\s+/g, ' ').trim();
+
+        a.classList.add('cite-link');
+        a.addEventListener('mouseenter', function () { showTooltip(citation, a); });
+        a.addEventListener('mouseleave', hideTooltip);
+        a.addEventListener('focus',      function () { showTooltip(citation, a); });
+        a.addEventListener('blur',       hideTooltip);
+      });
+    })();
+  </script>
+  <script>
+    /* ── Table of contents + Back to top ── */
+    (function () {
+      /* Back to top */
+      var btt = document.createElement('button');
+      btt.className = 'back-to-top';
+      btt.setAttribute('aria-label', 'Back to top');
+      btt.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+      document.body.appendChild(btt);
+      window.addEventListener('scroll', function () {
+        btt.classList.toggle('visible', window.scrollY > 400);
+      }, { passive: true });
+      btt.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      /* Table of contents */
+      var sidebar = document.getElementById('toc-sidebar');
+      if (!sidebar) return;
+
+      /* Collect h2 + h3 that are NOT inside a collapsed week-content wrapper */
+      var allHeadings = Array.from(document.querySelectorAll('.markdown-content h2, .markdown-content h3'))
+        .filter(function (h) { return !h.closest('.week-content'); });
+      if (allHeadings.length < 2) { sidebar.remove(); return; }
+
+      var header = document.querySelector('.site-header');
+      function scrollToHeading(h) {
+        var offset = (header ? header.offsetHeight : 0) + 16;
+        var top = h.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+
+      function headingText(h) {
+        var clone = h.cloneNode(true);
+        clone.querySelectorAll('svg, a[id]').forEach(function (el) {
+          if (el.tagName === 'A' && el.id && !el.textContent.trim()) el.remove();
+          else if (el.tagName === 'svg') el.remove();
+        });
+        return clone.textContent.trim();
+      }
+
+      var titleEl = document.createElement('p');
+      titleEl.className = 'toc-title';
+      titleEl.textContent = 'Contents';
+      sidebar.appendChild(titleEl);
+
+      var list = document.createElement('ul');
+      list.className = 'toc-list';
+      sidebar.appendChild(list);
+
+      var idCounter = 0;
+      var entries = allHeadings.map(function (h) {
+        var level = parseInt(h.tagName.slice(1), 10); /* 2 or 3 */
+        var anchor = h.querySelector('a[id]');
+        var id = h.id || (anchor ? anchor.id : '') || ('toc-h-' + (idCounter++));
+        if (!h.id) h.id = id;
+
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + id;
+        a.className = 'toc-link toc-level-' + level;
+        a.textContent = headingText(h);
+        a.title = a.textContent;
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (h.classList.contains('week-heading') && h.classList.contains('collapsed')) {
+            h.click();
+            setTimeout(function () { scrollToHeading(h); }, 60);
+          } else {
+            scrollToHeading(h);
+          }
+        });
+        li.appendChild(a);
+        list.appendChild(li);
+        return { h: h, a: a };
+      });
+
+      /* Active section tracking via scroll */
+      var lastActive = -1;
+      function updateActive() {
+        var scrollMid = window.scrollY + (header ? header.offsetHeight : 0) + 32;
+        var active = 0;
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].h.getBoundingClientRect().top + window.scrollY <= scrollMid) active = i;
+        }
+        if (active === lastActive) return;
+        entries.forEach(function (e, i) { e.a.classList.toggle('active', i === active); });
+        var link = entries[active].a;
+        var sbRect = sidebar.getBoundingClientRect();
+        var lkRect = link.getBoundingClientRect();
+        if (lkRect.top < sbRect.top + 4 || lkRect.bottom > sbRect.bottom - 4) {
+          link.scrollIntoView({ block: 'nearest' });
+        }
+        lastActive = active;
+      }
+      window.addEventListener('scroll', updateActive, { passive: true });
+      updateActive();
+
+      /* Push TOC below hero banner + parallax */
+      var heroBanner = document.querySelector('.project-hero-banner');
+      if (heroBanner) {
+        var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function updateBanner() {
+          var headerH = header ? header.offsetHeight : 0;
+          var bannerBottom = heroBanner.getBoundingClientRect().bottom;
+          /* TOC top */
+          var newTop = Math.max(headerH + 16, bannerBottom + 16);
+          sidebar.style.top = newTop + 'px';
+          sidebar.style.maxHeight = 'calc(100vh - ' + (newTop + 16) + 'px)';
+          /* Parallax */
+          if (!reducedMotion && bannerBottom > 0) {
+            heroBanner.style.setProperty('--parallax-offset', (window.scrollY * 0.35) + 'px');
+          }
+        }
+        window.addEventListener('scroll', updateBanner, { passive: true });
+        updateBanner();
+      }
     })();
   </script>
   <script>

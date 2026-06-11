@@ -1,6 +1,9 @@
 ---
 title: VkRay
 layout: project
+image: /assets/imgs/projects/vk_ray_preview.png
+image_position: 30% 28%
+subtitle: Interactive Vulkan Path Tracing Engine
 ---
 
 # VkRay: Interactive Vulkan Path Tracing Engine
