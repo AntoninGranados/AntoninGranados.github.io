@@ -1,7 +1,7 @@
 ---
 title: VkRay
 layout: project
-image: /assets/imgs/projects/vk_ray_preview.png
+image: /assets/imgs/projects/vk_ray_preview.webp
 image_position: 30% 28%
 subtitle: Interactive Vulkan Path Tracing Engine
 ---
@@ -9,7 +9,7 @@ subtitle: Interactive Vulkan Path Tracing Engine
 # VkRay: Interactive Vulkan Path Tracing Engine
 
 <figure class="project-hero-media">
-  <img src="/assets/imgs/projects/vk_ray/vkray-logo.png" alt="VkRay 1.0 logo rendered inside the engine">
+  <img src="/assets/imgs/projects/vk_ray/vkray-logo.webp" alt="VkRay 1.0 logo rendered inside the engine">
 </figure>
 
 VkRay is a physically based rendering application written in C++ with Vulkan. It is built on top of my lightweight Vulkan framework, [VkSmol](https://github.com/AntoninGranados/VkSmol), and implements its path tracing pipeline in shaders instead of relying on Vulkan ray tracing extensions.
@@ -49,17 +49,17 @@ The renderer runs as a fullscreen raster pass that generates one camera ray per 
 Materials include Lambertian diffuse, emissive surfaces, GGX metal, GGX glossy/plastic, dielectric glass, and programmable procedural materials. The microfacet materials use Cook-Torrance shading, GGX visible-normal sampling, and Schlick Fresnel. Direct light sampling is combined with BSDF sampling through Multiple Importance Sampling to reduce variance around bright or small light sources.
 
 <figure class="project-hero-media">
-  <img src="/assets/imgs/projects/vk_ray/render-1.png" alt="VkRay render showing a grid of glossy, metallic, and diffuse green spheres">
+  <img src="/assets/imgs/projects/vk_ray/render-1.webp" alt="VkRay render showing a grid of glossy, metallic, and diffuse green spheres">
   <figcaption>Material sweep rendered in VkRay, showing diffuse, glossy, and metallic responses under the same lighting.</figcaption>
 </figure>
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/material1.png" alt="VkRay material test scene with several spheres">
+    <img src="/assets/imgs/projects/vk_ray/material1.webp" alt="VkRay material test scene with several spheres">
     <figcaption>Material response comparison.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/material2.png" alt="VkRay second material test scene">
+    <img src="/assets/imgs/projects/vk_ray/material2.webp" alt="VkRay second material test scene">
     <figcaption>Roughness and reflection variation.</figcaption>
   </figure>
 </div>
@@ -100,11 +100,11 @@ VkRay also includes Quadric Error Metrics mesh simplification. The simplifier co
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/dragon1.png" alt="Stanford Dragon rendered in VkRay">
+    <img src="/assets/imgs/projects/vk_ray/dragon1.webp" alt="Stanford Dragon rendered in VkRay">
     <figcaption>High-detail mesh rendering.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/sponza.png" alt="Sponza scene rendered in VkRay">
+    <img src="/assets/imgs/projects/vk_ray/sponza.webp" alt="Sponza scene rendered in VkRay">
     <figcaption>Sponza stress test for mesh traversal.</figcaption>
   </figure>
 </div>
@@ -114,7 +114,7 @@ VkRay also includes Quadric Error Metrics mesh simplification. The simplifier co
 The application is an editor, not just an offline renderer. Objects can be selected with CPU raycasts against scene geometry, then transformed with gizmos. The side panels expose entities, materials, mesh assets, path tracer settings, lighting modes, and physics baking controls. A command panel handles shader hot reloads, single frame rendering, animation rendering, and debugging commands.
 
 <figure class="project-hero-media">
-  <img src="/assets/imgs/projects/vk_ray/ui.png" alt="VkRay editor interface with selected Lucy mesh, material controls, and path tracing settings">
+  <img src="/assets/imgs/projects/vk_ray/ui.webp" alt="VkRay editor interface with selected Lucy mesh, material controls, and path tracing settings">
   <figcaption>Interactive VkRay editor with ECS panels, material controls, selection outlines, gizmos, and physics baking timeline.</figcaption>
 </figure>
 

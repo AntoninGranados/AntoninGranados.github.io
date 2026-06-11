@@ -1,7 +1,7 @@
 ---
 title: Cloth Simulation with DL
 layout: project
-image: /assets/imgs/projects/cloth_dl_preview.png
+image: /assets/imgs/projects/cloth_dl_preview.webp
 image_position: 50% 18%
 subtitle: Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
 ---
@@ -153,7 +153,7 @@ To explore this, I implemented a very simple setup to better understand how such
 
 When trained on a single frame, the network fits the overall shape quite well. The predicted mesh closely matches the ground truth, both visually and in terms of MSE. The UV-coordinate maps (<a href="#cloth-neural-repr">Result image</a>: GT on top with nearest-neighbor interpolation, prediction below) also show that the global structure is captured correctly.
 
-<a id="cloth-neural-repr"></a><img src="/assets/imgs/projects/cloth_dl/cloth_neural_repr.png" alt="Cloth Neural Representation" width="80%">
+<a id="cloth-neural-repr"></a><img src="/assets/imgs/projects/cloth_dl/cloth_neural_repr.webp" alt="Cloth Neural Representation" width="80%">
 
 However, I encountered a limitation with a plain MLP (the results above were obtained after addressing this issue). Without any modification, the network tends to over-smooth the output, effectively removing most of the wrinkles in the cloth. To mitigate this, I introduced Fourier features on the UV inputs. With positional encoding, the network is able to represent higher-frequency details, and the wrinkles reappear much more faithfully. The architecture itself remains very small, so the improvement comes purely from the input encoding.
 
@@ -229,10 +229,10 @@ Initially, I used a rollout length of 8, but it was extremely slow. I then tried
 I found an issue in my code (I was expecting a mistake in the stretching loss but hadn't found it before) by comparing with the source code of [HOOD](#hood) (see [GitHub](https://github.com/dolorousrtur/hood)). I was computing the Green strain tensor using the formula I found for the 2D case, but did not project the 3D points onto the triangle's plane (which made some sort of mix between the strain tensor of a 3D tetrahedron and a 2D triangle). I also found that they didn't normalise the losses to take into account the size of the mesh (ie. dividing by the node count, edge count or the total area).
 
 After fixing this, I did an overfit test using 10 random samples from my custom dataset without any noise added. I first tried with the supervised approach as a baseline. It converged pretty quickly so I stopped the training after only 200 steps.
-<img src="/assets/imgs/projects/cloth_dl/overfit_sup.png" alt="Overfit Supervised" width="100%"><a id="overfit-supervised"></a>
+<img src="/assets/imgs/projects/cloth_dl/overfit_sup.webp" alt="Overfit Supervised" width="100%"><a id="overfit-supervised"></a>
 
 After this, I tried with the unsupervised loss; the results also looked satisfying. They were much slower (1000 steps on the graph below) but this was expected. I also displayed each of the loss terms separately under the total graph (from left to right: Inertia, Gravity, Bending, Stretching). Be aware that each graph is not to scale; for instance the gravity practically didn't decrease while the stretching did most of the work.
-<img src="/assets/imgs/projects/cloth_dl/overfit_unsup.png" alt="Overfit Unsupervised" width="100%"><a id="overfit-unsupervised"></a>
+<img src="/assets/imgs/projects/cloth_dl/overfit_unsup.webp" alt="Overfit Unsupervised" width="100%"><a id="overfit-unsupervised"></a>
 
 ## <a id="week-24-11-2025"></a> <a id="week-01-12-2025"></a> Week 24/11/2025 - 01/12/2025
 During these weeks, I finished the first version of the State of the Art Report.
@@ -304,7 +304,7 @@ I then looked into [Taichi](https://www.taichi-lang.org), but I wanted something
 
 I then tried the [SOFA framework](https://www.sofa-framework.org) and even though I had a bit of trouble compiling it, I managed to make it work on my computer. It uses XML to describe the scenes and can also work entirely through its Python interface (describe the scene + run the simulation). It also has a graphical interface (this is why I had some issues), which is useful but not strictly needed for my needs. It can simulate a wide variety of materials - from cloth to rigid bodies - so if we want to expand our field during the year, I will be able to use the same framework.
 
-<img src="/assets/imgs/projects/cloth_dl/sofa_demo.png" alt="SOFA demo" width="50%"><a id="sofa_demo"></a>
+<img src="/assets/imgs/projects/cloth_dl/sofa_demo.webp" alt="SOFA demo" width="50%"><a id="sofa_demo"></a>
 
 ### Bibliography
 1. **Adaptive Anisotropic Remeshing for Cloth Simulation**<a id="arcsim"></a>, R. Narain, A. Samii, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH Asia 2012_, 2012, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
@@ -380,7 +380,7 @@ Even with unsupervised learning, we need a dataset that would serve as input for
 
 But the body (collider) is missing as it came from the [CMU Motion Capture Database](https://mocap.cs.cmu.edu) (videos) and was converted to [SMPL](https://smpl.is.tue.mpg.de) format using a video-to-pose algorithm ([SURREAL](https://www.di.ens.fr/willow/research/surreal/data/)). I tried to compute the bone rotations directly from the CMU files (which are given, so using video-to-pose should not be necessary). But probably due to local/global coordinate differences between the two datasets, I did not manage to compute the body pose for now (the [image below](#smpl_dataset) should be the first frame of the [animation above](#vto_dataset)).
 
-<img src="/assets/imgs/projects/cloth_dl/smpl_dataset.png" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
+<img src="/assets/imgs/projects/cloth_dl/smpl_dataset.webp" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
 
 ### Bibliography
 1. **SNUG: Self-Supervised Neural Dynamic Garments**<a id="snug"></a>, I. Santesteban, M. A. Otaduy, and D. Casas, *Conference on Computer Vision and Pattern Recognition*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2204.02219)]

@@ -1,7 +1,7 @@
 ---
 title: TIPE - Neuroevolution for Autonomous Driving
 layout: project
-image: /assets/imgs/projects/tipe_preview.png
+image: /assets/imgs/projects/tipe_preview.webp
 image_position: 62% 42%
 subtitle: Evolving Neural Network Controllers with NEAT for a 2D Racing Simulation
 ---
@@ -50,11 +50,11 @@ The car perceives the world with a small set of ray-cast sensors pointing forwar
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/tipe/tracks.png" alt="Track editor using Bezier curves to generate a racing circuit">
+    <img src="/assets/imgs/projects/tipe/tracks.webp" alt="Track editor using Bezier curves to generate a racing circuit">
     <figcaption>Track editor based on Bezier control points and generated road segments.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/tipe/sensor.png" alt="Car ray-cast sensors measuring distance to track boundaries">
+    <img src="/assets/imgs/projects/tipe/sensor.webp" alt="Car ray-cast sensors measuring distance to track boundaries">
     <figcaption>Sensor rays provide distances to nearby track boundaries.</figcaption>
   </figure>
 </div>
@@ -67,11 +67,11 @@ The presentation introduces the network as a direct model of the driving policy:
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/tipe/network_base.png" alt="Dense neural network visualization">
+    <img src="/assets/imgs/projects/tipe/network_base.webp" alt="Dense neural network visualization">
     <figcaption>Dense reference network with a fixed structure.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/tipe/network_neat.png" alt="Smaller evolved neural network visualization">
+    <img src="/assets/imgs/projects/tipe/network_neat.webp" alt="Smaller evolved neural network visualization">
     <figcaption>Smaller evolved network reaching comparable behavior.</figcaption>
   </figure>
 </div>
@@ -84,11 +84,11 @@ Selection uses a probability distribution derived from fitness, so strong indivi
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/tipe/ex1.png" alt="Car driving on a more complex generated track">
+    <img src="/assets/imgs/projects/tipe/ex1.webp" alt="Car driving on a more complex generated track">
     <figcaption>Generalization test on a more complex circuit.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/tipe/ex2.png" alt="Car driving on another generated track">
+    <img src="/assets/imgs/projects/tipe/ex2.webp" alt="Car driving on another generated track">
     <figcaption>Score and trajectory visualization during evaluation.</figcaption>
   </figure>
 </div>

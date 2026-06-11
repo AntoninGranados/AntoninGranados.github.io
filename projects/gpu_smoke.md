@@ -1,7 +1,7 @@
 ---
 title: Smoke on the GPU
 layout: project
-image: /assets/imgs/projects/gpu_smoke_preview.png
+image: /assets/imgs/projects/gpu_smoke_preview.webp
 image_position: 68% 50%
 subtitle: Volumetric Smoke Simulation and Rendering in Godot with Lattice-Boltzmann and Ray Marching
 ---
@@ -17,7 +17,7 @@ The smoke is represented as a 3D voxel grid and simulated with the Lattice-Boltz
 </div>
 
 <figure class="project-hero-media">
-  <img src="/assets/imgs/projects/gpu_smoke/dragon.jpeg" alt="Smoke emitted from a dragon model in a bamboo scene">
+  <img src="/assets/imgs/projects/gpu_smoke/dragon.webp" alt="Smoke emitted from a dragon model in a bamboo scene">
   <figcaption>Smoke emitted from the Stanford Dragon's mouth, with collision handled inside the dragon mesh.</figcaption>
 </figure>
 
@@ -50,11 +50,11 @@ For each voxel inside an object's transformed bounding box, the shader casts a r
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/gpu_smoke/man.png" alt="Human-shaped blue smoke source on a black background">
+    <img src="/assets/imgs/projects/gpu_smoke/man.webp" alt="Human-shaped blue smoke source on a black background">
     <figcaption>Human-shaped source used to test mesh voxelization and source fields.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/gpu_smoke/plane.png" alt="Large cloud-like smoke plume in a blue sky scene">
+    <img src="/assets/imgs/projects/gpu_smoke/plane.webp" alt="Large cloud-like smoke plume in a blue sky scene">
     <figcaption>Cloud-like plume rendered in a larger outdoor scene.</figcaption>
   </figure>
 </div>
@@ -67,11 +67,11 @@ Voxel types from the voxelization stage define boundary behavior. Collider voxel
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/gpu_smoke/bars.png" alt="Smoke interacting with two rectangular bars">
+    <img src="/assets/imgs/projects/gpu_smoke/bars.webp" alt="Smoke interacting with two rectangular bars">
     <figcaption>Smoke moving around two rectangular colliders.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/gpu_smoke/colliding.png" alt="Two colored smoke plumes colliding around a point light">
+    <img src="/assets/imgs/projects/gpu_smoke/colliding.webp" alt="Two colored smoke plumes colliding around a point light">
     <figcaption>Two plumes colliding with point light interaction.</figcaption>
   </figure>
 </div>
