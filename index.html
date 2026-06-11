@@ -233,7 +233,7 @@ layout: null
                 if (!content) return null;
                 const activity = document.createElement('div');
                 activity.className = 'project-activity';
-                activity.textContent = 'Loading GitHub activity…';
+                activity.textContent = '';
 
                 const dateEl = content.querySelector('.project-date');
                 if (dateEl) {
@@ -276,14 +276,11 @@ layout: null
                         parts.push(`${data.open_issues_count} open issue${data.open_issues_count > 1 ? 's' : ''}`);
                     }
 
-                    if (!parts.length) {
-                        activityEl.textContent = 'GitHub activity unavailable';
-                        return;
-                    }
+                    if (!parts.length) { activityEl.remove(); return; }
 
                     renderActivity(activityEl, parts);
                 } catch (error) {
-                    activityEl.textContent = 'GitHub activity unavailable';
+                    activityEl.remove();
                 }
             });
         })();
@@ -317,6 +314,36 @@ layout: null
                     updateBtn(t);
                 }
             });
+        })();
+    </script>
+    <script>
+        /* ── Project card scroll-reveal ── */
+        (function () {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            if (!window.IntersectionObserver) return;
+
+            var cards = Array.from(document.querySelectorAll('.project-card'));
+            var trans = 'opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1), box-shadow 0.15s ease-out, border-color 0.15s ease-out';
+
+            cards.forEach(function (card) {
+                card.style.opacity   = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = trans;
+            });
+
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    var idx = cards.indexOf(entry.target);
+                    setTimeout(function () {
+                        entry.target.style.opacity   = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, idx * 110);
+                    observer.unobserve(entry.target);
+                });
+            }, { threshold: 0.08 });
+
+            cards.forEach(function (card) { observer.observe(card); });
         })();
     </script>
 </body>
