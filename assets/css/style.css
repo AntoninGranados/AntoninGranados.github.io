@@ -92,6 +92,7 @@
 *{scrollbar-width:none;-ms-overflow-style:none}
 html{
     scroll-behavior: smooth;
+    background: var(--bg);
 }
 .body-wrap{
     min-height:100%;
@@ -103,16 +104,18 @@ body{
     min-height: 100vh;
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     color: var(--text);
-    background: var(--bg);
+    background: transparent;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
     line-height:1.6;
+    position: relative;
+    z-index: 1;
 }
 
 #topo-bg,
 #topo-shine {
     position: fixed;
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
     display: block;
     will-change: transform;
@@ -138,6 +141,17 @@ body{
     position: sticky;
     top: 0;
     z-index: 100;
+}
+.site-header::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background: var(--header-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 
 /* Theme toggle button */
@@ -786,9 +800,9 @@ main{padding:1rem 0 2rem}
     align-items: center;
     justify-content: center;
     padding: 0.55rem 0.85rem;
-    border: 1px solid rgba(189, 147, 249, 0.55);
+    border: var(--border);
     border-radius: var(--radius-sm);
-    background: rgba(47, 49, 63, 0.55);
+    background: var(--card);
     color: var(--text);
     text-decoration: none;
     transition: all var(--transition-default);
