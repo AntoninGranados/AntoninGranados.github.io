@@ -1,0 +1,89 @@
+---
+title: 404
+layout: null
+permalink: /404.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 - Antonin Granados</title>
+  <link rel="icon" href="/assets/imgs/icon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+  {% include topo-bg.html %}
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-content">
+          <div class="brand-text">
+            <h1><a href="/" class="brand-name-link">Antonin Granados</a></h1>
+            <p class="muted">Engineering student at Telecom Paris</p>
+          </div>
+        </div>
+      </div>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/#contact">Contact</a>
+        <a href="/#projects">Projects</a>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="hero-inner" style="justify-content: center;">
+            <div class="hero-text" style="text-align: center; max-width: 480px;">
+              <h2 style="font-size: 5rem; margin: 0; line-height: 1; color: var(--accent);">404</h2>
+              <p class="tagline" style="text-align: center; margin-top: 1rem;">This page doesn't exist.</p>
+              <div class="cta" style="margin-top: 1.5rem;">
+                <a href="/" style="color: var(--link); text-decoration: none; font-size: var(--font-size-base);">← Back to home</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; {{ 'now' | date: "%Y" }} Antonin Granados - <a href="/">antoningranados.github.io</a> - Using the <a href="https://draculatheme.com" target="_blank" rel="noopener">Dracula Theme</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      var SUN = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+      var MOON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      var btn = document.getElementById('theme-toggle');
+      var html = document.documentElement;
+      function updateBtn(theme) {
+        btn.innerHTML = theme === 'dark' ? SUN : MOON;
+        btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      updateBtn(html.getAttribute('data-theme') || 'dark');
+      btn.addEventListener('click', function() {
+        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateBtn(next);
+      });
+    })();
+  </script>
+</body>
+</html>
