@@ -1,4 +1,5 @@
 <canvas id="topo-bg" aria-hidden="true"></canvas>
+<canvas id="topo-shine" aria-hidden="true"></canvas>
 <script>
 (function () {
   /* -- Perlin noise -- */
@@ -26,9 +27,11 @@
   var OX = (h % 600) * 1.2;
   var OY = ((h >> 10) % 600) * 1.2;
 
-  /* -- Canvas -- */
+  /* -- Canvases -- */
   var canvas = document.getElementById('topo-bg');
   var ctx = canvas.getContext('2d');
+  var shine = document.getElementById('topo-shine');
+  var sCtx = shine.getContext('2d');
 
   /* -- Marching squares lookup -- */
   var MS = [
@@ -47,31 +50,23 @@
   var STEP = 8, SCALE = 0.00110, PAD = 48, PARALLAX = 0.18;
   var TH = (function(){ var a=[]; for(var i=1;i<=30;i++) a.push(i/31); return a; })();
 
-  function draw() {
-    var W = window.innerWidth, H = window.innerHeight;
-    /* Canvas must be tall enough that parallax never exposes the bottom edge */
-    var pageH = Math.max(document.body.scrollHeight, H);
-    var extraH = Math.ceil((pageH - H) * PARALLAX) + STEP * 4;
-    var TW = W + PAD * 2, TH_px = H + PAD * 2 + extraH;
+  /* Cursor position in viewport coords */
+  var cursorCX = -9999, cursorCY = -9999;
 
-    canvas.width = TW; canvas.height = TH_px;
-    canvas.style.top  = '-' + PAD + 'px';
-    canvas.style.left = '-' + PAD + 'px';
+  function updateShinePos() {
+    /* Convert viewport cursor to canvas-local coords (pre-transform).
+       Canvas is offset by -PAD and shifted by parallax translateY. */
+    var x = cursorCX + PAD;
+    var y = cursorCY + PAD + Math.round(window.scrollY * PARALLAX);
+    shine.style.setProperty('--shine-x', x + 'px');
+    shine.style.setProperty('--shine-y', y + 'px');
+  }
 
-    var cols = Math.ceil(TW / STEP) + 2, rows = Math.ceil(TH_px / STEP) + 2;
-    var field = new Float32Array(cols * rows);
-    for (var r = 0; r < rows; r++)
-      for (var c = 0; c < cols; c++)
-        field[r * cols + c] = fbm(c * STEP * SCALE + OX, r * STEP * SCALE + OY);
-
-    var light = document.documentElement.getAttribute('data-theme') === 'light' ||
-      (!document.documentElement.getAttribute('data-theme') &&
-       window.matchMedia('(prefers-color-scheme:light)').matches);
-    ctx.strokeStyle = light ? 'rgba(98,114,164,0.32)' : 'rgba(189,147,249,0.12)';
-    ctx.lineWidth = 1;
-    ctx.clearRect(0, 0, TW, TH_px);
-    ctx.beginPath();
-
+  function drawContours(targetCtx, color, TW, TH_px, rows, cols, field) {
+    targetCtx.strokeStyle = color;
+    targetCtx.lineWidth = 1;
+    targetCtx.clearRect(0, 0, TW, TH_px);
+    targetCtx.beginPath();
     for (var ti = 0; ti < TH.length; ti++) {
       var th = TH[ti];
       for (var r = 0; r < rows - 1; r++) {
@@ -84,15 +79,43 @@
           for (var si = 0; si < segs.length; si++) {
             var p1=ep(segs[si][0],x,y,v0,v1,v2,v3,th,STEP);
             var p2=ep(segs[si][1],x,y,v0,v1,v2,v3,th,STEP);
-            ctx.moveTo(p1[0],p1[1]); ctx.lineTo(p2[0],p2[1]);
+            targetCtx.moveTo(p1[0],p1[1]); targetCtx.lineTo(p2[0],p2[1]);
           }
         }
       }
     }
-    ctx.stroke();
+    targetCtx.stroke();
   }
 
-  /* Draw after DOM is ready so document.body.scrollHeight is accurate */
+  function draw() {
+    var W = window.innerWidth, H = window.innerHeight;
+    var pageH = Math.max(document.body.scrollHeight, H);
+    var extraH = Math.ceil((pageH - H) * PARALLAX) + STEP * 4;
+    var TW = W + PAD * 2, TH_px = H + PAD * 2 + extraH;
+
+    canvas.width = TW; canvas.height = TH_px;
+    canvas.style.top  = '-' + PAD + 'px';
+    canvas.style.left = '-' + PAD + 'px';
+    shine.width = TW; shine.height = TH_px;
+    shine.style.top  = '-' + PAD + 'px';
+    shine.style.left = '-' + PAD + 'px';
+
+    var cols = Math.ceil(TW / STEP) + 2, rows = Math.ceil(TH_px / STEP) + 2;
+    var field = new Float32Array(cols * rows);
+    for (var r = 0; r < rows; r++)
+      for (var c = 0; c < cols; c++)
+        field[r * cols + c] = fbm(c * STEP * SCALE + OX, r * STEP * SCALE + OY);
+
+    var light = document.documentElement.getAttribute('data-theme') === 'light' ||
+      (!document.documentElement.getAttribute('data-theme') &&
+       window.matchMedia('(prefers-color-scheme:light)').matches);
+
+    drawContours(ctx,   light ? 'rgba(98,114,164,0.32)'  : 'rgba(189,147,249,0.12)',  TW, TH_px, rows, cols, field);
+    drawContours(sCtx,  light ? 'rgba(98,114,164,0.55)'  : 'rgba(189,147,249,0.38)',  TW, TH_px, rows, cols, field);
+
+    updateShinePos();
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', draw);
   } else {
@@ -105,11 +128,33 @@
     if (rafId) return;
     rafId = requestAnimationFrame(function () {
       rafId = null;
-      canvas.style.transform = 'translateY(-' + Math.round(window.scrollY * PARALLAX) + 'px)';
+      var t = 'translateY(-' + Math.round(window.scrollY * PARALLAX) + 'px)';
+      canvas.style.transform = t;
+      shine.style.transform = t;
+      updateShinePos();
     });
   }, { passive: true });
 
   var rT;
   window.addEventListener('resize', function () { clearTimeout(rT); rT = setTimeout(draw, 250); }, { passive: true });
+
+  /* Cursor shine */
+  var shineRaf = null, pendingCX = -9999, pendingCY = -9999;
+  window.addEventListener('mousemove', function (e) {
+    pendingCX = e.clientX; pendingCY = e.clientY;
+    if (shineRaf) return;
+    shineRaf = requestAnimationFrame(function () {
+      shineRaf = null;
+      cursorCX = pendingCX; cursorCY = pendingCY;
+      updateShinePos();
+    });
+  }, { passive: true });
+
+  var mo = new MutationObserver(function (mutations) {
+    for (var i = 0; i < mutations.length; i++) {
+      if (mutations[i].attributeName === 'data-theme') { draw(); break; }
+    }
+  });
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 </script>

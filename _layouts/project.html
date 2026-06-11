@@ -163,16 +163,41 @@
       /* ── Lightbox (images + videos) ── */
       var overlay = document.createElement('div');
       overlay.className = 'lightbox-overlay';
-      overlay.innerHTML = '<button class="lightbox-close" aria-label="Close">✕</button>';
+      overlay.innerHTML =
+        '<button class="lightbox-nav lightbox-prev" aria-label="Previous">&#8249;</button>' +
+        '<button class="lightbox-close" aria-label="Close">✕</button>' +
+        '<button class="lightbox-nav lightbox-next" aria-label="Next">&#8250;</button>';
       document.body.appendChild(overlay);
-      var lbMedia = null;
-      var lbWrap = null;
-      var progRaf = null;
+
+      var lbMedia = null, lbWrap = null, progRaf = null, lbIdx = -1;
+      var prevBtn = overlay.querySelector('.lightbox-prev');
+      var nextBtn = overlay.querySelector('.lightbox-next');
+
+      /* Build ordered list of all lightbox-able items */
+      var lbItems = Array.from(document.querySelectorAll(
+        '.markdown-content img, .markdown-content .video-container video'
+      ));
+
+      function updateNav() {
+        prevBtn.hidden = lbIdx <= 0;
+        nextBtn.hidden = lbIdx >= lbItems.length - 1;
+      }
+
+      function getCaption(el) {
+        var fig = el.closest('figure');
+        var fc = fig ? fig.querySelector('figcaption') : null;
+        return fc ? fc.textContent.trim() : '';
+      }
 
       function openLightbox(el) {
+        lbIdx = lbItems.indexOf(el);
+        if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
+        if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
         if (lbWrap) { lbWrap.remove(); lbWrap = null; }
         if (lbMedia) { lbMedia.remove(); lbMedia = null; }
+        var caption = getCaption(el);
         var isVideo = el.tagName === 'VIDEO';
+        lbWrap = document.createElement('div');
         if (isVideo) {
           lbMedia = document.createElement('video');
           lbMedia.src = el.currentSrc || el.src || (el.querySelector('source') ? el.querySelector('source').src : '');
@@ -197,27 +222,40 @@
             var rect = progress.getBoundingClientRect();
             lbMedia.currentTime = ((e.clientX - rect.left) / rect.width) * lbMedia.duration;
           });
-          lbWrap = document.createElement('div');
           lbWrap.className = 'lightbox-video-wrap';
           lbWrap.appendChild(lbMedia);
           lbWrap.appendChild(progress);
-          overlay.appendChild(lbWrap);
         } else {
           lbMedia = document.createElement('img');
           lbMedia.src = el.src;
           lbMedia.alt = el.alt || '';
-          overlay.appendChild(lbMedia);
+          lbWrap.className = 'lightbox-img-wrap';
+          lbWrap.appendChild(lbMedia);
         }
+        if (caption) {
+          var cap = document.createElement('p');
+          cap.className = 'lightbox-caption';
+          cap.textContent = caption;
+          lbWrap.appendChild(cap);
+        }
+        overlay.appendChild(lbWrap);
         overlay.classList.add('open');
         document.body.style.overflow = 'hidden';
+        updateNav();
       }
+
+      function navigate(delta) {
+        var next = lbItems[lbIdx + delta];
+        if (next) openLightbox(next);
+      }
+
       function closeLightbox() {
         overlay.classList.remove('open');
         document.body.style.overflow = '';
         if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
         if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
-        if (lbWrap) { lbWrap.remove(); lbWrap = null; }
-        if (lbMedia) { lbMedia.remove(); lbMedia = null; }
+        if (lbWrap) { lbWrap.remove(); lbWrap = null; lbMedia = null; }
+        lbIdx = -1;
       }
 
       document.querySelectorAll('.markdown-content img').forEach(function (img) {
@@ -231,8 +269,13 @@
       overlay.addEventListener('click', function (e) {
         if (e.target === overlay || e.target.classList.contains('lightbox-close')) closeLightbox();
       });
+      prevBtn.addEventListener('click', function (e) { e.stopPropagation(); navigate(-1); });
+      nextBtn.addEventListener('click', function (e) { e.stopPropagation(); navigate(1); });
       document.addEventListener('keydown', function (e) {
+        if (!overlay.classList.contains('open')) return;
         if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft')  navigate(-1);
+        if (e.key === 'ArrowRight') navigate(1);
       });
 
       /* ── Collapsible week sections ── */
