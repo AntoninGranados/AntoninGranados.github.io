@@ -52,6 +52,7 @@
   </script>
 </head>
 <body>
+  {% include topo-bg.html %}
   <header class="site-header">
     <div class="container header-inner">
       <div class="brand">
@@ -166,6 +167,7 @@
       document.body.appendChild(overlay);
       var lbMedia = null;
       var lbWrap = null;
+      var progRaf = null;
 
       function openLightbox(el) {
         if (lbWrap) { lbWrap.remove(); lbWrap = null; }
@@ -183,9 +185,13 @@
           var fill = document.createElement('div');
           fill.className = 'lightbox-progress-fill';
           progress.appendChild(fill);
-          lbMedia.addEventListener('timeupdate', function () {
-            if (lbMedia.duration) fill.style.width = (lbMedia.currentTime / lbMedia.duration * 100) + '%';
-          });
+          function tickProgress() {
+            if (lbMedia && lbMedia.duration) fill.style.width = (lbMedia.currentTime / lbMedia.duration * 100) + '%';
+            progRaf = requestAnimationFrame(tickProgress);
+          }
+          lbMedia.addEventListener('play',  function () { if (!progRaf) tickProgress(); });
+          lbMedia.addEventListener('pause', function () { cancelAnimationFrame(progRaf); progRaf = null; });
+          lbMedia.addEventListener('ended', function () { cancelAnimationFrame(progRaf); progRaf = null; });
           progress.addEventListener('click', function (e) {
             e.stopPropagation();
             var rect = progress.getBoundingClientRect();
@@ -208,6 +214,7 @@
       function closeLightbox() {
         overlay.classList.remove('open');
         document.body.style.overflow = '';
+        if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
         if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
         if (lbWrap) { lbWrap.remove(); lbWrap = null; }
         if (lbMedia) { lbMedia.remove(); lbMedia = null; }
