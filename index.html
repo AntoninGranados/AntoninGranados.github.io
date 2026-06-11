@@ -96,7 +96,7 @@ layout: null
         <div class="projects-grid">
             <a href="projects/cloth_dl.html" class="project-card" data-repo="AntoninGranados/MeshGraphNets">
                 <div class="project-image in-progress">
-                    <img src="/assets/imgs/projects/cloth_dl_preview.png" alt="Preview of Cloth Simulation with Machine Learning">
+                    <img src="/assets/imgs/projects/cloth_dl_preview.png" alt="Preview of Cloth Simulation with Machine Learning" loading="lazy">
                 </div>
                 <div class="project-content">
                     <h4>Cloth Simulation with DL</h4>
@@ -111,7 +111,7 @@ layout: null
             </a>
             <a href="/projects/vk_ray.html" class="project-card" data-repo="AntoninGranados/VkRay">
                 <div class="project-image in-progress">
-                    <img src="/assets/imgs/projects/vk_ray_preview.png" alt="Preview of VkRay">
+                    <img src="/assets/imgs/projects/vk_ray_preview.png" alt="Preview of VkRay" loading="lazy">
                 </div>
                 <div class="project-content">
                     <h4>VkRay</h4>
@@ -125,7 +125,7 @@ layout: null
             </a>
             <a href="/projects/gpu_smoke.html" class="project-card" data-repo="artishow-smoke/Smoke">
                 <div class="project-image">
-                    <img src="/assets/imgs/projects/gpu_smoke_preview.png" alt="Preview of GPU Smoke simulation">
+                    <img src="/assets/imgs/projects/gpu_smoke_preview.png" alt="Preview of GPU Smoke simulation" loading="lazy">
                 </div>
                 <div class="project-content">
                     <h4>Smoke Simulation on the GPU</h4>
@@ -139,7 +139,7 @@ layout: null
             </a>
             <a href="/projects/tipe.html" class="project-card" data-repo="">
                 <div class="project-image">
-                    <img src="/assets/imgs/projects/tipe_preview.png" alt="Preview of NEAT Neuroevolution">
+                    <img src="/assets/imgs/projects/tipe_preview.png" alt="Preview of NEAT Neuroevolution" loading="lazy">
                 </div>
                 <div class="project-content">
                     <h4>Neuroevolution & NEAT - TIPE Project</h4>
@@ -340,11 +340,11 @@ layout: null
             if (!window.IntersectionObserver) return;
 
             var cards = Array.from(document.querySelectorAll('.project-card'));
-            var trans = 'opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1), box-shadow 0.15s ease-out, border-color 0.15s ease-out';
+            var trans = 'opacity 0.35s cubic-bezier(0.22,1,0.36,1), transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.15s ease-out, border-color 0.15s ease-out';
 
             cards.forEach(function (card) {
                 card.style.opacity   = '0';
-                card.style.transform = 'translateY(20px)';
+                card.style.transform = 'translateY(14px)';
                 card.style.transition = trans;
             });
 
@@ -355,12 +355,62 @@ layout: null
                     setTimeout(function () {
                         entry.target.style.opacity   = '1';
                         entry.target.style.transform = 'translateY(0)';
-                    }, idx * 110);
+                    }, idx * 60);
                     observer.unobserve(entry.target);
                 });
             }, { threshold: 0.08 });
 
             cards.forEach(function (card) { observer.observe(card); });
+        })();
+    </script>
+    <script>
+        /* ── 3D card tilt ── */
+        (function () {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            document.querySelectorAll('.project-card').forEach(function (card) {
+                var shine = document.createElement('div');
+                shine.className = 'card-shine';
+                card.appendChild(shine);
+
+                var rafId = null;
+                var pendingX = 0, pendingY = 0;
+                /* Read rect once on mouseenter, not on every move */
+                var rect = null;
+                card.addEventListener('mouseenter', function () {
+                    rect = card.getBoundingClientRect();
+                }, { passive: true });
+
+                card.addEventListener('mousemove', function (e) {
+                    pendingX = e.clientX;
+                    pendingY = e.clientY;
+                    if (rafId) return;
+                    rafId = requestAnimationFrame(function () {
+                        rafId = null;
+                        if (!rect) rect = card.getBoundingClientRect();
+                        var x = (pendingX - rect.left) / rect.width;
+                        var y = (pendingY - rect.top) / rect.height;
+                        var tiltX = (y - 0.5) * -5;
+                        var tiltY = (x - 0.5) * 5;
+                        card.style.transition = 'box-shadow 0.15s ease-out, border-color 0.15s ease-out';
+                        card.style.transform = 'perspective(900px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale3d(1.02, 1.02, 1.02)';
+                        card.style.boxShadow = 'var(--shadow-md)';
+                        card.style.borderColor = 'rgba(189,147,249,0.35)';
+                        card.style.setProperty('--shine-angle', (Math.atan2(tiltY, -tiltX) * (180 / Math.PI)) + 'deg');
+                        shine.style.opacity = '1';
+                    });
+                }, { passive: true });
+
+                card.addEventListener('mouseleave', function () {
+                    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+                    rect = null;
+                    card.style.transition = 'transform 0.5s cubic-bezier(0.22,1,0.36,1), box-shadow 0.15s ease-out, border-color 0.15s ease-out';
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                    card.style.borderColor = '';
+                    shine.style.opacity = '0';
+                }, { passive: true });
+            });
         })();
     </script>
 </body>

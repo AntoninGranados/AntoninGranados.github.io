@@ -437,43 +437,63 @@
         return { h: h, a: a };
       });
 
-      /* Active section tracking via scroll */
+      /* Pre-compute heading offsets once — no getBoundingClientRect on every scroll */
+      var headingOffsets = [];
+      function computeHeadingOffsets() {
+        headingOffsets = entries.map(function (e) {
+          return e.h.getBoundingClientRect().top + window.scrollY;
+        });
+      }
+      computeHeadingOffsets();
+      window.addEventListener('resize', computeHeadingOffsets, { passive: true });
+
+      /* Active section tracking via scroll — RAF-throttled */
       var lastActive = -1;
+      var activeRaf = null;
       function updateActive() {
-        var scrollMid = window.scrollY + (header ? header.offsetHeight : 0) + 32;
-        var active = 0;
-        for (var i = 0; i < entries.length; i++) {
-          if (entries[i].h.getBoundingClientRect().top + window.scrollY <= scrollMid) active = i;
-        }
-        if (active === lastActive) return;
-        entries.forEach(function (e, i) { e.a.classList.toggle('active', i === active); });
-        var link = entries[active].a;
-        var sbRect = sidebar.getBoundingClientRect();
-        var lkRect = link.getBoundingClientRect();
-        if (lkRect.top < sbRect.top + 4 || lkRect.bottom > sbRect.bottom - 4) {
-          link.scrollIntoView({ block: 'nearest' });
-        }
-        lastActive = active;
+        if (activeRaf) return;
+        activeRaf = requestAnimationFrame(function () {
+          activeRaf = null;
+          var scrollMid = window.scrollY + (header ? header.offsetHeight : 0) + 32;
+          var active = 0;
+          for (var i = 0; i < headingOffsets.length; i++) {
+            if (headingOffsets[i] <= scrollMid) active = i;
+          }
+          if (active === lastActive) return;
+          entries.forEach(function (e, i) { e.a.classList.toggle('active', i === active); });
+          var link = entries[active].a;
+          var sbRect = sidebar.getBoundingClientRect();
+          var lkRect = link.getBoundingClientRect();
+          if (lkRect.top < sbRect.top + 4 || lkRect.bottom > sbRect.bottom - 4) {
+            link.scrollIntoView({ block: 'nearest' });
+          }
+          lastActive = active;
+        });
       }
       window.addEventListener('scroll', updateActive, { passive: true });
       updateActive();
 
-      /* Push TOC below hero banner + parallax */
+      /* Push TOC below hero banner + parallax — RAF-throttled */
       var heroBanner = document.querySelector('.project-hero-banner');
       if (heroBanner) {
         var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var headerH = header ? header.offsetHeight : 0;
+        /* Pre-compute banner bottom in document coordinates — no reflow on scroll */
+        var bannerAbsBottom = heroBanner.getBoundingClientRect().bottom + window.scrollY;
+        var bannerRaf = null;
 
         function updateBanner() {
-          var headerH = header ? header.offsetHeight : 0;
-          var bannerBottom = heroBanner.getBoundingClientRect().bottom;
-          /* TOC top */
-          var newTop = Math.max(headerH + 16, bannerBottom + 16);
-          sidebar.style.top = newTop + 'px';
-          sidebar.style.maxHeight = 'calc(100vh - ' + (newTop + 16) + 'px)';
-          /* Parallax */
-          if (!reducedMotion && bannerBottom > 0) {
-            heroBanner.style.setProperty('--parallax-offset', (window.scrollY * 0.35) + 'px');
-          }
+          if (bannerRaf) return;
+          bannerRaf = requestAnimationFrame(function () {
+            bannerRaf = null;
+            var scrollY = window.scrollY;
+            var newTop = Math.max(headerH + 16, bannerAbsBottom - scrollY + 16);
+            sidebar.style.top = newTop + 'px';
+            sidebar.style.maxHeight = 'calc(100vh - ' + (newTop + 16) + 'px)';
+            if (!reducedMotion && scrollY < bannerAbsBottom) {
+              heroBanner.style.setProperty('--parallax-offset', (scrollY * 0.35) + 'px');
+            }
+          });
         }
         window.addEventListener('scroll', updateBanner, { passive: true });
         updateBanner();
