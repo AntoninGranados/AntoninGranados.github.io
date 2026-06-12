@@ -111,6 +111,17 @@ body{
     position: relative;
     z-index: 1;
 }
+body::after {
+    content: '';
+    position: fixed;
+    top: 100vh;
+    left: 0;
+    right: 0;
+    height: 200vh;
+    background: var(--bg);
+    pointer-events: none;
+    z-index: -1;
+}
 
 #topo-bg,
 #topo-shine {
