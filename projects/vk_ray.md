@@ -112,7 +112,7 @@ VkRay also includes Quadric Error Metrics mesh simplification. The simplifier co
 ## Lucy Interactive Viewer
 
 <div class="lucy-viewer" id="lucy-viewer" markdown="0">
-  <video id="lucy-rot-video" data-lightbox="rotation" src="/assets/videos/vk_ray/lucy.mp4" muted playsinline preload="auto" disablepictureinpicture></video>
+  <video id="lucy-rot-video" data-lightbox="rotation" src="/assets/videos/vk_ray/lucy.mp4" poster="/assets/videos/vk_ray/lucy-poster.jpg" muted playsinline preload="none" disablepictureinpicture></video>
   <div class="lucy-hint" id="lucy-hint" aria-hidden="true">
     <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M4 8H36M4 8L9 3M4 8L9 13M36 8L31 3M36 8L31 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

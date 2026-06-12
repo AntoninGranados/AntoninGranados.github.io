@@ -153,16 +153,20 @@
       var nextBtn = overlay.querySelector('.lightbox-next');
 
       /* Shared drag state — single persistent window listeners, no add/remove */
-      var rotDragging = false, rotLastX = 0;
+      var rotDragging = false, rotLastX = 0, rotMoved = false;
       var pbDragging  = false, pbProgress = null, pbFill = null;
 
       function lbHandleMove(x) {
         if (rotDragging && lbWrap && lbMedia) {
           var dx = x - rotLastX;
           rotLastX = x;
-          var sensitivity = lbMedia.duration / lbWrap.offsetWidth;
-          lbMedia.currentTime = Math.max(0, Math.min(lbMedia.duration,
-            lbMedia.currentTime + dx * sensitivity));
+          if (Math.abs(dx) > 1) rotMoved = true;
+          /* Guard: skip seek if metadata not yet loaded (avoids TypeError from NaN duration) */
+          if (lbMedia.readyState >= 1 && lbMedia.duration > 0) {
+            var sensitivity = lbMedia.duration / Math.max(1, lbWrap.offsetWidth);
+            lbMedia.currentTime = Math.max(0, Math.min(lbMedia.duration,
+              lbMedia.currentTime + dx * sensitivity));
+          }
         }
         if (pbDragging && pbProgress && lbMedia) {
           var rect = pbProgress.getBoundingClientRect();
@@ -176,7 +180,11 @@
           rotDragging = false;
           overlay.classList.remove('rot-dragging');
           if (lbWrap) lbWrap.style.cursor = 'ew-resize';
-          overlay.addEventListener('click', swallowOnce, { capture: true });
+          /* Only swallow the post-drag click if the user actually moved —
+             without this guard, tapping and then clicking the backdrop
+             to close requires two clicks instead of one. */
+          if (rotMoved) overlay.addEventListener('click', swallowOnce, { capture: true });
+          rotMoved = false;
         }
         if (pbDragging) {
           pbDragging = false;
@@ -190,7 +198,8 @@
       window.addEventListener('touchmove', function (e) {
         if (rotDragging || pbDragging) { e.preventDefault(); lbHandleMove(e.touches[0].clientX); }
       }, { passive: false });
-      window.addEventListener('touchend', lbHandleEnd);
+      window.addEventListener('touchend',   lbHandleEnd);
+      window.addEventListener('touchcancel', lbHandleEnd);
 
       function swallowOnce(e) {
         e.stopImmediatePropagation();
@@ -240,6 +249,7 @@
             function rotStart(x) {
               rotDragging = true;
               rotLastX = x;
+              rotMoved = false;
               overlay.classList.add('rot-dragging');
               hint.style.opacity = '0';
             }

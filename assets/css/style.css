@@ -987,7 +987,9 @@ main{padding:1rem 0 2rem}
     -webkit-user-select: none;
     touch-action: none;
     max-width: min(420px, 100%);
-    margin: 0 auto;
+    margin: 1.75rem auto;
+    border: var(--border);
+    box-shadow: var(--shadow-md);
 }
 .lucy-viewer video {
     width: 100%;
