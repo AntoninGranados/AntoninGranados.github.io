@@ -173,10 +173,45 @@
       var prevBtn = overlay.querySelector('.lightbox-prev');
       var nextBtn = overlay.querySelector('.lightbox-next');
 
-      /* Build ordered list of all lightbox-able items */
-      var lbItems = Array.from(document.querySelectorAll(
-        '.markdown-content img, .markdown-content .video-container video'
-      ));
+      /* Shared drag state — single persistent window listeners, no add/remove */
+      var rotDragging = false, rotLastX = 0;
+      var pbDragging  = false, pbProgress = null, pbFill = null;
+
+      window.addEventListener('mousemove', function (e) {
+        if (rotDragging && lbWrap && lbMedia) {
+          var dx = e.clientX - rotLastX;
+          rotLastX = e.clientX;
+          var sensitivity = lbMedia.duration / lbWrap.offsetWidth;
+          lbMedia.currentTime = Math.max(0, Math.min(lbMedia.duration,
+            lbMedia.currentTime + dx * sensitivity));
+        }
+        if (pbDragging && pbProgress && lbMedia) {
+          var rect = pbProgress.getBoundingClientRect();
+          var pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+          lbMedia.currentTime = pct * lbMedia.duration;
+          if (pbFill) pbFill.style.width = (pct * 100) + '%';
+        }
+      });
+
+      window.addEventListener('mouseup', function () {
+        if (rotDragging) {
+          rotDragging = false;
+          overlay.classList.remove('rot-dragging');
+          if (lbWrap) lbWrap.style.cursor = 'ew-resize';
+          /* swallow the next overlay click so releasing outside doesn't close */
+          overlay.addEventListener('click', swallowOnce, { capture: true });
+        }
+        if (pbDragging) {
+          pbDragging = false;
+          if (pbProgress) pbProgress.classList.remove('dragging');
+          if (lbMedia) lbMedia.play();
+        }
+      });
+
+      function swallowOnce(e) {
+        e.stopImmediatePropagation();
+        overlay.removeEventListener('click', swallowOnce, { capture: true });
+      }
 
       function updateNav() {
         prevBtn.hidden = lbIdx <= 0;
@@ -189,42 +224,80 @@
         return fc ? fc.textContent.trim() : '';
       }
 
+      /* Build ordered list of all lightbox-able items */
+      var lbItems = Array.from(document.querySelectorAll(
+        '.markdown-content img, .markdown-content .video-container video, .markdown-content [data-lightbox]'
+      ));
+
       function openLightbox(el) {
         lbIdx = lbItems.indexOf(el);
+        rotDragging = false; pbDragging = false; pbProgress = null; pbFill = null;
         if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
         if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
         if (lbWrap) { lbWrap.remove(); lbWrap = null; }
-        if (lbMedia) { lbMedia.remove(); lbMedia = null; }
+        lbMedia = null;
         var caption = getCaption(el);
         var isVideo = el.tagName === 'VIDEO';
         lbWrap = document.createElement('div');
+
         if (isVideo) {
+          var isRotation = el.dataset.lightbox === 'rotation';
           lbMedia = document.createElement('video');
           lbMedia.src = el.currentSrc || el.src || (el.querySelector('source') ? el.querySelector('source').src : '');
-          lbMedia.autoplay = true;
-          lbMedia.loop = true;
           lbMedia.muted = true;
           lbMedia.playsInline = true;
-          var progress = document.createElement('div');
-          progress.className = 'lightbox-progress';
-          var fill = document.createElement('div');
-          fill.className = 'lightbox-progress-fill';
-          progress.appendChild(fill);
-          function tickProgress() {
-            if (lbMedia && lbMedia.duration) fill.style.width = (lbMedia.currentTime / lbMedia.duration * 100) + '%';
-            progRaf = requestAnimationFrame(tickProgress);
-          }
-          lbMedia.addEventListener('play',  function () { if (!progRaf) tickProgress(); });
-          lbMedia.addEventListener('pause', function () { cancelAnimationFrame(progRaf); progRaf = null; });
-          lbMedia.addEventListener('ended', function () { cancelAnimationFrame(progRaf); progRaf = null; });
-          progress.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var rect = progress.getBoundingClientRect();
-            lbMedia.currentTime = ((e.clientX - rect.left) / rect.width) * lbMedia.duration;
-          });
           lbWrap.className = 'lightbox-video-wrap';
-          lbWrap.appendChild(lbMedia);
-          lbWrap.appendChild(progress);
+
+          if (isRotation) {
+            lbMedia.addEventListener('loadedmetadata', function () {
+              lbMedia.currentTime = lbMedia.duration / 2;
+            });
+            lbWrap.style.cursor = 'ew-resize';
+            lbWrap.addEventListener('mousedown', function (e) {
+              e.stopPropagation();
+              rotDragging = true;
+              rotLastX = e.clientX;
+              overlay.classList.add('rot-dragging');
+            });
+            /* Hint overlay */
+            var hint = document.createElement('div');
+            hint.className = 'lucy-hint lb-rot-hint';
+            hint.innerHTML = '<svg width="40" height="16" viewBox="0 0 40 16" fill="none"><path d="M4 8H36M4 8L9 3M4 8L9 13M36 8L31 3M36 8L31 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Drag to rotate</span>';
+            lbWrap.appendChild(lbMedia);
+            lbWrap.appendChild(hint);
+            lbWrap.addEventListener('mousedown', function () {
+              hint.style.opacity = '0';
+            }, { once: true });
+          } else {
+            lbMedia.autoplay = true;
+            lbMedia.loop = true;
+            var progress = document.createElement('div');
+            progress.className = 'lightbox-progress';
+            var fill = document.createElement('div');
+            fill.className = 'lightbox-progress-fill';
+            progress.appendChild(fill);
+            pbProgress = progress; pbFill = fill;
+            function tickProgress() {
+              if (lbMedia && lbMedia.duration) fill.style.width = (lbMedia.currentTime / lbMedia.duration * 100) + '%';
+              progRaf = requestAnimationFrame(tickProgress);
+            }
+            lbMedia.addEventListener('play',  function () { if (!progRaf) tickProgress(); });
+            lbMedia.addEventListener('pause', function () { cancelAnimationFrame(progRaf); progRaf = null; });
+            lbMedia.addEventListener('ended', function () { cancelAnimationFrame(progRaf); progRaf = null; });
+            progress.addEventListener('mousedown', function (e) {
+              e.stopPropagation();
+              pbDragging = true;
+              progress.classList.add('dragging');
+              lbMedia.pause();
+              var rect = progress.getBoundingClientRect();
+              var pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+              lbMedia.currentTime = pct * lbMedia.duration;
+              fill.style.width = (pct * 100) + '%';
+            });
+            progress.addEventListener('click', function (e) { e.stopPropagation(); });
+            lbWrap.appendChild(lbMedia);
+            lbWrap.appendChild(progress);
+          }
         } else {
           lbMedia = document.createElement('img');
           lbMedia.src = el.src;
@@ -252,6 +325,7 @@
       function closeLightbox() {
         overlay.classList.remove('open');
         document.body.style.overflow = '';
+        rotDragging = false; pbDragging = false; pbProgress = null; pbFill = null;
         if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
         if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
         if (lbWrap) { lbWrap.remove(); lbWrap = null; lbMedia = null; }
@@ -265,6 +339,9 @@
         var vid = container.querySelector('video');
         if (!vid) return;
         vid.addEventListener('click', function (e) { e.stopPropagation(); openLightbox(vid); });
+      });
+      document.querySelectorAll('.markdown-content [data-lightbox]').forEach(function (el) {
+        el.addEventListener('click', function (e) { e.stopPropagation(); openLightbox(el); });
       });
       overlay.addEventListener('click', function (e) {
         if (e.target === overlay || e.target.classList.contains('lightbox-close')) closeLightbox();

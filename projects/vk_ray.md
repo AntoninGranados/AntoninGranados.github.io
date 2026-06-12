@@ -109,6 +109,115 @@ VkRay also includes Quadric Error Metrics mesh simplification. The simplifier co
   </figure>
 </div>
 
+## Lucy Interactive Viewer
+
+<div class="lucy-viewer" id="lucy-viewer" markdown="0">
+  <video id="lucy-rot-video" data-lightbox="rotation" src="/assets/videos/vk_ray/lucy.mp4" muted playsinline preload="auto" disablepictureinpicture></video>
+  <div class="lucy-hint" id="lucy-hint" aria-hidden="true">
+    <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 8H36M4 8L9 3M4 8L9 13M36 8L31 3M36 8L31 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Drag to rotate</span>
+  </div>
+</div>
+
+<style>
+.lucy-viewer {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  max-width: min(420px, 100%);
+  margin: 0 auto;
+}
+.lucy-viewer video {
+  width: 100%;
+  display: block;
+  pointer-events: none;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.lucy-hint {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.4s ease;
+}
+.lucy-viewer.interacted .lucy-hint {
+  opacity: 0;
+}
+</style>
+
+<script>
+(function () {
+  var viewer = document.getElementById('lucy-viewer');
+  var video  = document.getElementById('lucy-rot-video');
+  if (!viewer || !video) return;
+
+  var dragging = false;
+  var lastX    = 0;
+  var startX   = 0;
+  var moved    = false;
+
+  video.addEventListener('loadedmetadata', function () {
+    video.currentTime = video.duration / 2;
+  });
+
+  function seekByDelta(dx) {
+    var sensitivity = video.duration / viewer.offsetWidth;
+    video.currentTime = Math.max(0, Math.min(video.duration,
+      video.currentTime + dx * sensitivity));
+  }
+
+  function onStart(x) {
+    dragging = true;
+    moved = false;
+    startX = lastX = x;
+    document.body.classList.add('rot-dragging');
+  }
+  function onMove(x) {
+    if (!dragging) return;
+    if (Math.abs(x - startX) > 4) moved = true;
+    seekByDelta(x - lastX);
+    lastX = x;
+  }
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    document.body.classList.remove('rot-dragging');
+    if (!moved) {
+      video.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    } else {
+      viewer.classList.add('interacted');
+    }
+  }
+
+  viewer.addEventListener('mousedown', function (e) { e.preventDefault(); onStart(e.clientX); });
+  window.addEventListener('mousemove', function (e) { onMove(e.clientX); });
+  window.addEventListener('mouseup', onEnd);
+
+  viewer.addEventListener('touchstart', function (e) { e.preventDefault(); onStart(e.touches[0].clientX); }, { passive: false });
+  window.addEventListener('touchmove',  function (e) { if (dragging) { e.preventDefault(); onMove(e.touches[0].clientX); } }, { passive: false });
+  window.addEventListener('touchend', onEnd);
+})();
+</script>
+
 ## Editor
 
 The application is an editor, not just an offline renderer. Objects can be selected with CPU raycasts against scene geometry, then transformed with gizmos. The side panels expose entities, materials, mesh assets, path tracer settings, lighting modes, and physics baking controls. A command panel handles shader hot reloads, single frame rendering, animation rendering, and debugging commands.
