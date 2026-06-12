@@ -16,6 +16,19 @@ VkRay is a physically based rendering application written in C++ with Vulkan. It
 
 The project combines a renderer, a small rigid body simulation system, mesh processing tools, and an interactive editor. The common data model is a custom Entity Component System (ECS), which keeps transforms, materials, geometry, animation, physics, and GPU packing connected without coupling every subsystem directly.
 
+<div class="rotation-viewer-row" markdown="0">
+  <div class="rotation-viewer"
+       data-axis="x"
+       data-src="/assets/videos/vk_ray/lucy.mp4"
+       data-poster="/assets/videos/vk_ray/lucy-poster.webp"></div>
+  <div class="rotation-viewer"
+       data-axis="xy"
+       data-frame-stride="15"
+       data-invert="x"
+       data-src="/assets/videos/vk_ray/test.mp4"
+       data-poster="/assets/videos/vk_ray/test-poster.webp"></div>
+</div>
+
 <div class="project-link-row" markdown="0">
   <a href="https://github.com/AntoninGranados/VkRay/" target="_blank" rel="noopener">Source code</a>
   <a href="/assets/docs/projects/vk_ray_report.pdf" target="_blank" rel="noopener">Technical report</a>
@@ -107,18 +120,6 @@ VkRay also includes Quadric Error Metrics mesh simplification. The simplifier co
     <img src="/assets/imgs/projects/vk_ray/sponza.webp" alt="Sponza scene rendered in VkRay">
     <figcaption>Sponza stress test for mesh traversal.</figcaption>
   </figure>
-</div>
-
-## Lucy Interactive Viewer
-
-<div class="lucy-viewer" id="lucy-viewer" markdown="0">
-  <video id="lucy-rot-video" data-lightbox="rotation" src="/assets/videos/vk_ray/lucy.mp4" poster="/assets/videos/vk_ray/lucy-poster.jpg" muted playsinline preload="none" disablepictureinpicture></video>
-  <div class="lucy-hint" id="lucy-hint" aria-hidden="true">
-    <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M4 8H36M4 8L9 3M4 8L9 13M36 8L31 3M36 8L31 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span>Drag to rotate</span>
-  </div>
 </div>
 
 ## Editor

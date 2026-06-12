@@ -137,6 +137,7 @@
       });
     });
   </script>
+  <script src="/assets/js/rotation-viewer.js"></script>
   <script>
     (function () {
       /* ── Lightbox (images + videos) ── */
@@ -153,19 +154,39 @@
       var nextBtn = overlay.querySelector('.lightbox-next');
 
       /* Shared drag state — single persistent window listeners, no add/remove */
-      var rotDragging = false, rotLastX = 0, rotMoved = false;
+      var rotDragging = false, rotLastX = 0, rotLastY = 0, rotMoved = false, rotInvX = 1;
+      var lbAxis = 'x', lbStride = 0, lbFps = 24, lbPosX = 0.5, lbPosY = 0.5, lbInvY = 1;
+      var lbSensX = 1/300, lbSensY = 1/300;
       var pbDragging  = false, pbProgress = null, pbFill = null;
 
-      function lbHandleMove(x) {
+      function lbSeek() {
+        if (!lbMedia || lbMedia.readyState < 1 || !lbMedia.duration) return;
+        var d = lbMedia.duration;
+        if (lbAxis === 'xy' && lbStride > 0) {
+          var cols   = lbStride;
+          var frames = Math.round(d * lbFps);
+          var rows   = Math.ceil(frames / cols);
+          var col    = Math.round(lbPosX * (cols - 1));
+          var row    = Math.round(lbPosY * (rows - 1));
+          lbMedia.currentTime = Math.max(0, Math.min(d,
+            (row * cols + col + 0.5) * d / frames));
+        } else if (lbAxis === 'y') {
+          lbMedia.currentTime = Math.max(0, Math.min(d, lbPosY * d));
+        } else {
+          lbMedia.currentTime = Math.max(0, Math.min(d, lbPosX * d));
+        }
+      }
+
+      function lbHandleMove(x, y) {
         if (rotDragging && lbWrap && lbMedia) {
-          var dx = x - rotLastX;
-          rotLastX = x;
-          if (Math.abs(dx) > 1) rotMoved = true;
-          /* Guard: skip seek if metadata not yet loaded (avoids TypeError from NaN duration) */
+          var dx = (x - rotLastX) * rotInvX;
+          var dy = (y - rotLastY) * lbInvY;
+          rotLastX = x; rotLastY = y;
+          if (Math.abs(dx) > 1 || Math.abs(dy) > 1) rotMoved = true;
           if (lbMedia.readyState >= 1 && lbMedia.duration > 0) {
-            var sensitivity = lbMedia.duration / Math.max(1, lbWrap.offsetWidth);
-            lbMedia.currentTime = Math.max(0, Math.min(lbMedia.duration,
-              lbMedia.currentTime + dx * sensitivity));
+            if (lbAxis !== 'y') lbPosX = Math.max(0, Math.min(1, lbPosX + dx * lbSensX));
+            if (lbAxis !== 'x') lbPosY = Math.max(0, Math.min(1, lbPosY + dy * lbSensY));
+            lbSeek();
           }
         }
         if (pbDragging && pbProgress && lbMedia) {
@@ -179,7 +200,7 @@
         if (rotDragging) {
           rotDragging = false;
           overlay.classList.remove('rot-dragging');
-          if (lbWrap) lbWrap.style.cursor = 'ew-resize';
+          if (lbWrap) lbWrap.style.cursor = lbAxis === 'y' ? 'ns-resize' : lbAxis === 'xy' ? 'move' : 'ew-resize';
           /* Only swallow the post-drag click if the user actually moved —
              without this guard, tapping and then clicking the backdrop
              to close requires two clicks instead of one. */
@@ -193,10 +214,14 @@
         }
       }
 
-      window.addEventListener('mousemove', function (e) { lbHandleMove(e.clientX); });
+      window.addEventListener('mousemove', function (e) {
+        /* Safety valve: mouse released while browser was unfocused */
+        if (rotDragging && !e.buttons) { lbHandleEnd(); return; }
+        lbHandleMove(e.clientX, e.clientY);
+      });
       window.addEventListener('mouseup', lbHandleEnd);
       window.addEventListener('touchmove', function (e) {
-        if (rotDragging || pbDragging) { e.preventDefault(); lbHandleMove(e.touches[0].clientX); }
+        if (rotDragging || pbDragging) { e.preventDefault(); lbHandleMove(e.touches[0].clientX, e.touches[0].clientY); }
       }, { passive: false });
       window.addEventListener('touchend',   lbHandleEnd);
       window.addEventListener('touchcancel', lbHandleEnd);
@@ -242,23 +267,45 @@
           lbWrap.className = 'lightbox-video-wrap';
 
           if (isRotation) {
+            var rv       = el.closest('.rotation-viewer');
+            var rvInvert = rv ? (rv.dataset.invert || '') : '';
+            lbAxis   = rv ? (rv.dataset.axis || 'x').toLowerCase() : 'x';
+            lbStride = rv ? (parseInt(rv.dataset.frameStride, 10) || 0) : 0;
+            lbFps    = rv ? (parseInt(rv.dataset.fps,         10) || 24) : 24;
+            lbPosX = 0.5; lbPosY = 0.5;
+            rotInvX = rvInvert.indexOf('x') !== -1 ? -1 : 1;
+            lbInvY  = rvInvert.indexOf('y') !== -1 ? -1 : 1;
+            lbSensX = (lbAxis === 'xy' && lbStride > 1) ? 1 / ((lbStride - 1) * 30) : 1/300;
+            lbSensY = 1/300; /* updated in loadedmetadata once duration is known */
             lbMedia.addEventListener('loadedmetadata', function () {
-              lbMedia.currentTime = lbMedia.duration / 2;
+              if (lbAxis === 'xy' && lbStride > 0) {
+                var rows = Math.ceil(Math.round(lbMedia.duration * lbFps) / lbStride);
+                lbSensY = rows > 1 ? 1 / ((rows - 1) * 30) : 1/300;
+              }
+              lbSeek();
             });
-            lbWrap.style.cursor = 'ew-resize';
-            function rotStart(x) {
+            var lbCursor = lbAxis === 'y' ? 'ns-resize' : lbAxis === 'xy' ? 'move' : 'ew-resize';
+            lbWrap.style.cursor = lbCursor;
+            /* Hint overlay — created before rotStart so the closure captures it */
+            var lbHintIcons = {
+              x:  '<svg width="40" height="16" viewBox="0 0 40 16" fill="none"><path d="M4 8H36M4 8L9 3M4 8L9 13M36 8L31 3M36 8L31 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+              y:  '<svg width="16" height="40" viewBox="0 0 16 40" fill="none"><path d="M8 4V36M8 4L3 9M8 4L13 9M8 36L3 31M8 36L13 31" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+              xy: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 7l3-4 3 4M9 17l3 4 3-4M7 9l-4 3 4 3M17 9l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+            };
+            var lbHintLabels = { x: 'Drag to rotate', y: 'Drag to rotate', xy: 'Drag to explore' };
+            var hint = document.createElement('div');
+            hint.className = 'rot-hint lb-rot-hint';
+            hint.innerHTML = (lbHintIcons[lbAxis] || lbHintIcons.x) +
+                             '<span>' + (lbHintLabels[lbAxis] || 'Drag to rotate') + '</span>';
+            function rotStart(x, y) {
               rotDragging = true;
-              rotLastX = x;
+              rotLastX = x; rotLastY = y;
               rotMoved = false;
               overlay.classList.add('rot-dragging');
               hint.style.opacity = '0';
             }
-            lbWrap.addEventListener('mousedown', function (e) { e.stopPropagation(); rotStart(e.clientX); });
-            lbWrap.addEventListener('touchstart', function (e) { e.stopPropagation(); rotStart(e.touches[0].clientX); }, { passive: true });
-            /* Hint overlay */
-            var hint = document.createElement('div');
-            hint.className = 'lucy-hint lb-rot-hint';
-            hint.innerHTML = '<svg width="40" height="16" viewBox="0 0 40 16" fill="none"><path d="M4 8H36M4 8L9 3M4 8L9 13M36 8L31 3M36 8L31 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Drag to rotate</span>';
+            lbWrap.addEventListener('mousedown', function (e) { e.stopPropagation(); rotStart(e.clientX, e.clientY); });
+            lbWrap.addEventListener('touchstart', function (e) { e.stopPropagation(); rotStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
             lbWrap.appendChild(lbMedia);
             lbWrap.appendChild(hint);
           } else {
@@ -319,7 +366,10 @@
       function closeLightbox() {
         overlay.classList.remove('open');
         document.body.style.overflow = '';
-        rotDragging = false; pbDragging = false; pbProgress = null; pbFill = null;
+        rotDragging = false; rotInvX = 1; rotMoved = false;
+        lbAxis = 'x'; lbStride = 0; lbFps = 24; lbPosX = 0.5; lbPosY = 0.5; lbInvY = 1;
+        lbSensX = 1/300; lbSensY = 1/300;
+        pbDragging = false; pbProgress = null; pbFill = null;
         if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
         if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
         if (lbWrap) { lbWrap.remove(); lbWrap = null; lbMedia = null; }
@@ -622,6 +672,5 @@
     })();
   </script>
   <script src="/assets/js/theme-toggle.js"></script>
-  <script src="/assets/js/rotation-viewer.js"></script>
 </body>
 </html>
