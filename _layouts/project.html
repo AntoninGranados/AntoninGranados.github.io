@@ -53,24 +53,7 @@
 </head>
 <body>
   {% include topo-bg.html %}
-  <header class="site-header">
-    <div class="container header-inner">
-      <div class="brand">
-        <div class="brand-content">
-          <div class="brand-text">
-            <h1><a href="/" class="brand-name-link">Antonin Granados</a></h1>
-            <p class="muted">Engineering student at Telecom Paris</p>
-          </div>
-        </div>
-      </div>
-      <nav class="site-nav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/#contact">Contact</a>
-        <a href="/#projects">Projects</a>
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
-      </nav>
-    </div>
-  </header>
+  {% include header.html %}
 
   <main{% if page.image %} class="has-hero"{% endif %}>
     {% if page.image %}
@@ -177,28 +160,26 @@
       var rotDragging = false, rotLastX = 0;
       var pbDragging  = false, pbProgress = null, pbFill = null;
 
-      window.addEventListener('mousemove', function (e) {
+      function lbHandleMove(x) {
         if (rotDragging && lbWrap && lbMedia) {
-          var dx = e.clientX - rotLastX;
-          rotLastX = e.clientX;
+          var dx = x - rotLastX;
+          rotLastX = x;
           var sensitivity = lbMedia.duration / lbWrap.offsetWidth;
           lbMedia.currentTime = Math.max(0, Math.min(lbMedia.duration,
             lbMedia.currentTime + dx * sensitivity));
         }
         if (pbDragging && pbProgress && lbMedia) {
           var rect = pbProgress.getBoundingClientRect();
-          var pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+          var pct  = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
           lbMedia.currentTime = pct * lbMedia.duration;
           if (pbFill) pbFill.style.width = (pct * 100) + '%';
         }
-      });
-
-      window.addEventListener('mouseup', function () {
+      }
+      function lbHandleEnd() {
         if (rotDragging) {
           rotDragging = false;
           overlay.classList.remove('rot-dragging');
           if (lbWrap) lbWrap.style.cursor = 'ew-resize';
-          /* swallow the next overlay click so releasing outside doesn't close */
           overlay.addEventListener('click', swallowOnce, { capture: true });
         }
         if (pbDragging) {
@@ -206,7 +187,14 @@
           if (pbProgress) pbProgress.classList.remove('dragging');
           if (lbMedia) lbMedia.play();
         }
-      });
+      }
+
+      window.addEventListener('mousemove', function (e) { lbHandleMove(e.clientX); });
+      window.addEventListener('mouseup', lbHandleEnd);
+      window.addEventListener('touchmove', function (e) {
+        if (rotDragging || pbDragging) { e.preventDefault(); lbHandleMove(e.touches[0].clientX); }
+      }, { passive: false });
+      window.addEventListener('touchend', lbHandleEnd);
 
       function swallowOnce(e) {
         e.stopImmediatePropagation();
@@ -253,21 +241,20 @@
               lbMedia.currentTime = lbMedia.duration / 2;
             });
             lbWrap.style.cursor = 'ew-resize';
-            lbWrap.addEventListener('mousedown', function (e) {
-              e.stopPropagation();
+            function rotStart(x) {
               rotDragging = true;
-              rotLastX = e.clientX;
+              rotLastX = x;
               overlay.classList.add('rot-dragging');
-            });
+              hint.style.opacity = '0';
+            }
+            lbWrap.addEventListener('mousedown', function (e) { e.stopPropagation(); rotStart(e.clientX); });
+            lbWrap.addEventListener('touchstart', function (e) { e.stopPropagation(); rotStart(e.touches[0].clientX); }, { passive: true });
             /* Hint overlay */
             var hint = document.createElement('div');
             hint.className = 'lucy-hint lb-rot-hint';
             hint.innerHTML = '<svg width="40" height="16" viewBox="0 0 40 16" fill="none"><path d="M4 8H36M4 8L9 3M4 8L9 13M36 8L31 3M36 8L31 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Drag to rotate</span>';
             lbWrap.appendChild(lbMedia);
             lbWrap.appendChild(hint);
-            lbWrap.addEventListener('mousedown', function () {
-              hint.style.opacity = '0';
-            }, { once: true });
           } else {
             lbMedia.autoplay = true;
             lbMedia.loop = true;
@@ -284,16 +271,17 @@
             lbMedia.addEventListener('play',  function () { if (!progRaf) tickProgress(); });
             lbMedia.addEventListener('pause', function () { cancelAnimationFrame(progRaf); progRaf = null; });
             lbMedia.addEventListener('ended', function () { cancelAnimationFrame(progRaf); progRaf = null; });
-            progress.addEventListener('mousedown', function (e) {
-              e.stopPropagation();
+            function pbStart(x) {
               pbDragging = true;
               progress.classList.add('dragging');
               lbMedia.pause();
               var rect = progress.getBoundingClientRect();
-              var pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+              var pct  = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
               lbMedia.currentTime = pct * lbMedia.duration;
               fill.style.width = (pct * 100) + '%';
-            });
+            }
+            progress.addEventListener('mousedown', function (e) { e.stopPropagation(); pbStart(e.clientX); });
+            progress.addEventListener('touchstart', function (e) { e.stopPropagation(); pbStart(e.touches[0].clientX); }, { passive: false });
             progress.addEventListener('click', function (e) { e.stopPropagation(); });
             lbWrap.appendChild(lbMedia);
             lbWrap.appendChild(progress);
@@ -627,36 +615,7 @@
       }
     })();
   </script>
-  <script>
-    (function() {
-      var SUN = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
-      var MOON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-
-      var btn = document.getElementById('theme-toggle');
-      var html = document.documentElement;
-
-      function updateBtn(theme) {
-        btn.innerHTML = theme === 'dark' ? SUN : MOON;
-        btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-      }
-
-      updateBtn(html.getAttribute('data-theme') || 'dark');
-
-      btn.addEventListener('click', function() {
-        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-        updateBtn(next);
-      });
-
-      window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
-        if (!localStorage.getItem('theme')) {
-          var t = e.matches ? 'light' : 'dark';
-          html.setAttribute('data-theme', t);
-          updateBtn(t);
-        }
-      });
-    })();
-  </script>
+  <script src="/assets/js/theme-toggle.js"></script>
+  <script src="/assets/js/rotation-viewer.js"></script>
 </body>
 </html>
