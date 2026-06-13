@@ -13,10 +13,7 @@
 
   /* ── Shared drag + seek logic ────────────────────────────────────────────
      Used by both inline viewers (initViewer) and the lightbox.
-     opts: { axis, stride, fps, invX, invY, hint, onStart, onEnd }
-       hint    — DOM element hidden when dragging begins
-       onStart — called on pointerdown
-       onEnd   — called on lostpointercapture with (moved: bool) */
+     opts: { axis, stride, fps, invX, invY, sensitivity, hint, onStart, onEnd } */
   function initDrag(wrap, video, opts) {
     var axis        = (opts.axis || 'x').toLowerCase();
     var stride      = opts.stride      || 0;
@@ -32,25 +29,66 @@
     var posX = 0.5, posY = 0.5;
     var sensX = (axis === 'xy' && stride > 1) ? 1 / ((stride - 1) * pxPerStep) : 1 / DEFAULT_FULL;
     var sensY = 1 / DEFAULT_FULL;
-    var capturedId = -1, lastX = 0, lastY = 0, startX = 0, startY = 0, moved = false;
-    var rafId = null;
 
-    wrap.style.touchAction = 'none';
+    /* ── Seek engine ─────────────────────────────────────────────────────
+       One seek in-flight at a time. If seeked fires late (> 800 ms), the
+       video element is reloaded and the last position is re-applied.       */
+    var rafId       = null;
+    var seekPending = false;
+    var watchdog    = null;
 
-    function seek() {
+    function computeTime() {
       var d = video.duration;
-      if (!d || isNaN(d)) return;
+      if (!d || isNaN(d)) return -1;
       if (axis === 'y') {
-        video.currentTime = Math.max(0, Math.min(d, posY * d));
+        return Math.max(0, Math.min(d, posY * d));
       } else if (axis === 'xy' && stride > 0) {
         var frames = Math.round(d * fps);
         var rows   = Math.ceil(frames / stride);
         var col    = Math.round(posX * (stride - 1));
         var row    = Math.round(posY * (rows   - 1));
-        video.currentTime = Math.max(0, Math.min(d, (row * stride + col + 0.5) * d / frames));
+        return Math.max(0, Math.min(d, (row * stride + col + 0.5) * d / frames));
       } else {
-        video.currentTime = Math.max(0, Math.min(d, posX * d));
+        return Math.max(0, Math.min(d, posX * d));
       }
+    }
+
+    function dispatch(t) {
+      seekPending = false;
+      clearTimeout(watchdog);
+      video.currentTime = t;
+      /* Watchdog: if seeked hasn't fired after 800 ms the video element is
+         stuck. Reload it and re-seek to the current computed position.    */
+      watchdog = setTimeout(function () {
+        if (!video.seeking) return;
+        seekPending = false;
+        var target = computeTime();
+        function onReload() {
+          video.removeEventListener('loadedmetadata', onReload);
+          if (target >= 0) video.currentTime = target;
+        }
+        video.addEventListener('loadedmetadata', onReload);
+        video.load();
+      }, 800);
+    }
+
+    function seekNow() {
+      var t = computeTime();
+      if (t < 0) return;
+      if (video.seeking) { seekPending = true; return; }
+      dispatch(t);
+    }
+
+    video.addEventListener('seeked', function () {
+      clearTimeout(watchdog);
+      if (!seekPending) return;
+      var t = computeTime();
+      if (t >= 0) dispatch(t);
+      else seekPending = false;
+    });
+
+    function schedSeek() {
+      if (!rafId) rafId = requestAnimationFrame(function () { rafId = null; seekNow(); });
     }
 
     video.addEventListener('loadedmetadata', function () {
@@ -58,10 +96,38 @@
         var rows = Math.ceil(Math.round(video.duration * fps) / stride);
         sensY = rows > 1 ? 1 / ((rows - 1) * pxPerStep) : 1 / DEFAULT_FULL;
       }
-      seek();
+      seekNow();
     });
 
+    /* ── Drag state ──────────────────────────────────────────────────── */
+    var capturedId = -1;
+    var startX = 0, startY = 0, lastX = 0, lastY = 0;
+    var moved  = false;
+
+    wrap.style.touchAction = 'none';
+
+    function checkMoved(cx, cy) {
+      if (moved) return;
+      if (Math.abs(cx - startX) > 4 || Math.abs(cy - startY) > 4) {
+        moved = true;
+        wrap.classList.add('interacted');
+        if (hint) hint.style.opacity = '0';
+      }
+    }
+
+    function applyDelta(dx, dy) {
+      if (axis !== 'y') posX = Math.max(0, Math.min(1, posX + dx * sensX));
+      if (axis !== 'x') posY = Math.max(0, Math.min(1, posY + dy * sensY));
+    }
+
+    /* ── Pointer events ──────────────────────────────────────────────────
+       setPointerCapture routes all subsequent pointer events to wrap even
+       when the pointer leaves the element. lostpointercapture fires on
+       pointerup OR pointercancel, so both release paths are covered.
+       touch-action:none (set above) prevents scroll-detection from
+       firing pointercancel during a drag.                                */
     wrap.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
       wrap.setPointerCapture(e.pointerId);
       e.preventDefault();
       capturedId = e.pointerId;
@@ -74,18 +140,15 @@
 
     wrap.addEventListener('pointermove', function (e) {
       if (e.pointerId !== capturedId) return;
+      /* Do NOT call e.preventDefault() here — touch-action:none handles
+         scroll prevention without triggering pointercancel on Safari.   */
       var dx = (e.clientX - lastX) * invX;
       var dy = (e.clientY - lastY) * invY;
       lastX = e.clientX; lastY = e.clientY;
-      if (!moved && (Math.abs(e.clientX - startX) > 4 || Math.abs(e.clientY - startY) > 4)) {
-        moved = true;
-        wrap.classList.add('interacted');
-        if (hint) hint.style.opacity = '0';
-      }
+      checkMoved(e.clientX, e.clientY);
       if (!moved) return;
-      if (axis !== 'y') posX = Math.max(0, Math.min(1, posX + dx * sensX));
-      if (axis !== 'x') posY = Math.max(0, Math.min(1, posY + dy * sensY));
-      if (!rafId) rafId = requestAnimationFrame(function () { rafId = null; seek(); });
+      applyDelta(dx, dy);
+      schedSeek();
     });
 
     wrap.addEventListener('lostpointercapture', function (e) {
@@ -96,15 +159,15 @@
   }
 
   function initViewer(viewer) {
-    var src    = viewer.dataset.src;
-    var poster = viewer.dataset.poster || '';
-    var axis   = (viewer.dataset.axis || 'x').toLowerCase();
-    var stride = parseInt(viewer.dataset.frameStride, 10) || 0;
+    var src         = viewer.dataset.src;
+    var poster      = viewer.dataset.poster || '';
+    var axis        = (viewer.dataset.axis || 'x').toLowerCase();
+    var stride      = parseInt(viewer.dataset.frameStride, 10) || 0;
     var fps         = parseInt(viewer.dataset.fps,         10) || 24;
     var sensitivity = parseFloat(viewer.dataset.sensitivity)  || 1;
-    var invert = viewer.dataset.invert || '';
-    var invX   = invert.indexOf('x') !== -1 ? -1 : 1;
-    var invY   = invert.indexOf('y') !== -1 ? -1 : 1;
+    var invert      = viewer.dataset.invert || '';
+    var invX        = invert.indexOf('x') !== -1 ? -1 : 1;
+    var invY        = invert.indexOf('y') !== -1 ? -1 : 1;
 
     if (!src) return;
 
@@ -128,11 +191,15 @@
       var io = new IntersectionObserver(function (entries) {
         if (entries[0].isIntersecting) {
           io.disconnect();
+          /* preload=auto encourages the browser to buffer the full file so
+             all seeks are served from memory and cannot get stuck.        */
+          video.preload = 'auto';
           if (video.readyState === 0 && video.networkState !== 2) video.load();
         }
       }, { rootMargin: '300px' });
       io.observe(viewer);
     } else {
+      video.preload = 'auto';
       if (video.readyState === 0 && video.networkState !== 2) video.load();
     }
 

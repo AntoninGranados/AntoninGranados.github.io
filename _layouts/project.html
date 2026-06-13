@@ -220,6 +220,7 @@
           lbWrap.className = 'lightbox-video-wrap';
 
           if (isRotation) {
+            lbMedia.preload = 'auto';
             lbMedia.load();
             var rv       = el.closest('.rotation-viewer');
             var rvInvert = rv ? (rv.dataset.invert || '') : '';
