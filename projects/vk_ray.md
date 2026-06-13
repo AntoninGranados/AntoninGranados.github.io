@@ -23,8 +23,9 @@ The project combines a renderer, a small rigid body simulation system, mesh proc
        data-poster="/assets/videos/vk_ray/lucy-poster.webp"></div>
   <div class="rotation-viewer"
        data-axis="xy"
-       data-frame-stride="15"
+       data-frame-stride="24"
        data-invert="x"
+       data-sensitivity="2"
        data-src="/assets/videos/vk_ray/test.mp4"
        data-poster="/assets/videos/vk_ray/test-poster.webp"></div>
 </div>
