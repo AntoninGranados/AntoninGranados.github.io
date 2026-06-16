@@ -32,6 +32,7 @@
   var ctx = canvas.getContext('2d');
   var shine = document.getElementById('topo-shine');
   var sCtx = shine.getContext('2d');
+  if (!ctx || !sCtx) return;
 
   /* -- Marching squares lookup -- */
   var MS = [

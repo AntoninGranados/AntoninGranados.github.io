@@ -26,7 +26,9 @@ layout: null
   <link rel="stylesheet" href="./assets/css/style.css">
   <script>
     (function(){
-      var t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      var t = 'dark';
+      try { t = localStorage.getItem('theme') || t; } catch (e) {}
+      if (t === 'dark') t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>
@@ -100,10 +102,6 @@ layout: null
                 <div class="project-content">
                     <h4>VkRay</h4>
                     <p>A real-time <b>Raytracer</b> using a custom <b>Vulkan</b> engine</p>
-                    <div class="project-tags">
-                        <span class="tag">C++</span>
-                        <span class="tag">Vulkan</span>
-                    </div>
                     <time class="project-date"><i>now</i></time>
                 </div>
             </a>
@@ -118,11 +116,6 @@ layout: null
                 <div class="project-content">
                     <h4>Cloth Simulation with DL</h4>
                     <p>Physics-based Simulation of <b>Deformable Objects</b> with <b>Deep Learning</b> for Computer Graphics Applications</p>
-                    <div class="project-tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">PyTorch</span>
-                        <span class="tag">C++</span>
-                    </div>
                     <time class="project-date">September 2025 - June 2026</time>
                 </div>
             </a>
@@ -136,11 +129,6 @@ layout: null
                 <div class="project-content">
                     <h4>Cell Classification - IMA205</h4>
                     <p>White blood cell classification from microscopy images using custom <b>GrabCut segmentation</b> and a residual <b>autoencoder-classifier</b></p>
-                    <div class="project-tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">PyTorch</span>
-                        <span class="tag">Computer Vision</span>
-                    </div>
                     <time class="project-date">April 2025 - June 2025</time>
                 </div>
             </a>
@@ -154,10 +142,6 @@ layout: null
                 <div class="project-content">
                     <h4>Smoke Simulation on the GPU</h4>
                     <p><b>Simulation</b> and <b>Rendering</b> of Smoke using <b>Compute Shader</b> for the <b>Godot</b> game engine</p>
-                    <div class="project-tags">
-                        <span class="tag">Godot</span>
-                        <span class="tag">Compute Shaders</span>
-                    </div>
                     <time class="project-date">February 2025 - July 2025</time>
                 </div>
             </a>
@@ -171,10 +155,6 @@ layout: null
                 <div class="project-content">
                     <h4>Neuroevolution & NEAT - TIPE Project</h4>
                     <p>Work on <b>Neuroevolution</b> algorithms with focus on <b>NEAT</b> (NeuroEvolution of Augmenting Topologies) for my CPGE project</p>
-                    <div class="project-tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">Genetic Algorithms</span>
-                    </div>
                     <time class="project-date">September 2023 - April 2024</time>
                 </div>
             </a>
@@ -185,10 +165,6 @@ layout: null
                 <div class="project-content">
                     <h4>Python Ray Tracer</h4>
                     <p>A full <b>path tracer</b> built from scratch in Python — soft shadows, PBR materials, depth of field — ported to a <b>Casio calculator</b></p>
-                    <div class="project-tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">Ray Tracing</span>
-                    </div>
                     <time class="project-date">May 2022 - July 2022</time>
                 </div>
             </a>
@@ -285,7 +261,8 @@ layout: null
             document.querySelectorAll('a[href*="#"]').forEach(link => {
                 const href = link.getAttribute('href');
                 if (!href) return;
-                const url = new URL(href, window.location.origin);
+                var url;
+                try { url = new URL(href, window.location.origin); } catch (e) { return; }
                 if (normalizePath(url.pathname) !== currentPath || !url.hash) return;
 
                 link.addEventListener('click', (e) => {

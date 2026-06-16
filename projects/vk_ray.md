@@ -20,15 +20,21 @@ The project combines a renderer, a small rigid body simulation system, mesh proc
 <div class="rotation-viewer-row" markdown="0">
   <div class="rotation-viewer"
        data-axis="x"
-       data-src="/assets/videos/vk_ray/lucy-widget.mp4"
-       data-poster="/assets/videos/vk_ray/lucy-widget-poster.webp"></div>
+       data-strip-src="/assets/imgs/strips/lucy/strip_{row}.webp"
+       data-strip-rows="4"
+       data-strip-frames="12"
+       data-aspect="900/1055"
+       data-sensitivity="3"
+       data-loop="x"></div>
   <div class="rotation-viewer"
        data-axis="xy"
-       data-frame-stride="24"
+       data-strip-src="/assets/imgs/strips/dragon/strip_{row}.webp"
+       data-strip-rows="48"
+       data-strip-frames="12"
+       data-x-strips="2"
+       data-aspect="900/830"
        data-invert="x"
-       data-sensitivity="2"
-       data-src="/assets/videos/vk_ray/dragon-widget.mp4"
-       data-poster="/assets/videos/vk_ray/dragon-widget-poster.webp"></div>
+       data-sensitivity="3"></div>
 </div>
 
 <div class="project-link-row" markdown="0">

@@ -23,7 +23,9 @@
   <link rel="stylesheet" href="../assets/css/code-highlight.css">
   <script>
     (function(){
-      var t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      var t = 'dark';
+      try { t = localStorage.getItem('theme') || t; } catch (e) {}
+      if (t === 'dark') t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>
@@ -111,7 +113,8 @@
         const href = link.getAttribute('href');
         if (!href) return;
 
-        const url = new URL(href, window.location.origin);
+        var url;
+        try { url = new URL(href, window.location.origin); } catch (e) { return; }
         if (normalizePath(url.pathname) !== currentPath || !url.hash) return;
 
         link.addEventListener('click', (e) => {
@@ -167,18 +170,15 @@
       document.body.appendChild(overlay);
 
       var lbMedia = null, lbWrap = null, progRaf = null, lbIdx = -1;
-      var lbBorrowedParent = null, lbBorrowedNext = null;
+      var lbRotationDestroy = null;
 
       function cleanupLbMedia() {
-        if (!lbMedia || lbMedia.tagName !== 'VIDEO') return;
-        lbMedia.pause();
-        if (lbBorrowedParent) {
-          if (lbBorrowedNext) lbBorrowedParent.insertBefore(lbMedia, lbBorrowedNext);
-          else lbBorrowedParent.appendChild(lbMedia);
-          lbBorrowedParent = null; lbBorrowedNext = null;
-        } else {
+        if (lbRotationDestroy) { lbRotationDestroy(); lbRotationDestroy = null; }
+        if (lbMedia && lbMedia.tagName === 'VIDEO') {
+          lbMedia.pause();
           lbMedia.src = '';
         }
+        lbMedia = null;
       }
       var prevBtn = overlay.querySelector('.lightbox-prev');
       var nextBtn = overlay.querySelector('.lightbox-next');
@@ -197,7 +197,7 @@
         if (pbDragging) {
           pbDragging = false;
           if (pbProgress) pbProgress.classList.remove('dragging');
-          if (lbMedia) lbMedia.play();
+          if (lbMedia) { var p = lbMedia.play(); if (p && p.catch) p.catch(function(){}); }
         }
       }
 
@@ -227,7 +227,7 @@
 
       /* Build ordered list of all lightbox-able items */
       var lbItems = Array.from(document.querySelectorAll(
-        '.markdown-content img, .markdown-content .video-container video, .markdown-content [data-lightbox]'
+        '.markdown-content img:not([aria-hidden]), .markdown-content .video-container video, .markdown-content [data-lightbox]'
       ));
 
       function openLightbox(el) {
@@ -238,45 +238,32 @@
         if (lbWrap) { lbWrap.remove(); lbWrap = null; }
         lbMedia = null;
         var caption = getCaption(el);
-        var isVideo = el.tagName === 'VIDEO';
+        var isCanvas = el.tagName === 'CANVAS';
+        var isVideo  = el.tagName === 'VIDEO';
         lbWrap = document.createElement('div');
 
-        if (isVideo) {
-          var isRotation = el.dataset.lightbox === 'rotation';
+        if ((isCanvas || isVideo) && el.dataset.lightbox === 'rotation') {
           lbWrap.className = 'lightbox-video-wrap';
-
-          if (isRotation) {
-            lbMedia = el;
-            lbBorrowedParent = el.parentNode;
-            lbBorrowedNext   = el.nextSibling;
-            var rv       = el.closest('.rotation-viewer');
-            var rvInvert = rv ? (rv.dataset.invert || '') : '';
-            var rvAxis   = rv ? (rv.dataset.axis || 'x').toLowerCase() : 'x';
-            var lbCursor = rvAxis === 'y' ? 'ns-resize' : rvAxis === 'xy' ? 'move' : 'ew-resize';
-            lbWrap.style.cursor = lbCursor;
-            var hint = document.createElement('div');
-            hint.className = 'rot-hint lb-rot-hint';
-            hint.innerHTML = (RotationViewer.HINT_ICONS[rvAxis] || RotationViewer.HINT_ICONS.x) +
-                             '<span>' + (RotationViewer.HINT_LABELS[rvAxis] || 'Drag to rotate') + '</span>';
-            RotationViewer.initDrag(lbWrap, lbMedia, {
-              axis:        rvAxis,
-              stride:      rv ? (parseInt(rv.dataset.frameStride,  10) || 0)  : 0,
-              fps:         rv ? (parseInt(rv.dataset.fps,          10) || 24) : 24,
-              sensitivity: rv ? (parseFloat(rv.dataset.sensitivity)    || 1)  : 1,
-              invX:        rvInvert.indexOf('x') !== -1 ? -1 : 1,
-              invY:        rvInvert.indexOf('y') !== -1 ? -1 : 1,
-              hint:   hint,
-              onStart: function () { overlay.classList.add('rot-dragging'); },
-              onEnd:   function (moved) {
-                overlay.classList.remove('rot-dragging');
-                lbWrap.style.cursor = lbCursor;
-                if (moved) overlay.addEventListener('click', swallowOnce, { capture: true });
-              }
-            });
-            lbWrap.appendChild(lbMedia);
-            lbWrap.appendChild(hint);
-          } else {
-            lbMedia = document.createElement('video');
+          var rv      = el.closest('.rotation-viewer');
+          var rvAxis  = rv ? (rv.dataset.axis || 'x').toLowerCase() : 'x';
+          var lbCursor = rvAxis === 'y' ? 'ns-resize' : rvAxis === 'xy' ? 'move' : 'ew-resize';
+          lbWrap.style.cursor = lbCursor;
+          var hint = document.createElement('div');
+          hint.className = 'rot-hint lb-rot-hint';
+          hint.innerHTML = (RotationViewer.HINT_ICONS[rvAxis] || RotationViewer.HINT_ICONS.x) +
+                           '<span>' + (RotationViewer.HINT_LABELS[rvAxis] || 'Drag to rotate') + '</span>';
+          var lbInst = RotationViewer.initLightbox(lbWrap, rv, hint, {
+            onStart: function () { overlay.classList.add('rot-dragging'); },
+            onEnd:   function (moved) {
+              overlay.classList.remove('rot-dragging');
+              lbWrap.style.cursor = lbCursor;
+              if (moved) overlay.addEventListener('click', swallowOnce, { capture: true });
+            }
+          });
+          lbRotationDestroy = lbInst ? lbInst.destroy : null;
+        } else if (isVideo) {
+          lbWrap.className = 'lightbox-video-wrap';
+          lbMedia = document.createElement('video');
             lbMedia.src = el.currentSrc || el.src || (el.querySelector('source') ? el.querySelector('source').src : '');
             lbMedia.muted = true;
             lbMedia.playsInline = true;
@@ -307,9 +294,8 @@
             progress.addEventListener('mousedown', function (e) { e.stopPropagation(); pbStart(e.clientX); });
             progress.addEventListener('touchstart', function (e) { e.stopPropagation(); pbStart(e.touches[0].clientX); }, { passive: false });
             progress.addEventListener('click', function (e) { e.stopPropagation(); });
-            lbWrap.appendChild(lbMedia);
-            lbWrap.appendChild(progress);
-          }
+          lbWrap.appendChild(lbMedia);
+          lbWrap.appendChild(progress);
         } else {
           lbMedia = document.createElement('img');
           lbMedia.src = el.src;
@@ -339,12 +325,13 @@
         document.body.style.overflow = '';
         pbDragging = false; pbProgress = null; pbFill = null;
         if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
-        if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
-        if (lbWrap) { lbWrap.remove(); lbWrap = null; lbMedia = null; }
+        cleanupLbMedia();
+        if (lbWrap) { lbWrap.remove(); lbWrap = null; }
+        lbMedia = null;
         lbIdx = -1;
       }
 
-      document.querySelectorAll('.markdown-content img').forEach(function (img) {
+      document.querySelectorAll('.markdown-content img:not([aria-hidden])').forEach(function (img) {
         img.addEventListener('click', function () { openLightbox(img); });
       });
       document.querySelectorAll('.markdown-content .video-container').forEach(function (container) {
@@ -671,5 +658,31 @@
     })();
   </script>
   <script src="/assets/js/theme-toggle.js"></script>
+  <script>
+    /* Equal-height image rows inside .project-media-grid.
+       Sets flex: naturalWidth/naturalHeight on each figure so all images in
+       a row share the same height while keeping their true aspect ratios.   */
+    (function () {
+      function applyRatio(fig, w, h) {
+        if (w && h) fig.style.flex = w / h;
+      }
+      document.querySelectorAll('.project-media-grid').forEach(function (grid) {
+        Array.from(grid.querySelectorAll('figure')).forEach(function (fig) {
+          var img = fig.querySelector('img');
+          if (img) {
+            if (img.complete && img.naturalWidth) {
+              applyRatio(fig, img.naturalWidth, img.naturalHeight);
+            } else {
+              img.addEventListener('load', function () {
+                applyRatio(fig, img.naturalWidth, img.naturalHeight);
+              });
+            }
+          } else if (fig.querySelector('video')) {
+            fig.style.flex = 16 / 9;
+          }
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
