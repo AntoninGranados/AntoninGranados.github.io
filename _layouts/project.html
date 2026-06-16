@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title }} - Antonin Granados</title>
+  <meta name="description" content="{{ page.subtitle }}">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Antonin Granados">
+  <meta property="og:title" content="{{ page.title }} — Antonin Granados">
+  <meta property="og:description" content="{{ page.subtitle }}">
+  <meta property="og:url" content="https://antoningranados.github.io{{ page.url }}">
+  {% if page.image %}<meta property="og:image" content="https://antoningranados.github.io{{ page.image }}">{% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title }} — Antonin Granados">
+  <meta name="twitter:description" content="{{ page.subtitle }}">
+  {% if page.image %}<meta name="twitter:image" content="https://antoningranados.github.io{{ page.image }}">{% endif %}
   <link rel="icon" href="../assets/img/icon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

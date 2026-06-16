@@ -57,18 +57,24 @@
       seekPending = false;
       clearTimeout(watchdog);
       video.currentTime = t;
-      /* Watchdog: if seeked hasn't fired after 800 ms the video element is
-         stuck. Reload it and re-seek to the current computed position.    */
+      /* Watchdog: only recover if the target is already in the buffered range.
+         During initial network download, seeks to unbuffered segments are
+         expected to be slow — firing here would cause an infinite reload loop
+         on a slow connection. Only reload when the data is local but the
+         browser's seeking state is genuinely stuck.                          */
       watchdog = setTimeout(function () {
         if (!video.seeking) return;
+        var inBuffer = false;
+        try {
+          for (var i = 0; i < video.buffered.length; i++) {
+            if (video.buffered.start(i) <= t + 0.1 && t - 0.1 <= video.buffered.end(i)) {
+              inBuffer = true; break;
+            }
+          }
+        } catch (e) {}
+        if (!inBuffer) return; // still downloading — slow but not stuck
         seekPending = false;
-        var target = computeTime();
-        function onReload() {
-          video.removeEventListener('loadedmetadata', onReload);
-          if (target >= 0) video.currentTime = target;
-        }
-        video.addEventListener('loadedmetadata', onReload);
-        video.load();
+        video.load(); /* initDrag's loadedmetadata handler re-seeks to current pos */
       }, 800);
     }
 
