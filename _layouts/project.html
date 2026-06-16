@@ -167,6 +167,19 @@
       document.body.appendChild(overlay);
 
       var lbMedia = null, lbWrap = null, progRaf = null, lbIdx = -1;
+      var lbBorrowedParent = null, lbBorrowedNext = null;
+
+      function cleanupLbMedia() {
+        if (!lbMedia || lbMedia.tagName !== 'VIDEO') return;
+        lbMedia.pause();
+        if (lbBorrowedParent) {
+          if (lbBorrowedNext) lbBorrowedParent.insertBefore(lbMedia, lbBorrowedNext);
+          else lbBorrowedParent.appendChild(lbMedia);
+          lbBorrowedParent = null; lbBorrowedNext = null;
+        } else {
+          lbMedia.src = '';
+        }
+      }
       var prevBtn = overlay.querySelector('.lightbox-prev');
       var nextBtn = overlay.querySelector('.lightbox-next');
 
@@ -221,7 +234,7 @@
         lbIdx = lbItems.indexOf(el);
         pbDragging = false; pbProgress = null; pbFill = null;
         if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
-        if (lbMedia && lbMedia.tagName === 'VIDEO') { lbMedia.pause(); lbMedia.src = ''; }
+        cleanupLbMedia();
         if (lbWrap) { lbWrap.remove(); lbWrap = null; }
         lbMedia = null;
         var caption = getCaption(el);
@@ -230,15 +243,12 @@
 
         if (isVideo) {
           var isRotation = el.dataset.lightbox === 'rotation';
-          lbMedia = document.createElement('video');
-          lbMedia.src = el.currentSrc || el.src || (el.querySelector('source') ? el.querySelector('source').src : '');
-          lbMedia.muted = true;
-          lbMedia.playsInline = true;
           lbWrap.className = 'lightbox-video-wrap';
 
           if (isRotation) {
-            lbMedia.preload = 'auto';
-            lbMedia.load();
+            lbMedia = el;
+            lbBorrowedParent = el.parentNode;
+            lbBorrowedNext   = el.nextSibling;
             var rv       = el.closest('.rotation-viewer');
             var rvInvert = rv ? (rv.dataset.invert || '') : '';
             var rvAxis   = rv ? (rv.dataset.axis || 'x').toLowerCase() : 'x';
@@ -266,6 +276,10 @@
             lbWrap.appendChild(lbMedia);
             lbWrap.appendChild(hint);
           } else {
+            lbMedia = document.createElement('video');
+            lbMedia.src = el.currentSrc || el.src || (el.querySelector('source') ? el.querySelector('source').src : '');
+            lbMedia.muted = true;
+            lbMedia.playsInline = true;
             lbMedia.autoplay = true;
             lbMedia.loop = true;
             var progress = document.createElement('div');
@@ -528,10 +542,39 @@
         return clone.textContent.trim();
       }
 
+      /* ── Document type icons ── */
+      var DOC_ICONS = {
+        pdf:    '<svg class="doc-icon" width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true"><path d="M1 2a1 1 0 011-1h5l3 3v7a1 1 0 01-1 1H2a1 1 0 01-1-1V2z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M7 1v3h3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.5" y1="7" x2="8.5" y2="7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><line x1="2.5" y1="9" x2="7" y2="9" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>',
+        slides: '<svg class="doc-icon" width="13" height="12" viewBox="0 0 13 12" fill="none" aria-hidden="true"><rect x="1" y="1" width="11" height="7.5" rx="1" stroke="currentColor" stroke-width="1.1"/><path d="M5 8.5L6.5 11L8 8.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      };
+      function getDocType(label) {
+        var l = label.toLowerCase();
+        return (l.indexOf('slide') !== -1 || l.indexOf('presentation') !== -1) ? 'slides' : 'pdf';
+      }
+
+      /* ── Documents first ── */
+      if (tocDocs) {
+        var docsHeading = document.createElement('p');
+        docsHeading.className = 'toc-section-title';
+        docsHeading.textContent = 'Documents';
+        sidebar.appendChild(docsHeading);
+        var docsDiv = document.createElement('div');
+        docsDiv.className = 'toc-docs';
+        Array.from(tocDocs.querySelectorAll('a')).forEach(function (a) {
+          var label = a.textContent.trim();
+          var type  = getDocType(label);
+          a.innerHTML = DOC_ICONS[type] + '<span>' + label + '</span>';
+          docsDiv.appendChild(a);
+        });
+        sidebar.appendChild(docsDiv);
+        tocDocs.remove();
+      }
+
+      /* ── Contents heading ── */
       var titleEl = document.createElement('p');
-      titleEl.className = 'toc-title';
+      titleEl.className = tocDocs ? 'toc-title toc-title--sep' : 'toc-title';
       titleEl.textContent = 'Contents';
-      sidebar.appendChild(titleEl);
+      if (allHeadings.length >= 2) sidebar.appendChild(titleEl);
 
       var list = document.createElement('ul');
       list.className = 'toc-list';
@@ -563,19 +606,6 @@
         list.appendChild(li);
         return { h: h, a: a };
       });
-
-      /* Documents section */
-      if (tocDocs) {
-        var docsHeading = document.createElement('p');
-        docsHeading.className = 'toc-section-title';
-        docsHeading.textContent = 'Documents';
-        sidebar.appendChild(docsHeading);
-        var docsDiv = document.createElement('div');
-        docsDiv.className = 'toc-docs';
-        Array.from(tocDocs.querySelectorAll('a')).forEach(function (a) { docsDiv.appendChild(a); });
-        sidebar.appendChild(docsDiv);
-        tocDocs.remove();
-      }
 
       /* Pre-compute heading offsets once — no getBoundingClientRect on every scroll */
       var headingOffsets = [];

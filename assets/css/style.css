@@ -563,21 +563,46 @@ main{padding:1rem 0 2rem}
     transform: scale(1.04);
 }
 
-/* In-progress pill badge */
-.project-image.in-progress::before {
-    content: 'In Progress';
+/* ── Card badge system ── */
+.card-badges {
     position: absolute;
     top: 0.65rem;
     left: 0.65rem;
-    background: #F1FA8C;
-    color: #1b1c26;
-    padding: 0.18rem 0.6rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+}
+
+.card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.7rem;
     border-radius: 999px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.04em;
-    line-height: 1.6;
-    z-index: 1;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: #1b1c26;
+}
+
+.card-badge--in-progress { background: #F1FA8C; }
+.card-badge--school      { background: #8BE9FD; }
+
+.card-heart {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.65rem;
+    z-index: 2;
+    font-size: 22px;
+    line-height: 1;
+    color: #FF79C6;
+    text-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    pointer-events: none;
+    user-select: none;
 }
 
 @media(max-width:720px){
@@ -1343,9 +1368,9 @@ body.rot-dragging * {
     text-overflow: ellipsis;
 }
 .toc-level-3 {
-    padding-left: 1.5rem;
-    font-size: 12px;
-    opacity: 0.85;
+    padding-left: 1.75rem;
+    font-size: 11.5px;
+    opacity: 0.7;
 }
 [data-theme="light"] .toc-link { border-left-color: rgba(0,0,0,0.08); }
 .toc-link:hover { color: var(--text); opacity: 1; }
@@ -1362,11 +1387,18 @@ body.rot-dragging * {
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin: 1.25rem 0 0.5rem;
+    margin: 0 0 0.5rem;
+    padding-top: 0;
+    border-top: none;
+}
+
+/* "Contents" title that follows the docs block gets a top separator */
+.toc-title--sep {
+    margin-top: 1.25rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(255,255,255,0.06);
 }
-[data-theme="light"] .toc-section-title { border-top-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .toc-title--sep { border-top-color: rgba(0,0,0,0.08); }
 
 .toc-docs {
     display: flex;
@@ -1375,7 +1407,9 @@ body.rot-dragging * {
 }
 
 .toc-docs a {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     padding: 0.3rem 0.6rem;
     font-size: 12px;
     border: var(--border);
@@ -1393,6 +1427,11 @@ body.rot-dragging * {
     border-color: rgba(189, 147, 249, 0.2);
     color: var(--text);
     text-decoration: none;
+}
+
+.doc-icon {
+    flex-shrink: 0;
+    opacity: 0.75;
 }
 
 /* ── Citation tooltip ── */

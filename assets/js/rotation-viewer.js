@@ -104,6 +104,13 @@
       }
       seekNow();
     });
+    if (video.readyState >= 1) {
+      if (axis === 'xy' && stride > 0) {
+        var rows = Math.ceil(Math.round(video.duration * fps) / stride);
+        sensY = rows > 1 ? 1 / ((rows - 1) * pxPerStep) : 1 / DEFAULT_FULL;
+      }
+      seekNow();
+    }
 
     /* ── Drag state ──────────────────────────────────────────────────── */
     var capturedId = -1;
