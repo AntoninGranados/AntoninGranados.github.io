@@ -235,7 +235,7 @@ body::after {
     color: var(--accent);
 }
 
-@media(max-width:480px){
+@media(max-width:640px){
   .site-header .header-inner{
     display: flex !important;
     flex-direction: column !important;
@@ -1413,4 +1413,103 @@ body.rot-dragging * {
     .lightbox-overlay { transition: none; }
     .toc-link { transition: none; }
     .back-to-top { transition: none; }
+}
+
+/* ── Publications & Reports ────────────────────────────────────── */
+.pub-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem auto;
+    width: 100%;
+    max-width: 820px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pub-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.1rem;
+    background: var(--card);
+    border: var(--border);
+    border-radius: var(--radius-lg);
+    transition: background var(--transition-default), border-color var(--transition-default);
+    flex-wrap: wrap;
+}
+
+.pub-item:hover {
+    background: var(--card-grad-hover);
+    border-color: rgba(189, 147, 249, 0.25);
+}
+
+.pub-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(189, 147, 249, 0.1);
+    border-radius: var(--radius-sm);
+    padding: 0.18rem 0.45rem;
+    flex-shrink: 0;
+    width: 3.8rem;
+    text-align: center;
+}
+
+[data-theme="light"] .pub-badge {
+    background: rgba(109, 63, 187, 0.1);
+}
+
+.pub-info {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.pub-title {
+    font-size: 0.8rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.pub-project {
+    font-size: 0.9rem;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.pub-links {
+    display: flex;
+    gap: 0.45rem;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.pub-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.32rem 0.65rem;
+    font-size: 0.75rem;
+    border: var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text);
+    text-decoration: none;
+    transition: all var(--transition-default);
+    white-space: nowrap;
+}
+
+.pub-links a:hover {
+    background: var(--card-grad-hover);
+    border-color: rgba(189, 147, 249, 0.3);
+    box-shadow: var(--shadow-sm);
+    color: var(--text);
+    text-decoration: none;
 }
