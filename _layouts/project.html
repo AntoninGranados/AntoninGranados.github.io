@@ -75,17 +75,17 @@
       </div>
     </div>
     {% endif %}
-    {% if page.pdf or page.docs %}
-    <div class="project-link-row">
-      {% if page.pdf %}<a href="{{ page.pdf }}" target="_blank" rel="noopener">{{ page.pdf_label | default: "Technical report" }}</a>{% endif %}
-      {% for doc in page.docs %}<a href="{{ doc.href }}" target="_blank" rel="noopener">{{ doc.label }}</a>{% endfor %}
-    </div>
-    {% endif %}
     <div class="markdown-content">
       {{ content }}
     </div>
   </main>
   <aside id="toc-sidebar" class="toc-sidebar" aria-label="Table of contents"></aside>
+  {% if page.pdf or page.docs %}
+  <div id="toc-docs" hidden>
+    {% if page.pdf %}<a href="{{ page.pdf }}" target="_blank" rel="noopener">{{ page.pdf_label | default: "Technical report" }}</a>{% endif %}
+    {% for doc in page.docs %}<a href="{{ doc.href }}" target="_blank" rel="noopener">{{ doc.label }}</a>{% endfor %}
+  </div>
+  {% endif %}
 
   {% include footer.html %}
 
@@ -505,10 +505,12 @@
       var sidebar = document.getElementById('toc-sidebar');
       if (!sidebar) return;
 
+      var tocDocs = document.getElementById('toc-docs');
+
       /* Collect h2 + h3 that are NOT inside a collapsed week-content wrapper */
       var allHeadings = Array.from(document.querySelectorAll('.markdown-content h2, .markdown-content h3'))
         .filter(function (h) { return !h.closest('.week-content'); });
-      if (allHeadings.length < 2) { sidebar.remove(); return; }
+      if (allHeadings.length < 2 && !tocDocs) { sidebar.remove(); return; }
 
       var header = document.querySelector('.site-header');
       function scrollToHeading(h) {
@@ -533,7 +535,7 @@
 
       var list = document.createElement('ul');
       list.className = 'toc-list';
-      sidebar.appendChild(list);
+      if (allHeadings.length >= 2) sidebar.appendChild(list);
 
       var idCounter = 0;
       var entries = allHeadings.map(function (h) {
@@ -561,6 +563,19 @@
         list.appendChild(li);
         return { h: h, a: a };
       });
+
+      /* Documents section */
+      if (tocDocs) {
+        var docsHeading = document.createElement('p');
+        docsHeading.className = 'toc-section-title';
+        docsHeading.textContent = 'Documents';
+        sidebar.appendChild(docsHeading);
+        var docsDiv = document.createElement('div');
+        docsDiv.className = 'toc-docs';
+        Array.from(tocDocs.querySelectorAll('a')).forEach(function (a) { docsDiv.appendChild(a); });
+        sidebar.appendChild(docsDiv);
+        tocDocs.remove();
+      }
 
       /* Pre-compute heading offsets once — no getBoundingClientRect on every scroll */
       var headingOffsets = [];
