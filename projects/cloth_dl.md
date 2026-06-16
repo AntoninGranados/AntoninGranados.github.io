@@ -4,6 +4,11 @@ layout: project
 image: /assets/imgs/projects/cloth_dl_preview.webp
 image_position: 50% 18%
 subtitle: Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
+docs:
+  - label: "Final paper"
+    href: "/assets/docs/projects/cloth_dl/paper.pdf"
+  - label: "SoTA report"
+    href: "/assets/docs/projects/cloth_dl/sota-report.pdf"
 ---
 # Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
 
@@ -73,6 +78,13 @@ subtitle: Physics-based Simulation of Deformable Objects with Deep Learning for 
         <li><a href="#week-15-02-2026">Week 15/02/2026</a></li>
         <li><a href="#week-18-01-2026">Week 18/01/2026</a></li>
     </ul>
+</div>
+
+<div class="pdf-embed" markdown="0"> <a id="paper"></a>
+    <object data="/assets/docs/projects/cloth_dl/paper.pdf" type="application/pdf">
+        <p>Your browser doesn't support embedded PDFs.
+        <a href="/assets/docs/projects/cloth_dl/paper.pdf">Download the paper instead</a></p>
+    </object>
 </div>
 
 ## <a id="week-09-03-2026"></a> Week 09/03/2026
@@ -312,7 +324,6 @@ I then tried the [SOFA framework](https://www.sofa-framework.org) and even thoug
 
 ## <a id="week-06-10-2025"></a> Week 06/10/2025
 The main challenge for implementing **unsupervised learning** is the computation of the loss, because the model will still be the same as in [MeshGraphNets](#mgn). Here is the loss function used in [HOOD](#hood), with some of the terms (_bending_, _gravity_, _collision_ and _inertia_) found in [SNUG](#snug):
-
 $$
     \mathcal{L}_{total} = \mathcal{L}_{stretching} + \mathcal{L}_{bending} + \mathcal{L}_{gravity} + \mathcal{L}_{friction} + \mathcal{L}_{collision} + \mathcal{L}_{inertia}
 $$
@@ -438,3 +449,8 @@ The results are promising, despite limited training of only ~400 epochs out of t
 
 ### Bibliography
 1. **Learning Mesh-Based Simulation with Graph Networks**<a id="mgn"></a>, T. Pfaff, M. Fortunato, A. Sanchez-Gonzalez, and P. W. Battaglia, *International Conference on Learning Representations*, 2021, [[PDF ArXiv](https://arxiv.org/pdf/2010.03409)]
+
+## Presentations
+
+- [Research presentation](/assets/docs/projects/cloth_dl/presentation.pdf) — Final research presentation slides
+- [SoTA presentation](/assets/docs/projects/cloth_dl/sota-presentation.pdf) — State of the art review slides

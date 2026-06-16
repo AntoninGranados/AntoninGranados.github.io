@@ -4,6 +4,7 @@ layout: project
 image: /assets/imgs/projects/gpu_smoke_preview.webp
 image_position: 68% 50%
 subtitle: Volumetric Smoke Simulation and Rendering in Godot with Lattice-Boltzmann and Ray Marching
+pdf: /assets/docs/projects/gpu_smoke_report.pdf
 ---
 
 # 3D Smoke Simulation and Rendering in Godot
@@ -11,10 +12,6 @@ subtitle: Volumetric Smoke Simulation and Rendering in Godot with Lattice-Boltzm
 This project implements an interactive volumetric smoke pipeline inside Godot. The simulation, scene voxelization, and rendering stages all run on the GPU through Godot's Vulkan-backed `RenderingDevice` API.
 
 The smoke is represented as a 3D voxel grid and simulated with the Lattice-Boltzmann Method (LBM). The same volume data is then rendered with ray marching inside a bounding box, which keeps the fragment shader focused on the screen region where smoke can actually appear.
-
-<div class="project-link-row" markdown="0">
-  <a href="/assets/docs/projects/gpu_smoke_report.pdf" target="_blank" rel="noopener">Technical report</a>
-</div>
 
 <figure class="project-hero-media">
   <img src="/assets/imgs/projects/gpu_smoke/dragon.webp" alt="Smoke emitted from a dragon model in a bamboo scene">

@@ -4,6 +4,7 @@ layout: project
 image: /assets/imgs/projects/vk_ray_preview.webp
 image_position: 30% 28%
 subtitle: Interactive Vulkan Path Tracing Engine
+pdf: /assets/docs/projects/vk_ray_report.pdf
 ---
 
 # VkRay: Interactive Vulkan Path Tracing Engine
@@ -32,7 +33,6 @@ The project combines a renderer, a small rigid body simulation system, mesh proc
 
 <div class="project-link-row" markdown="0">
   <a href="https://github.com/AntoninGranados/VkRay/" target="_blank" rel="noopener">Source code</a>
-  <a href="/assets/docs/projects/vk_ray_report.pdf" target="_blank" rel="noopener">Technical report</a>
 </div>
 
 ## Overview

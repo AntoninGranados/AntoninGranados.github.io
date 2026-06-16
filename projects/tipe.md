@@ -4,15 +4,13 @@ layout: project
 image: /assets/imgs/projects/tipe_preview.webp
 image_position: 62% 42%
 subtitle: Evolving Neural Network Controllers with NEAT for a 2D Racing Simulation
+pdf: /assets/docs/projects/tipe_presentation.pdf
+pdf_label: Presentation PDF
 ---
 
 # TIPE: Neuroevolution for Autonomous Driving
 
 This TIPE project studies how a genetic algorithm can train a neural network to drive a car in a 2D racing game. The work covers the full loop: implementing the neural network, building the driving environment, evaluating agents, evolving populations, and testing whether trained controllers generalize to new tracks.
-
-<div class="project-link-row" markdown="0">
-  <a href="/assets/docs/projects/tipe_presentation.pdf" target="_blank" rel="noopener">Presentation PDF</a>
-</div>
 
 <figure class="video-container project-wide-video">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">

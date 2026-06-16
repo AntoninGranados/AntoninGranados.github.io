@@ -75,6 +75,12 @@
       </div>
     </div>
     {% endif %}
+    {% if page.pdf or page.docs %}
+    <div class="project-link-row">
+      {% if page.pdf %}<a href="{{ page.pdf }}" target="_blank" rel="noopener">{{ page.pdf_label | default: "Technical report" }}</a>{% endif %}
+      {% for doc in page.docs %}<a href="{{ doc.href }}" target="_blank" rel="noopener">{{ doc.label }}</a>{% endfor %}
+    </div>
+    {% endif %}
     <div class="markdown-content">
       {{ content }}
     </div>
