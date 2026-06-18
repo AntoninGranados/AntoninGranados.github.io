@@ -257,13 +257,27 @@
     var px = start.posX, py = start.posY;
     var active = true;
 
-    /* Size container to source aspect ratio */
+    /* Resolve frame dimensions from loaded strips or data-aspect fallback */
+    var fw0 = 0, fh0 = 0;
     var anySrc = api.strips[Object.keys(api.strips)[0]];
     if (anySrc) {
-      var fw0 = anySrc.naturalWidth / api.stripFrames;
-      var fh0 = anySrc.naturalHeight;
-      container.style.aspectRatio = fw0 + '/' + fh0;
+      fw0 = anySrc.naturalWidth / api.stripFrames;
+      fh0 = anySrc.naturalHeight;
+    } else if (rv.dataset.aspect) {
+      var p = rv.dataset.aspect.split('/');
+      if (p.length === 2) { fw0 = parseFloat(p[0]); fh0 = parseFloat(p[1]); }
     }
+
+    /* Size container explicitly to fill viewport (same constraints as images) */
+    function sizeContainer() {
+      if (!fw0 || !fh0) return;
+      var maxW = Math.min(window.innerWidth  * 0.88, 1100);
+      var maxH = window.innerHeight * 0.88;
+      var scale = Math.min(maxW / fw0, maxH / fh0);
+      container.style.width  = Math.round(fw0 * scale) + 'px';
+      container.style.height = Math.round(fh0 * scale) + 'px';
+    }
+    sizeContainer();
     container.style.position = 'relative';
 
     var canvas = document.createElement('canvas');
@@ -308,7 +322,7 @@
     var resizeRaf = null;
     function scheduleResize() {
       if (!active || resizeRaf) return;
-      resizeRaf = requestAnimationFrame(function () { resizeRaf = null; resize(); });
+      resizeRaf = requestAnimationFrame(function () { resizeRaf = null; sizeContainer(); resize(); });
     }
     window.addEventListener('resize', scheduleResize, { passive: true });
 
