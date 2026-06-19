@@ -39,7 +39,7 @@ The project combines a renderer, a small rigid body simulation system, mesh proc
   <div class="rotation-viewer"
        data-axis="xy"
        data-strip-src="/assets/imgs/strips/armadillo/strip_{row}.webp"
-       data-strip-rows="10"
+       data-strip-rows="48"
        data-strip-frames="12"
        data-x-strips="2"
        data-aspect="828/900"
