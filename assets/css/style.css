@@ -1049,7 +1049,8 @@ main{padding:1rem 0 2rem}
     gap: 1.5rem;
     justify-content: center;
     flex-wrap: wrap;
-    margin: 1.75rem 0;
+    margin: 1.75rem auto;
+    max-width: 94%;
 }
 .rotation-viewer-row .rotation-viewer {
     flex: 1;

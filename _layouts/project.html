@@ -82,10 +82,11 @@
     </div>
   </main>
   <aside id="toc-sidebar" class="toc-sidebar" aria-label="Table of contents"></aside>
-  {% if page.pdf or page.docs %}
+  {% if page.pdf or page.docs or page.source_code %}
   <div id="toc-docs" hidden>
     {% if page.pdf %}<a href="{{ page.pdf }}" target="_blank" rel="noopener">{{ page.pdf_label | default: "Technical report" }}</a>{% endif %}
     {% for doc in page.docs %}<a href="{{ doc.href }}" target="_blank" rel="noopener">{{ doc.label }}</a>{% endfor %}
+    {% if page.source_code %}<a href="{{ page.source_code }}" target="_blank" rel="noopener" data-type="code">Source code</a>{% endif %}
   </div>
   {% endif %}
 
@@ -532,9 +533,11 @@
       /* ── Document type icons ── */
       var DOC_ICONS = {
         pdf:    '<svg class="doc-icon" width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true"><path d="M1 2a1 1 0 011-1h5l3 3v7a1 1 0 01-1 1H2a1 1 0 01-1-1V2z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M7 1v3h3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.5" y1="7" x2="8.5" y2="7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><line x1="2.5" y1="9" x2="7" y2="9" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>',
-        slides: '<svg class="doc-icon" width="13" height="12" viewBox="0 0 13 12" fill="none" aria-hidden="true"><rect x="1" y="1" width="11" height="7.5" rx="1" stroke="currentColor" stroke-width="1.1"/><path d="M5 8.5L6.5 11L8 8.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        slides: '<svg class="doc-icon" width="13" height="12" viewBox="0 0 13 12" fill="none" aria-hidden="true"><rect x="1" y="1" width="11" height="7.5" rx="1" stroke="currentColor" stroke-width="1.1"/><path d="M5 8.5L6.5 11L8 8.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        code:   '<svg class="doc-icon" width="13" height="12" viewBox="0 0 13 12" fill="none" aria-hidden="true"><polyline points="4 3 1 6 4 9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9 3 12 6 9 9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="7.5" y1="1.5" x2="5.5" y2="10.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>'
       };
-      function getDocType(label) {
+      function getDocType(a, label) {
+        if (a.dataset.type === 'code') return 'code';
         var l = label.toLowerCase();
         return (l.indexOf('slide') !== -1 || l.indexOf('presentation') !== -1) ? 'slides' : 'pdf';
       }
@@ -543,13 +546,13 @@
       if (tocDocs) {
         var docsHeading = document.createElement('p');
         docsHeading.className = 'toc-section-title';
-        docsHeading.textContent = 'Documents';
+        docsHeading.textContent = 'Links';
         sidebar.appendChild(docsHeading);
         var docsDiv = document.createElement('div');
         docsDiv.className = 'toc-docs';
         Array.from(tocDocs.querySelectorAll('a')).forEach(function (a) {
           var label = a.textContent.trim();
-          var type  = getDocType(label);
+          var type  = getDocType(a, label);
           a.innerHTML = DOC_ICONS[type] + '<span>' + label + '</span>';
           docsDiv.appendChild(a);
         });

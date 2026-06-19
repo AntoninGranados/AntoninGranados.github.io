@@ -5,6 +5,7 @@ image: /assets/imgs/projects/vk_ray_preview.webp
 image_position: 30% 28%
 subtitle: Interactive Vulkan Path Tracing Engine
 pdf: /assets/docs/projects/vk_ray_report.pdf
+source_code: https://github.com/AntoninGranados/VkRay/
 ---
 
 # VkRay: Interactive Vulkan Path Tracing Engine
@@ -19,26 +20,31 @@ The project combines a renderer, a small rigid body simulation system, mesh proc
 
 <div class="rotation-viewer-row" markdown="0">
   <div class="rotation-viewer"
-       data-axis="x"
-       data-strip-src="/assets/imgs/strips/lucy/strip_{row}.webp"
-       data-strip-rows="4"
-       data-strip-frames="12"
-       data-aspect="900/1055"
-       data-sensitivity="3"
-       data-loop="x"></div>
-  <div class="rotation-viewer"
        data-axis="xy"
        data-strip-src="/assets/imgs/strips/dragon/strip_{row}.webp"
        data-strip-rows="48"
        data-strip-frames="12"
        data-x-strips="2"
-       data-aspect="900/830"
+       data-aspect="976/900"
        data-invert="x"
        data-sensitivity="3"></div>
-</div>
-
-<div class="project-link-row" markdown="0">
-  <a href="https://github.com/AntoninGranados/VkRay/" target="_blank" rel="noopener">Source code</a>
+  <div class="rotation-viewer"
+       data-axis="x"
+       data-strip-src="/assets/imgs/strips/lucy/strip_{row}.webp"
+       data-strip-rows="4"
+       data-strip-frames="12"
+       data-aspect="768/900"
+       data-sensitivity="3"
+       data-loop="x"></div>
+  <div class="rotation-viewer"
+       data-axis="xy"
+       data-strip-src="/assets/imgs/strips/armadillo/strip_{row}.webp"
+       data-strip-rows="10"
+       data-strip-frames="12"
+       data-x-strips="2"
+       data-aspect="828/900"
+       data-invert="x"
+       data-sensitivity="2"></div>
 </div>
 
 ## Overview
