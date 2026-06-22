@@ -36,6 +36,17 @@ The project combines a renderer, a small rigid body simulation system, mesh proc
        data-aspect="768/900"
        data-sensitivity="3"
        data-loop="x"></div>
+</div>
+
+<div class="rotation-viewer-row" markdown="0">
+  <div class="rotation-viewer"
+       data-axis="x"
+       data-strip-src="/assets/imgs/strips/glass-dragon/strip_{row}.webp"
+       data-strip-rows="4"
+       data-strip-frames="12"
+       data-aspect="894/900"
+       data-invert="x"
+       data-sensitivity="3"></div>
   <div class="rotation-viewer"
        data-axis="xy"
        data-strip-src="/assets/imgs/strips/armadillo/strip_{row}.webp"
