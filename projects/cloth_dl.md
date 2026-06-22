@@ -450,5 +450,5 @@ The results are promising, despite limited training of only ~400 epochs out of t
 
 ## Presentations
 
-- [Research presentation](/assets/docs/projects/cloth_dl/presentation.pdf) — Final research presentation slides
-- [SoTA presentation](/assets/docs/projects/cloth_dl/sota-presentation.pdf) — State of the art review slides
+- [Research presentation](/assets/docs/projects/cloth_dl/presentation.pdf) - Final research presentation slides
+- [SoTA presentation](/assets/docs/projects/cloth_dl/sota-presentation.pdf) - State of the art review slides

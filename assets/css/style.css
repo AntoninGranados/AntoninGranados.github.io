@@ -236,7 +236,7 @@ body::after {
     color: var(--accent);
 }
 
-/* Hamburger toggle — hidden on desktop */
+/* Hamburger toggle - hidden on desktop */
 .nav-toggle {
     display: none;
     background: none;

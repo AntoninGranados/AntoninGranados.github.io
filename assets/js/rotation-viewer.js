@@ -15,7 +15,7 @@
   /* ── Frame mapping ──────────────────────────────────────────────────────────
    * xy  : xStrips strips cover one full y-row. xCols = stripFrames × xStrips.
    *        row = yRow × xStrips + floor(xi / stripFrames),  col = xi % stripFrames
-   * x   : linear across all strips — row = floor(i/cols), col = i % cols
+   * x   : linear across all strips - row = floor(i/cols), col = i % cols
    *        (allows splitting long x-axis sequences across multiple strips to
    *         stay within the WebP 16383px width limit)
    * y   : row = posY × (rows-1),  col = 0                                     */
@@ -33,7 +33,7 @@
     if (axis === 'y') {
       return { row: Math.round(posY * (stripRows - 1)), col: 0 };
     }
-    /* axis === 'x' — possibly multi-strip */
+    /* axis === 'x' - possibly multi-strip */
     var total = stripRows * stripFrames;
     var i = Math.round(posX * (total - 1));
     i = Math.max(0, Math.min(total - 1, i));
@@ -53,11 +53,11 @@
    *
    * Optional attributes:
    *   data-axis        "x" | "y" | "xy"  (default "x")
-   *   data-invert      "x" | "y" | "xy"  — flip drag direction per axis
-   *   data-sensitivity  number            — multiplier; higher = faster
-   *   data-loop        "x" | "y" | "xy"  — wrap instead of clamp per axis
-   *   data-x-strips     number            — strips per y-row for xy axis (default 1)
-   *   data-aspect      "W/H"             — initial aspect ratio hint               */
+   *   data-invert      "x" | "y" | "xy"  - flip drag direction per axis
+   *   data-sensitivity  number            - multiplier; higher = faster
+   *   data-loop        "x" | "y" | "xy"  - wrap instead of clamp per axis
+   *   data-x-strips     number            - strips per y-row for xy axis (default 1)
+   *   data-aspect      "W/H"             - initial aspect ratio hint               */
   function initViewer(viewer) {
     var stripSrc    = viewer.dataset.stripSrc;
     var stripRows   = parseInt(viewer.dataset.stripRows,   10) || 1;
@@ -74,7 +74,7 @@
 
     if (!stripSrc) return;
 
-    /* Aspect ratio and flex weight — applied immediately from data-aspect,
+    /* Aspect ratio and flex weight - applied immediately from data-aspect,
        then updated from the actual strip dimensions once loaded.            */
     function setAspect(w, h) {
       viewer.style.setProperty('--rv-aspect', w + '/' + h);
@@ -310,7 +310,7 @@
       drawAt(px, py);
     }
 
-    /* First draw deferred — container is not yet in the DOM when initLightbox
+    /* First draw deferred - container is not yet in the DOM when initLightbox
        is called. ResizeObserver fires as soon as the container is sized.     */
     if ('ResizeObserver' in window) {
       var ro = new ResizeObserver(function () { ro.disconnect(); resize(); });

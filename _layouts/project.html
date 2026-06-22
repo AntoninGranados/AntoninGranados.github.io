@@ -7,12 +7,12 @@
   <meta name="description" content="{{ page.subtitle }}">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Antonin Granados">
-  <meta property="og:title" content="{{ page.title }} — Antonin Granados">
+  <meta property="og:title" content="{{ page.title }} - Antonin Granados">
   <meta property="og:description" content="{{ page.subtitle }}">
   <meta property="og:url" content="https://antoningranados.github.io{{ page.url }}">
   {% if page.image %}<meta property="og:image" content="https://antoningranados.github.io{{ page.image }}">{% endif %}
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ page.title }} — Antonin Granados">
+  <meta name="twitter:title" content="{{ page.title }} - Antonin Granados">
   <meta name="twitter:description" content="{{ page.subtitle }}">
   {% if page.image %}<meta name="twitter:image" content="https://antoningranados.github.io{{ page.image }}">{% endif %}
   <link rel="icon" href="../assets/img/icon.png" type="image/png">
@@ -597,7 +597,7 @@
         return { h: h, a: a };
       });
 
-      /* Pre-compute heading offsets once — no getBoundingClientRect on every scroll */
+      /* Pre-compute heading offsets once - no getBoundingClientRect on every scroll */
       var headingOffsets = [];
       function computeHeadingOffsets() {
         headingOffsets = entries.map(function (e) {
@@ -607,7 +607,7 @@
       computeHeadingOffsets();
       window.addEventListener('resize', computeHeadingOffsets, { passive: true });
 
-      /* Active section tracking via scroll — RAF-throttled */
+      /* Active section tracking via scroll - RAF-throttled */
       var lastActive = -1;
       var activeRaf = null;
       function updateActive() {
@@ -633,12 +633,12 @@
       window.addEventListener('scroll', updateActive, { passive: true });
       updateActive();
 
-      /* Push TOC below hero banner + parallax — RAF-throttled */
+      /* Push TOC below hero banner + parallax - RAF-throttled */
       var heroBanner = document.querySelector('.project-hero-banner');
       if (heroBanner) {
         var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var headerH = header ? header.offsetHeight : 0;
-        /* Pre-compute banner bottom in document coordinates — no reflow on scroll */
+        /* Pre-compute banner bottom in document coordinates - no reflow on scroll */
         var bannerAbsBottom = heroBanner.getBoundingClientRect().bottom + window.scrollY;
         var bannerRaf = null;
 
