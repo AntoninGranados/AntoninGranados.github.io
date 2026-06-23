@@ -228,7 +228,7 @@
 
       /* Build ordered list of all lightbox-able items */
       var lbItems = Array.from(document.querySelectorAll(
-        '.markdown-content img:not([aria-hidden]), .markdown-content .video-container video, .markdown-content [data-lightbox]'
+        '.markdown-content img:not([aria-hidden]), .markdown-content .video-container video:not([controls]), .markdown-content [data-lightbox]'
       ));
 
       function openLightbox(el) {
@@ -337,7 +337,7 @@
       });
       document.querySelectorAll('.markdown-content .video-container').forEach(function (container) {
         var vid = container.querySelector('video');
-        if (!vid) return;
+        if (!vid || vid.hasAttribute('controls')) return;
         vid.addEventListener('click', function (e) { e.stopPropagation(); openLightbox(vid); });
       });
       document.querySelectorAll('.markdown-content [data-lightbox]').forEach(function (el) {

@@ -641,6 +641,7 @@ main{padding:1rem 0 2rem}
 
 .card-badge--in-progress { background: #F1FA8C; }
 .card-badge--school      { background: #8BE9FD; }
+.card-badge--award       { background: #FFD700; color: #1a1a1a; }
 
 .card-heart {
     position: absolute;
