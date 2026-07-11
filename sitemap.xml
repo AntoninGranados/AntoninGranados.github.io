@@ -34,6 +34,11 @@ layout: null
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://antoningranados.github.io/projects/echo_depths.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://antoningranados.github.io/projects/ima205.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
