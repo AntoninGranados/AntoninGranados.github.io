@@ -15,6 +15,29 @@ docs:
 
 The game was made by **SlyzDev, Antonin Granados, and R2Jeu**.
 
+## Results
+
+Out of **1786 entries** in Ludum Dare 57.
+
+<div class="project-feature-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr));" markdown="0">
+  <section>
+    <h3>#35 Overall</h3>
+    <p>4.244 / 5 from 47 ratings</p>
+  </section>
+  <section>
+    <h3>#12 Innovation</h3>
+    <p>4.344 / 5 from 47 ratings</p>
+  </section>
+  <section>
+    <h3>#46 Fun</h3>
+    <p>4.144 / 5 from 47 ratings</p>
+  </section>
+  <section>
+    <h3>#56 Audio</h3>
+    <p>4.102 / 5 from 46 ratings</p>
+  </section>
+</div>
+
 ## Mechanic
 
 The level is completely dark by default. Clicking sends out a radial scan that reveals the outlines of platforms, walls, and hazards for a brief moment. You build a picture of each room scan by scan, then commit to a jump or a path before the image fades. The tension comes from deciding when to scan and when to move.
