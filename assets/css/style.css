@@ -749,6 +749,7 @@ main{padding:1rem 0 2rem}
     color: var(--heading-2);
     font-weight: 700;
     text-align: center;
+    scroll-margin-top: calc(var(--header-h, 4.5rem) + 1.5rem);
 }
 
 .markdown-content h3 {
@@ -757,6 +758,27 @@ main{padding:1rem 0 2rem}
     color: var(--heading-3);
     font-weight: 600;
     text-align: center;
+    scroll-margin-top: calc(var(--header-h, 4.5rem) + 1.5rem);
+}
+
+.heading-anchor-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+    padding: 0.25rem;
+    border: none;
+    background: none;
+    color: var(--accent);
+    opacity: 0.4;
+    cursor: pointer;
+    transition: opacity var(--transition-default);
+}
+.heading-anchor-btn:hover,
+.heading-anchor-btn:focus-visible,
+.heading-anchor-btn.copied {
+    opacity: 1;
 }
 
 .markdown-content p {
@@ -1116,14 +1138,32 @@ main{padding:1rem 0 2rem}
     display: block;
     outline: none;
     border: none;
+}
+.markdown-content .video-container video:not([controls]) {
     cursor: zoom-in;
 }
 
-.markdown-content .video-container video::-webkit-media-controls {
+.markdown-content .video-container video:not([controls])::-webkit-media-controls {
     display: none !important;
 }
-.markdown-content .video-container video::-webkit-media-controls-panel {
+.markdown-content .video-container video:not([controls])::-webkit-media-controls-panel {
     display: none !important;
+}
+
+.markdown-content .video-container:has(video:not([autoplay]))::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23BD93F9' d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 1.75rem;
 }
 
 .markdown-content img {

@@ -18,9 +18,10 @@ Our team **Télécommando** - **André Poix, Florent Wallet, Mathias Anseaume, a
 ## Presentation video
 
 <figure class="video-container project-wide-video" markdown="0">
-  <video controls preload="metadata" playsinline disablepictureinpicture>
+  <video poster="/assets/videos/aspis/presentation_poster.webp" preload="none" playsinline disablepictureinpicture>
     <source src="/assets/videos/aspis/presentation_telecommando.mp4" type="video/mp4">
   </video>
+  <figcaption>Team Télécommando's presentation video (with audio, click to play).</figcaption>
 </figure>
 
 ## Challenge

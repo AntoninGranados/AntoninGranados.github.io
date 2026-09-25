@@ -268,10 +268,9 @@
           lbWrap.className = 'lightbox-video-wrap';
           lbMedia = document.createElement('video');
             lbMedia.src = el.currentSrc || el.src || (el.querySelector('source') ? el.querySelector('source').src : '');
-            lbMedia.muted = true;
+            lbMedia.muted = el.muted;
             lbMedia.playsInline = true;
-            lbMedia.autoplay = true;
-            lbMedia.loop = true;
+            lbMedia.loop = el.loop;
             var progress = document.createElement('div');
             progress.className = 'lightbox-progress';
             var fill = document.createElement('div');
@@ -299,6 +298,8 @@
             progress.addEventListener('click', function (e) { e.stopPropagation(); });
           lbWrap.appendChild(lbMedia);
           lbWrap.appendChild(progress);
+          var lbPlayPromise = lbMedia.play();
+          if (lbPlayPromise && lbPlayPromise.catch) lbPlayPromise.catch(function () {});
         } else {
           lbMedia = document.createElement('img');
           lbMedia.src = el.src;
@@ -503,6 +504,43 @@
       }, { passive: true });
       btt.addEventListener('click', function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      var copyLinkIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+      var copyCheckIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+      function createCopyLinkBtn(getUrl, label) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'heading-anchor-btn';
+        btn.setAttribute('aria-label', label);
+        btn.innerHTML = copyLinkIcon;
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          navigator.clipboard.writeText(getUrl()).then(function () {
+            btn.classList.add('copied');
+            btn.innerHTML = copyCheckIcon;
+            setTimeout(function () {
+              btn.classList.remove('copied');
+              btn.innerHTML = copyLinkIcon;
+            }, 1500);
+          }).catch(function () {});
+        });
+        return btn;
+      }
+
+      var titleEl = document.querySelector('.project-hero-text h1, .markdown-content h1:first-of-type');
+      if (titleEl) {
+        titleEl.appendChild(createCopyLinkBtn(function () { return location.origin + location.pathname; }, 'Copy link to this page'));
+      }
+
+      var headingIdCounter = 0;
+      document.querySelectorAll('.markdown-content h2, .markdown-content h3').forEach(function (h) {
+        var innerAnchor = h.querySelector('a[id]');
+        if (!h.id) h.id = innerAnchor ? innerAnchor.id : ('section-' + (headingIdCounter++));
+        if (h.tagName !== 'H2') return;
+        h.appendChild(createCopyLinkBtn(function () { return location.origin + location.pathname + '#' + h.id; }, 'Copy link to this section'));
       });
 
       /* Table of contents */
