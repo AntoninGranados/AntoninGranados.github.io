@@ -24,7 +24,7 @@ docs:
         box-shadow: var(--shadow-sm);
     }
 
-    .section-links {
+    .markdown-content .section-links {
         display: grid;
         grid-template-columns: repeat(2, minmax(180px, 1fr));
         gap: 0.75rem;
@@ -32,23 +32,20 @@ docs:
         margin: 0.25rem auto 0.75rem auto;
         max-width: 420px;
     }
-    .section-links li { list-style: none; margin: 0; }
-    .section-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
+    .markdown-content .section-links li { list-style: none; margin: 0; }
+    .markdown-content .section-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
 
-    .week-links {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    .markdown-content .week-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 0.75rem;
         padding: 0;
         margin: 0.75rem auto 1.25rem auto;
         max-width: var(--max-width);
     }
-    .week-links li { list-style: none; margin: 0; }
-    .week-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
-
-    @media (min-width: 900px) {
-        .week-links { grid-template-columns: repeat(4, minmax(180px, 1fr)); }
-    }
+    .markdown-content .week-links li { list-style: none; margin: 0; flex: 1 1 220px; max-width: 260px; }
+    .markdown-content .week-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
 
     .section-divider {
         height: 1px;

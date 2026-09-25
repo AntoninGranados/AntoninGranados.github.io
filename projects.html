@@ -239,43 +239,5 @@ layout: null
       });
     })();
   </script>
-  <script>
-    (function () {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      document.querySelectorAll('.project-card').forEach(function (card) {
-        var shine = document.createElement('div');
-        shine.className = 'card-shine';
-        card.appendChild(shine);
-        var rafId = null, pendingX = 0, pendingY = 0, rect = null;
-        card.addEventListener('mouseenter', function () { rect = card.getBoundingClientRect(); }, { passive: true });
-        card.addEventListener('mousemove', function (e) {
-          pendingX = e.clientX; pendingY = e.clientY;
-          if (rafId) return;
-          rafId = requestAnimationFrame(function () {
-            rafId = null;
-            if (!rect) rect = card.getBoundingClientRect();
-            var x = (pendingX - rect.left) / rect.width;
-            var y = (pendingY - rect.top) / rect.height;
-            var tiltX = (y - 0.5) * -5, tiltY = (x - 0.5) * 5;
-            card.style.transition = 'box-shadow 0.15s ease-out, border-color 0.15s ease-out';
-            card.style.transform = 'perspective(900px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale3d(1.02, 1.02, 1.02)';
-            card.style.boxShadow = 'var(--shadow-md)';
-            card.style.borderColor = 'rgba(189,147,249,0.35)';
-            card.style.setProperty('--shine-angle', (Math.atan2(tiltY, -tiltX) * (180 / Math.PI)) + 'deg');
-            shine.style.opacity = '1';
-          });
-        }, { passive: true });
-        card.addEventListener('mouseleave', function () {
-          if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-          rect = null;
-          card.style.transition = 'transform 0.5s cubic-bezier(0.22,1,0.36,1), box-shadow 0.15s ease-out, border-color 0.15s ease-out';
-          card.style.transform = '';
-          card.style.boxShadow = '';
-          card.style.borderColor = '';
-          shine.style.opacity = '0';
-        }, { passive: true });
-      });
-    })();
-  </script>
 </body>
 </html>

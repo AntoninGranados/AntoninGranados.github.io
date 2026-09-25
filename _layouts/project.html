@@ -77,11 +77,13 @@
       </div>
     </div>
     {% endif %}
-    <div class="markdown-content">
-      {{ content }}
+    <div class="project-body">
+      <div class="markdown-content">
+        {{ content }}
+      </div>
+      <aside id="toc-sidebar" class="toc-sidebar" aria-label="Table of contents"></aside>
     </div>
   </main>
-  <aside id="toc-sidebar" class="toc-sidebar" aria-label="Table of contents"></aside>
   {% if page.pdf or page.docs or page.source_code %}
   <div id="toc-docs" hidden>
     {% if page.pdf %}<a href="{{ page.pdf }}" target="_blank" rel="noopener">{{ page.pdf_label | default: "Technical report" }}</a>{% endif %}
@@ -515,6 +517,13 @@
       if (allHeadings.length < 2 && !tocDocs) { sidebar.remove(); return; }
 
       var header = document.querySelector('.site-header');
+
+      function setHeaderHeightVar() {
+        document.documentElement.style.setProperty('--header-h', (header ? header.offsetHeight : 0) + 'px');
+      }
+      setHeaderHeightVar();
+      window.addEventListener('resize', setHeaderHeightVar, { passive: true });
+
       function scrollToHeading(h) {
         var offset = (header ? header.offsetHeight : 0) + 16;
         var top = h.getBoundingClientRect().top + window.scrollY - offset;
@@ -633,11 +642,9 @@
       window.addEventListener('scroll', updateActive, { passive: true });
       updateActive();
 
-      /* Push TOC below hero banner + parallax - RAF-throttled */
+      /* Parallax on hero banner background - RAF-throttled */
       var heroBanner = document.querySelector('.project-hero-banner');
-      if (heroBanner) {
-        var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var headerH = header ? header.offsetHeight : 0;
+      if (heroBanner && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         /* Pre-compute banner bottom in document coordinates - no reflow on scroll */
         var bannerAbsBottom = heroBanner.getBoundingClientRect().bottom + window.scrollY;
         var bannerRaf = null;
@@ -647,10 +654,7 @@
           bannerRaf = requestAnimationFrame(function () {
             bannerRaf = null;
             var scrollY = window.scrollY;
-            var newTop = Math.max(headerH + 16, bannerAbsBottom - scrollY + 16);
-            sidebar.style.top = newTop + 'px';
-            sidebar.style.maxHeight = 'calc(100vh - ' + (newTop + 16) + 'px)';
-            if (!reducedMotion && scrollY < bannerAbsBottom) {
+            if (scrollY < bannerAbsBottom) {
               heroBanner.style.setProperty('--parallax-offset', (scrollY * 0.35) + 'px');
             }
           });

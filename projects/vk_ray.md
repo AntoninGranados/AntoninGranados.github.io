@@ -14,9 +14,9 @@ source_code: https://github.com/AntoninGranados/VkRay/
   <img src="/assets/imgs/projects/vk_ray/vkray-logo.webp" alt="VkRay 1.0 logo rendered inside the engine">
 </figure>
 
-VkRay is a physically based rendering application written in C++ with Vulkan. It is built on top of my lightweight Vulkan framework, [VkSmol](https://github.com/AntoninGranados/VkSmol), and implements its path tracing pipeline in shaders instead of relying on Vulkan ray tracing extensions.
+VkRay is a physically based renderer written in C++ with Vulkan, built on my lightweight framework [VkSmol](https://github.com/AntoninGranados/VkSmol). Its path tracer runs entirely in shaders, without Vulkan's ray tracing extensions.
 
-The project combines a renderer, a small rigid body simulation system, mesh processing tools, and an interactive editor. The common data model is a custom Entity Component System (ECS), which keeps transforms, materials, geometry, animation, physics, and GPU packing connected without coupling every subsystem directly.
+It combines a renderer, a rigid body simulator, mesh processing tools, and an interactive editor, all built around a custom Entity Component System (ECS) that ties transforms, materials, geometry, animation, and physics together.
 
 <div class="rotation-viewer-row" markdown="0">
   <div class="rotation-viewer"
@@ -63,15 +63,15 @@ The project combines a renderer, a small rigid body simulation system, mesh proc
 <div class="project-feature-grid" markdown="0">
   <section>
     <h3>Rendering</h3>
-    <p>A shader path tracer with HDR accumulation, direct light sampling, MIS, homogeneous volumes, and AOV export, backed by an explicit CPU-built BVH for mesh acceleration.</p>
+    <p>A shader path tracer with HDR accumulation, direct light sampling, MIS, homogeneous volumes, and AOV export. Mesh acceleration uses a CPU-built BVH.</p>
   </section>
   <section>
-    <h3>Programmable Materials</h3>
-    <p>Custom BSDFs written in GLSL, hot-reloaded at runtime with their parameters automatically surfaced in the editor's inspector.</p>
+    <h3>Programmable Shading</h3>
+    <p>A small DSL for authoring materials and camera ray generation in GLSL, hot-reloaded at runtime with parameters surfaced automatically in the editor.</p>
   </section>
   <section>
-    <h3>Camera &amp; Lens</h3>
-    <p>Depth of field with custom aperture shapes, shutter-driven motion blur, and a tilt-shift lens with Scheimpflug focus control.</p>
+    <h3>Camera</h3>
+    <p>Native depth of field and shutter-driven motion blur, paired with a fully programmable lens for custom projections and ray generation.</p>
   </section>
   <section>
     <h3>Editor</h3>
@@ -81,31 +81,31 @@ The project combines a renderer, a small rigid body simulation system, mesh proc
 
 ## Path Tracing
 
-The renderer runs as a fullscreen raster pass that generates one camera ray per pixel and iteratively traces light transport in GLSL. Scene data is stored in Shader Storage Buffer Objects: analytic primitives are grouped by type, mesh handles reference flattened BVH nodes, and a separate light buffer supports importance sampling of emissive geometry.
+The renderer runs as a fullscreen raster pass that fires one camera ray per pixel and traces light transport iteratively in GLSL. Scene data lives in Shader Storage Buffer Objects: primitives grouped by type, mesh handles pointing to flattened BVH nodes, and a light buffer for importance sampling emissive geometry.
 
-Materials include Lambertian diffuse, emissive surfaces, GGX metal, GGX glossy/plastic, dielectric glass, homogeneous participating media, and programmable procedural materials. The microfacet materials use Cook-Torrance shading, GGX visible-normal sampling, and Schlick Fresnel. Direct light sampling is combined with BSDF sampling through Multiple Importance Sampling to reduce variance around bright or small light sources. Volumes are sampled with Beer-Lambert transmittance and a Henyey-Greenstein phase function, with next event estimation at scatter points so the medium receives direct lighting instead of only forward-scattered radiance.
+Materials include Lambertian diffuse, emissive, GGX metal, GGX glossy/plastic, dielectric glass, homogeneous volumes, and programmable procedural materials. Microfacet materials use Cook-Torrance shading with GGX visible-normal sampling and Schlick Fresnel. Direct light sampling and BSDF sampling are combined through Multiple Importance Sampling to cut variance around small or bright lights. Volumes use Beer-Lambert transmittance and a Henyey-Greenstein phase function, with direct lighting applied at each scatter point.
 
-An AOV (Arbitrary Output Variable) pass exports camera-space normals, albedo, linear depth, and a sky mask alongside the beauty render as a single multi-channel EXR. A headless job system drives batches of these renders from declarative JSON files — parameter overrides, multiple sample checkpoints, and per-checkpoint AOV control — which is how the mesh-simplification and denoising test datasets are generated without touching the editor.
+An AOV (Arbitrary Output Variable) pass exports camera-space normals, albedo, linear depth, and a sky mask alongside the beauty render, as a single multi-channel EXR. A headless job system drives batches of these renders from JSON files (parameter overrides, sample checkpoints, per-checkpoint AOVs), which is how the mesh-simplification and denoising test datasets get generated without touching the editor.
 
 <figure class="project-hero-media">
-  <img src="/assets/imgs/projects/vk_ray/render-1.webp" alt="VkRay render showing a grid of glossy, metallic, and diffuse green spheres">
+  <img src="/assets/imgs/projects/vk_ray/materials/render-1.webp" alt="VkRay render showing a grid of glossy, metallic, and diffuse green spheres">
   <figcaption>Material sweep rendered in VkRay, showing diffuse, glossy, and metallic responses under the same lighting.</figcaption>
 </figure>
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/material1.webp" alt="VkRay material test scene with several spheres">
+    <img src="/assets/imgs/projects/vk_ray/materials/material1.webp" alt="VkRay material test scene with several spheres">
     <figcaption>Material response comparison.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/material2.webp" alt="VkRay second material test scene">
+    <img src="/assets/imgs/projects/vk_ray/materials/material2.webp" alt="VkRay second material test scene">
     <figcaption>Roughness and reflection variation.</figcaption>
   </figure>
 </div>
 
 ## Programmable Materials
 
-Beyond the built-in BSDFs, materials can be authored as standalone GLSL files and attached to any object through a `Programmable` component. A material file declares its own typed, constrained parameters with `#param` directives (`int`, `float`, `vec3: color`, with optional `min()`/`max()` bounds), and composes the surface response in `main()` from the same BSDF constructors the built-in materials use — `Diffuse(albedo)`, and so on. Saving the file triggers a hot reload: the shader is recompiled, the pipeline is rebuilt in place, and the new parameters are surfaced automatically in the editor's inspector — no engine restart, no manually wiring UI widgets. This reuses the declarative field/metadata system that also drives ECS components and render parameters, so a material author only ever writes the shader.
+Beyond the built-in BSDFs, materials can be authored as standalone GLSL files and attached to any object through a `Programmable` component. A material file declares typed parameters with `#param` directives (`int`, `float`, `vec3: color`, with optional bounds), then builds its surface response in `main()` using the same BSDF constructors as the built-in materials, like `Diffuse(albedo)`. Saving the file hot-reloads it: the shader recompiles, the pipeline rebuilds in place, and the new parameters appear in the editor automatically, with no engine restart and no manual UI wiring. It reuses the same field system that drives ECS components, so a material author only ever writes the shader.
 
 <figure class="video-container project-wide-video">
   <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
@@ -116,48 +116,76 @@ Beyond the built-in BSDFs, materials can be authored as standalone GLSL files an
 
 <div class="project-media-grid three" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/dragon-gold.webp" alt="Stanford Dragon rendered with a procedural marble-and-gold-vein programmable material">
+    <img src="/assets/imgs/projects/vk_ray/materials/dragon-gold.webp" alt="Stanford Dragon rendered with a procedural marble-and-gold-vein programmable material">
     <figcaption>Marble with procedural gold veining.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/dragon-glass.webp" alt="Stanford Dragon rendered with a jade-green glass programmable material">
+    <img src="/assets/imgs/projects/vk_ray/materials/dragon-glass.webp" alt="Stanford Dragon rendered with a jade-green glass programmable material">
     <figcaption>Jade-glass dielectric variant.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/dragon-marble.webp" alt="Stanford Dragon rendered with a white marble programmable material">
+    <img src="/assets/imgs/projects/vk_ray/materials/dragon-marble.webp" alt="Stanford Dragon rendered with a white marble programmable material">
     <figcaption>Plain marble, same underlying shader.</figcaption>
   </figure>
 </div>
 
-## Camera & Lens
+## Camera
 
-The `Camera` entity carries a stack of optional lens components instead of a single hard-coded projection. A `ThinLensCamera` adds physically based depth of field from an `aperture` and `focus_depth`; the aperture itself can be replaced with an image mask (heart, star, cat-eye, ring, or any custom shape) so out-of-focus highlights take that shape instead of a plain disc. `shutter_speed` on the `Camera` drives motion blur through stochastic temporal sampling with a centered shutter: each sample draws a random time within the exposure window and interpolates scene transforms to that instant, rather than blurring the final image as a post effect.
+Depth of field and motion blur are native to the `Camera` component. An `f_stop` and `focal_distance` (or a `focus_target` entity) drive physically based depth of field, and the aperture shape can be swapped for a polygon or an image mask (heart, star, cat-eye, ring, or custom), so out-of-focus highlights take that shape instead of a plain disc.
 
-A `TiltShiftLens` goes further and tilts the focal plane itself using the Scheimpflug principle, driven by `plane_position` and `plane_rotation` fields with a dedicated viewport gizmo and an optional focus-plane overlay for direct manipulation — the same miniature-effect / selective-focus control view cameras use.
+`shutter_speed` drives motion blur through stochastic temporal sampling with a centered shutter: each sample draws a random time within the exposure window and interpolates scene transforms to that instant, instead of blurring the final image as a post effect.
 
 <figure class="project-hero-media">
-  <img src="/assets/imgs/projects/vk_ray/motion-blur.webp" alt="Police car chase render with strong directional motion blur">
+  <img src="/assets/imgs/projects/vk_ray/lens/motion-blur.webp" alt="Police car chase render with strong directional motion blur">
   <figcaption>Shutter-driven motion blur on a chase scene.</figcaption>
 </figure>
 
 <div class="project-media-grid four" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/bokeh-heart.webp" alt="Campfire scene with heart-shaped bokeh highlights">
+    <img src="/assets/imgs/projects/vk_ray/lens/bokeh-heart.webp" alt="Campfire scene with heart-shaped bokeh highlights">
     <figcaption>Heart aperture mask.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/bokeh-star.webp" alt="Campfire scene with star-shaped bokeh highlights">
+    <img src="/assets/imgs/projects/vk_ray/lens/bokeh-star.webp" alt="Campfire scene with star-shaped bokeh highlights">
     <figcaption>Star aperture mask.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/bokeh-cateye.webp" alt="Campfire scene with cat-eye-shaped bokeh highlights">
+    <img src="/assets/imgs/projects/vk_ray/lens/bokeh-cateye.webp" alt="Campfire scene with cat-eye-shaped bokeh highlights">
     <figcaption>Cat-eye aperture mask.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/bokeh-ring.webp" alt="Campfire scene with ring-shaped bokeh highlights">
+    <img src="/assets/imgs/projects/vk_ray/lens/bokeh-ring.webp" alt="Campfire scene with ring-shaped bokeh highlights">
     <figcaption>Ring aperture mask.</figcaption>
   </figure>
 </div>
+
+### Programmable Lens
+
+The lens itself, in contrast, has no native implementation. The same DSL used for materials extends to ray generation: a camera file declares parameters just like a material, but its `main()` returns a ray (an origin and direction per pixel) instead of a BSDF sample, and hot-reloads the same way. Even bundled lenses like the tilt-shift (Scheimpflug) one are ordinary scripts on top of this DSL. Orthographic projections, fisheye and other wide-angle mappings, a tilted focal plane, or a lens's field-dependent aberrations all become a few lines of GLSL instead of new engine code.
+
+Swapping the projection changes how the camera relates to the scene, not just how it looks. An orthographic camera emits parallel rays, so dollying into a mesh doesn't converge toward it: it slices through the surface and flips to show the inside, like a moving cross-section. A fisheye camera instead spreads the view direction across an extreme field of view, for a hemispherical, barrel-distorted look.
+
+<div class="project-media-grid two" markdown="0">
+  <figure class="video-container">
+    <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+      <source src="/assets/videos/vk_ray/xray.mp4" type="video/mp4">
+    </video>
+    <figcaption>Orthographic camera dollying straight through the Dragon mesh.</figcaption>
+  </figure>
+  <figure class="video-container">
+    <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
+      <source src="/assets/videos/vk_ray/zoom.mp4" type="video/mp4">
+    </video>
+    <figcaption>Fisheye camera orbiting a mesh with an extreme field of view.</figcaption>
+  </figure>
+</div>
+
+Custom ray generation also reaches further than the aperture masks above: a Petzval camera reproduces the field curvature and swirly, cat's-eye edge bokeh of early portrait lenses just from how it samples the lens per pixel, instead of compositing a fixed image mask over a disc.
+
+<figure class="project-hero-media">
+  <img src="/assets/imgs/projects/vk_ray/rays/petzval-bunny.webp" alt="Glass bunny rendered with a Petzval-lens camera, showing swirly edge bokeh">
+  <figcaption>Petzval-lens camera: swirly, field-curved bokeh from custom ray sampling, not an aperture mask.</figcaption>
+</figure>
 
 ## Simulation and Animation
 
@@ -165,7 +193,7 @@ The simulation system is scheduled through the ECS and updates transform and rig
 
 Collisions are impulse-based. Planes, spheres, and boxes are supported as colliders, while rigid bodies store mass, inertia, linear momentum, and angular momentum. Boxes are sampled on their surface for contacts; spheres use a Fibonacci distribution.
 
-Keyframe animation runs on the same field system as the programmable materials: any numeric field on a component or material can hold a typed `Track` of keyframes, with six interpolation modes (linear, step, cubic, ease-in, ease-out, ease-in-out). An `AnimationStore` maps `(entity, component, field)` and `(material, field)` pairs to tracks, and a single `evaluate()` call applies all of them per frame — so transforms, physics parameters, and shader parameters can all be keyframed from the same timeline.
+Keyframe animation runs on the same field system as the programmable materials. Any numeric field on a component or material can hold a typed `Track` of keyframes, with six interpolation modes (linear, step, cubic, ease-in, ease-out, ease-in-out). An `AnimationStore` maps `(entity, component, field)` and `(material, field)` pairs to tracks, and a single `evaluate()` call applies all of them per frame. That means transforms, physics parameters, and shader parameters can all be keyframed from the same timeline.
 
 <div class="project-media-grid two" markdown="0">
   <figure class="video-container">
@@ -197,11 +225,11 @@ VkRay also includes Quadric Error Metrics mesh simplification. The simplifier co
 
 <div class="project-media-grid two" markdown="0">
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/dragon1.webp" alt="Stanford Dragon rendered in VkRay">
+    <img src="/assets/imgs/projects/vk_ray/meshes/dragon1.webp" alt="Stanford Dragon rendered in VkRay">
     <figcaption>High-detail mesh rendering.</figcaption>
   </figure>
   <figure>
-    <img src="/assets/imgs/projects/vk_ray/sponza.webp" alt="Sponza scene rendered in VkRay">
+    <img src="/assets/imgs/projects/vk_ray/meshes/sponza.webp" alt="Sponza scene rendered in VkRay">
     <figcaption>Sponza stress test for mesh traversal.</figcaption>
   </figure>
 </div>
@@ -211,8 +239,8 @@ VkRay also includes Quadric Error Metrics mesh simplification. The simplifier co
 The application is an editor, not just an offline renderer. Objects can be selected with CPU raycasts against scene geometry, then transformed with gizmos. The side panels expose entities, materials, mesh assets, path tracer settings, lighting modes, and physics baking controls. A command panel handles shader hot reloads, single frame rendering, animation rendering, and debugging commands.
 
 <figure class="project-hero-media">
-  <img src="/assets/imgs/projects/vk_ray/editor.webp" alt="VkRay editor interface with a selected object, its Programmable material component, and the keyframe animation timeline">
-  <figcaption>Editor in its Dracula theme: entity/material panels, a Programmable material component, renderer settings, and the keyframe animation timeline along the bottom.</figcaption>
+  <img src="/assets/imgs/projects/vk_ray/editor/editor.webp" alt="VkRay editor interface with a selected Dragon mesh, its transform and material inspector, renderer settings, and a debug view">
+  <figcaption>Editor in its Dracula theme: selection gizmo, transform/mesh/material inspector, renderer and AOV settings, a debug view, and the keyframe animation timeline along the bottom.</figcaption>
 </figure>
 
 ## Report
