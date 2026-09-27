@@ -1,85 +1,27 @@
 ---
-title: Cloth Simulation with DL
+title: Atlas Cloth Dynamics
 layout: project
-image: /assets/imgs/projects/cloth_dl_preview.webp
+image: /assets/imgs/projects/atlas_dyn_preview.webp
 image_position: 50% 18%
 subtitle: Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
 docs:
   - label: "Final paper"
-    href: "/assets/docs/projects/cloth_dl/paper.pdf"
+    href: "/assets/docs/projects/atlas_dyn/paper.pdf"
   - label: "SoTA report"
-    href: "/assets/docs/projects/cloth_dl/sota-report.pdf"
+    href: "/assets/docs/projects/atlas_dyn/sota-report.pdf"
 ---
-# Physics-based Simulation of Deformable Objects with Deep Learning for Computer Graphics Applications
+# Atlas Cloth Dynamics: Physics-based Simulation of Deformable Objects with Deep Learning
 
-<!-- Section and week quick navigation (reuses .social-links styles) -->
-<style>
-    .section-selector {
-        max-width: var(--max-width);
-        margin: 1rem auto 1.75rem auto;
-        padding: 0.9rem 1rem 0.5rem 1rem;
-        background: var(--card-grad);
-        border: var(--border);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-sm);
-    }
+## <a id="status-section"></a> Status
 
-    .markdown-content .section-links {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(180px, 1fr));
-        gap: 0.75rem;
-        padding: 0;
-        margin: 0.25rem auto 0.75rem auto;
-        max-width: 420px;
-    }
-    .markdown-content .section-links li { list-style: none; margin: 0; }
-    .markdown-content .section-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
+Currently preparing a short paper submission for Eurographics 2027.
 
-    .markdown-content .week-links {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.75rem;
-        padding: 0;
-        margin: 0.75rem auto 1.25rem auto;
-        max-width: var(--max-width);
-    }
-    .markdown-content .week-links li { list-style: none; margin: 0; flex: 1 1 220px; max-width: 260px; }
-    .markdown-content .week-links a { display: inline-flex; justify-content: center; align-items: center; width: 100%; }
-
-    .section-divider {
-        height: 1px;
-        max-width: var(--max-width);
-        margin: 2rem auto 2.25rem auto;
-        background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
-        opacity: 0.45;
-    }
-</style>
-<div class="container section-selector">
-    <ul class="social-links section-links">
-        <li><a href="#research-section">Research</a></li>
-        <li><a href="#sota-section">SOTA</a></li>
-    </ul>
-</div>
-
-<div class="section-divider" aria-hidden="true"></div>
-
-## <a id="research-section"></a> Research Section
-
-<div class="container">
-    <ul class="social-links week-links">
-        <li><a href="#week-02-03-2026">Week 09/03/2026</a></li>
-        <li><a href="#week-02-03-2026">Week 02/03/2026</a></li>
-        <li><a href="#week-22-02-2026">Week 22/02/2026</a></li>
-        <li><a href="#week-15-02-2026">Week 15/02/2026</a></li>
-        <li><a href="#week-18-01-2026">Week 18/01/2026</a></li>
-    </ul>
-</div>
+## <a id="research-section"></a> Research
 
 <div class="pdf-embed" markdown="0"> <a id="paper"></a>
-    <object data="/assets/docs/projects/cloth_dl/paper.pdf" type="application/pdf">
+    <object data="/assets/docs/projects/atlas_dyn/paper.pdf" type="application/pdf">
         <p>Your browser doesn't support embedded PDFs.
-        <a href="/assets/docs/projects/cloth_dl/paper.pdf">Download the paper instead</a></p>
+        <a href="/assets/docs/projects/atlas_dyn/paper.pdf">Download the paper instead</a></p>
     </object>
 </div>
 
@@ -92,13 +34,13 @@ This directly addresses one of the main limitations of the previous approach: co
 
 <div class="video-container" style="max-width: 85%;"><a id="tshirt-new-model-gt-vs-pred"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/surface_diffusion_tshirt_uv_rollout.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/surface_diffusion_tshirt_uv_rollout.mp4" type="video/mp4">
 </video>
 </div>
 
 <div class="video-container" style="max-width: 85%;"><a id="tshirt-new-model-oversampled"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/surface_diffusion_tshirt_interp_rollout.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/surface_diffusion_tshirt_interp_rollout.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -112,7 +54,7 @@ I managed to resolve the "blockiness" issue by improving the function I used to 
 
 <div class="video-container" style="max-width: 85%;"><a id="smooth-continuous-encode-decode"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/simulation_uv_maps_gt_vs_pred.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/simulation_uv_maps_gt_vs_pred.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -120,7 +62,7 @@ The first thing I tested was the continuous nature of the model. I compared the 
 
 <div class="video-container" style="max-width: 85%;"><a id="oversampling-prediction"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/simulation_gt_vs_dense_pred_mesh.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/simulation_gt_vs_dense_pred_mesh.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -128,7 +70,7 @@ I also experimented with frame interpolation. The idea is simple: encode two fra
 
 <div class="video-container" style="max-width: 85%;"><a id="frame-interpolation"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/simulation_decoder_interp_consecutive_mesh_100_150.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/simulation_decoder_interp_consecutive_mesh_100_150.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -143,7 +85,7 @@ The reconstruction results are shown below (<a href="#continuous-encode-decode">
 
 <div class="video-container" style="max-width: 85%;"><a id="continuous-encode-decode"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/continuous_encode_decode.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/continuous_encode_decode.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -161,7 +103,7 @@ To explore this, I implemented a very simple setup to better understand how such
 
 When trained on a single frame, the network fits the overall shape quite well. The predicted mesh closely matches the ground truth, both visually and in terms of MSE. The UV-coordinate maps (<a href="#cloth-neural-repr">Result image</a>: GT on top with nearest-neighbor interpolation, prediction below) also show that the global structure is captured correctly.
 
-<a id="cloth-neural-repr"></a><img src="/assets/imgs/projects/cloth_dl/cloth_neural_repr.webp" alt="Cloth Neural Representation" width="80%">
+<a id="cloth-neural-repr"></a><img src="/assets/imgs/projects/atlas_dyn/cloth_neural_repr.webp" alt="Cloth Neural Representation" width="80%">
 
 However, I encountered a limitation with a plain MLP (the results above were obtained after addressing this issue). Without any modification, the network tends to over-smooth the output, effectively removing most of the wrinkles in the cloth. To mitigate this, I introduced Fourier features on the UV inputs. With positional encoding, the network is able to represent higher-frequency details, and the wrinkles reappear much more faithfully. The architecture itself remains very small, so the improvement comes purely from the input encoding.
 
@@ -186,36 +128,12 @@ The last thing I thought about (and later found that [FNOpt](#fnopt) mentioned i
 2. **FNOPT: Resolution-Agnostic, Self-Supervised Cloth Simulation using Meta-Optimization with Fourier Neural Operators**<a id="fnopt"></a>, R. Chen, T. Tran, S. Parashar, 2025, [[PDF ArXiv](https://arxiv.org/pdf/2512.05762)]
 3. **Mesh-Informed Neural Operator : A Transformer Generative Approach**<a id="mino"></a>, Y. Shi, Z. E. Ross, D. Asimaki, K. Azizzadenesheli, 2025, _Transactions on Machine Learning Research_, [[PDF ArXive](https://arxiv.org/pdf/2506.16656)]
 
-<div class="section-divider" aria-hidden="true"></div>
-
-## <a id="sota-section"></a> SOTA Section
-
-<div class="container">
-    <ul class="social-links week-links">
-        <li><a href="#week-15-12-2025">Week 15/12/2025</a></li>
-        <li><a href="#week-08-12-2025">Week 08/12/2025</a></li>
-        <li><a href="#week-01-12-2025">Week 01/12/2025</a></li>
-        <li><a href="#week-24-11-2025">Week 24/11/2025</a></li>
-        <li><a href="#week-17-11-2025">Week 17/11/2025</a></li>
-        <li><a href="#week-10-11-2025">Week 10/11/2025</a></li>
-        <li><a href="#week-03-11-2025">Week 03/11/2025</a></li>
-        <li><a href="#week-27-10-2025">Week 27/10/2025</a></li>
-        <li><a href="#week-20-10-2025">Week 20/10/2025</a></li>
-        <li><a href="#week-13-10-2025">Week 13/10/2025</a></li>
-        <li><a href="#week-06-10-2025">Week 06/10/2025</a></li>
-        <li><a href="#week-03-10-2025">Week 03/10/2025</a></li>
-        <li><a href="#week-29-09-2025">Week 29/09/2025</a></li>
-        <li><a href="#week-26-09-2025">Week 26/09/2025</a></li>
-        <li><a href="#week-22-09-2025">Week 22/09/2025</a></li>
-        <li><a href="#week-18-09-2025">Week 18/09/2025</a></li>
-        <li><a href="#week-15-09-2025">Week 15/09/2025</a></li>
-    </ul>
-</div>
+## <a id="sota-section"></a> SOTA
 
 <div class="pdf-embed" markdown="0"> <a id="sota-report"></a>
-    <object data="/assets/docs/projects/cloth_dl/sota-report.pdf" type="application/pdf">
+    <object data="/assets/docs/projects/atlas_dyn/sota-report.pdf" type="application/pdf">
         <p>Your browser doesn't support embedded PDFs.
-        <a href="/assets/docs/projects/cloth_dl/sota-report.pdf">Download the PDF report instead</a></p>
+        <a href="/assets/docs/projects/atlas_dyn/sota-report.pdf">Download the PDF report instead</a></p>
     </object>
 </div>
 
@@ -228,7 +146,7 @@ Initially, I used a rollout length of 8, but it was extremely slow. I then tried
 
 <div class="video-container" width="100%"><a id="self-sup"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/self_sup_roll4.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/self_sup_roll4.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -236,10 +154,10 @@ Initially, I used a rollout length of 8, but it was extremely slow. I then tried
 I found an issue in my code (I was expecting a mistake in the stretching loss but hadn't found it before) by comparing with the source code of [HOOD](#hood) (see [GitHub](https://github.com/dolorousrtur/hood)). I was computing the Green strain tensor using the formula I found for the 2D case, but did not project the 3D points onto the triangle's plane (which made some sort of mix between the strain tensor of a 3D tetrahedron and a 2D triangle). I also found that they didn't normalise the losses to take into account the size of the mesh (ie. dividing by the node count, edge count or the total area).
 
 After fixing this, I did an overfit test using 10 random samples from my custom dataset without any noise added. I first tried with the supervised approach as a baseline. It converged pretty quickly so I stopped the training after only 200 steps.
-<img src="/assets/imgs/projects/cloth_dl/overfit_sup.webp" alt="Overfit Supervised" width="100%"><a id="overfit-supervised"></a>
+<img src="/assets/imgs/projects/atlas_dyn/overfit_sup.webp" alt="Overfit Supervised" width="100%"><a id="overfit-supervised"></a>
 
 After this, I tried with the unsupervised loss; the results also looked satisfying. They were much slower (1000 steps on the graph below) but this was expected. I also displayed each of the loss terms separately under the total graph (from left to right: Inertia, Gravity, Bending, Stretching). Be aware that each graph is not to scale; for instance the gravity practically didn't decrease while the stretching did most of the work.
-<img src="/assets/imgs/projects/cloth_dl/overfit_unsup.webp" alt="Overfit Unsupervised" width="100%"><a id="overfit-unsupervised"></a>
+<img src="/assets/imgs/projects/atlas_dyn/overfit_unsup.webp" alt="Overfit Unsupervised" width="100%"><a id="overfit-unsupervised"></a>
 
 ### <a id="week-24-11-2025"></a> <a id="week-01-12-2025"></a> 24/11/2025 - 01/12/2025
 During these weeks, I finished the first version of the State of the Art Report.
@@ -286,7 +204,7 @@ We can also see issues on the [video](#demo-sofa) on the edges (they flip and in
 
 <div class="video-container" width="100%"><a id="demo-sofa"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/sofa.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/sofa.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -300,7 +218,7 @@ The last two simulations (without remeshing) are about 5 times faster and use ar
 
 <div class="video-container" width="100%"><a id="demo-arcsim"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture width="50%">
-    <source src="/assets/videos/cloth_dl/arcsim.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/arcsim.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -311,7 +229,7 @@ I then looked into [Taichi](https://www.taichi-lang.org), but I wanted something
 
 I then tried the [SOFA framework](https://www.sofa-framework.org) and even though I had a bit of trouble compiling it, I managed to make it work on my computer. It uses XML to describe the scenes and can also work entirely through its Python interface (describe the scene + run the simulation). It also has a graphical interface (this is why I had some issues), which is useful but not strictly needed for my needs. It can simulate a wide variety of materials - from cloth to rigid bodies - so if we want to expand our field during the year, I will be able to use the same framework.
 
-<img src="/assets/imgs/projects/cloth_dl/sofa_demo.webp" alt="SOFA demo" width="50%"><a id="sofa_demo"></a>
+<img src="/assets/imgs/projects/atlas_dyn/sofa_demo.webp" alt="SOFA demo" width="50%"><a id="sofa_demo"></a>
 
 #### Bibliography
 1. **Adaptive Anisotropic Remeshing for Cloth Simulation**<a id="arcsim"></a>, R. Narain, A. Samii, and J. F. O'Brien, _ACM Transactions on Graphics_, _Proceedings of ACM SIGGRAPH Asia 2012_, 2012, [[HTML Berkley](http://graphics.berkeley.edu/resources/ARCSim/)]
@@ -331,7 +249,7 @@ $$
 
     <div class="video-container" width="100%"><a id="stretching"></a>
     <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-        <source src="/assets/videos/cloth_dl/stretching.mp4" type="video/mp4">
+        <source src="/assets/videos/atlas_dyn/stretching.mp4" type="video/mp4">
     </video>
     </div>
 
@@ -343,7 +261,7 @@ $$
 
     <div class="video-container" width="100%"><a id="bending"></a>
     <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-        <source src="/assets/videos/cloth_dl/bending.mp4" type="video/mp4">
+        <source src="/assets/videos/atlas_dyn/bending.mp4" type="video/mp4">
     </video>
     </div>
 
@@ -367,7 +285,7 @@ $$
 
     <div class="video-container" width="100%"><a id="collision"></a>
     <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-        <source src="/assets/videos/cloth_dl/collision.mp4" type="video/mp4">
+        <source src="/assets/videos/atlas_dyn/collision.mp4" type="video/mp4">
     </video>
     </div>
 
@@ -380,13 +298,13 @@ $$
 Even with unsupervised learning, we need a dataset that would serve as input for the model. Here the T-shirt (simulated using [ARCSim](#arcsim)) comes from the [VTO dataset](https://github.com/isantesteban/vto-dataset) used by [HOOD](#hood).
 <div class="video-container"><a id="vto_dataset"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/vto_dataset.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/vto_dataset.mp4" type="video/mp4">
 </video>
 </div>
 
 But the body (collider) is missing as it came from the [CMU Motion Capture Database](https://mocap.cs.cmu.edu) (videos) and was converted to [SMPL](https://smpl.is.tue.mpg.de) format using a video-to-pose algorithm ([SURREAL](https://www.di.ens.fr/willow/research/surreal/data/)). I tried to compute the bone rotations directly from the CMU files (which are given, so using video-to-pose should not be necessary). But probably due to local/global coordinate differences between the two datasets, I did not manage to compute the body pose for now (the [image below](#smpl_dataset) should be the first frame of the [animation above](#vto_dataset)).
 
-<img src="/assets/imgs/projects/cloth_dl/smpl_dataset.webp" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
+<img src="/assets/imgs/projects/atlas_dyn/smpl_dataset.webp" alt="SMPL Dataset demo" width="50%"><a id="smpl_dataset"></a>
 
 #### Bibliography
 1. **SNUG: Self-Supervised Neural Dynamic Garments**<a id="snug"></a>, I. Santesteban, M. A. Otaduy, and D. Casas, *Conference on Computer Vision and Pattern Recognition*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2204.02219)]
@@ -395,20 +313,20 @@ But the body (collider) is missing as it came from the [CMU Motion Capture Datab
 After additional training, the model shows more coherent behavior, though collision handling remains challenging. This issue might stem from our use of a relatively coarse mesh (30x30 nodes). Even though we don't implement remeshing, the model is trained on finer data from a remeshed dataset.
 <div class="video-container">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
-    <source src="/assets/videos/cloth_dl/sphere_2.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/sphere_2.mp4" type="video/mp4">
 </video>
 </div>
 
 So I created a **uniform dataset**, which was built by interpolating (barycenter interpolation) a uniform mesh with [MeshGraphNets](#mgn)'s dataset. As we can see in the [video below](#uniform_dataset), due to the lack of vertex density in some critical places, there are some wrinkles on sharp bends. The _node count ratio_ (the node count in the interpolated mesh divided by the node count in the ground truth) is also not great, except when the remeshing creates a lot of new nodes.
 <div class="video-container"><a id="uniform_dataset"></a>
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
-    <source src="/assets/videos/cloth_dl/uniform_dataset.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/uniform_dataset.mp4" type="video/mp4">
 </video>
 </div>
 
 This is why most papers discussed this week incorporate some form of **unsupervised learning**.
 
-Report of the week (*the links inside don't work*) [[PDF](../assets/docs/projects/cloth_dl/report-week-29-09.pdf)].
+Report of the week (*the links inside don't work*) [[PDF](../assets/docs/projects/atlas_dyn/report-week-29-09.pdf)].
 
 #### Bibliography
 1. **Neural Cloth Simulation**, H. Bertiche, M. Madadi, and S. Escalera, *ACM Transactions on Graphics*, 2022, [[PDF ArXiv](https://arxiv.org/pdf/2212.11220)]
@@ -423,7 +341,7 @@ The next phase involved the **Sphere Dynamic** dataset, which features the same 
 The current results are preliminary, with only ~150 epochs completed out of the 2000 suggested in the original paper. At this stage, collision handling has not been successfully learned:
 <div class="video-container">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
-    <source src="/assets/videos/cloth_dl/sphere_1.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/sphere_1.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -438,7 +356,7 @@ This week focused on implementing the basic [MeshGraphNets](#mgn) architecture. 
 The results are promising, despite limited training of only ~400 epochs out of the recommended 2000. In the demonstration below, only the initial frame is provided to the model. The GIF compares the rollout results (*left*: model prediction, *right*: validation dataset sample):
 <div class="video-container">
 <video autoplay loop muted playsinline preload="auto" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
-    <source src="/assets/videos/cloth_dl/flag_minimal.mp4" type="video/mp4">
+    <source src="/assets/videos/atlas_dyn/flag_minimal.mp4" type="video/mp4">
 </video>
 </div>
 
@@ -447,5 +365,5 @@ The results are promising, despite limited training of only ~400 epochs out of t
 
 ## Presentations
 
-- [Research presentation](/assets/docs/projects/cloth_dl/presentation.pdf) - Final research presentation slides
-- [SoTA presentation](/assets/docs/projects/cloth_dl/sota-presentation.pdf) - State of the art review slides
+- [Research presentation](/assets/docs/projects/atlas_dyn/presentation.pdf) - Final research presentation slides
+- [SoTA presentation](/assets/docs/projects/atlas_dyn/sota-presentation.pdf) - State of the art review slides
