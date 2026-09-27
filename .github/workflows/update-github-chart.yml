@@ -1,0 +1,22 @@
+name: Update GitHub chart
+
+on:
+  schedule:
+    - cron: '15 4 * * 1,4'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - run: python3 scripts/update_github_chart.py
+
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Update GitHub contribution chart
+          file_pattern: _includes/github-chart.svg

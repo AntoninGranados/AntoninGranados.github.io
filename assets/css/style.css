@@ -40,6 +40,10 @@
 
   /* Theme-sensitive tokens */
   --header-bg: rgba(27, 28, 38, 0.75);
+  --gh-level-1: #2a6f4d;
+  --gh-level-2: #358d61;
+  --gh-level-3: #41aa75;
+  --gh-level-4: #59c08c;
 }
 
 /* Light theme - auto (system) */
@@ -62,6 +66,10 @@
     --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
     --header-bg: rgba(244, 244, 239, 0.78);
+    --gh-level-1: #94dbb8;
+    --gh-level-2: #5ec994;
+    --gh-level-3: #38a870;
+    --gh-level-4: #26734d;
   }
 }
 
@@ -84,6 +92,10 @@
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
   --header-bg: rgba(244, 244, 239, 0.92);
+  --gh-level-1: #94dbb8;
+  --gh-level-2: #5ec994;
+  --gh-level-3: #38a870;
+  --gh-level-4: #26734d;
 }
 
 /* Reset & base */
@@ -400,11 +412,12 @@ main{padding:1rem 0 2rem}
     margin: 0 auto;
     display: flex;
     flex-direction: row;
+    justify-content: center;
     gap: 0.75rem;
     width: 100%;
 }
 .social-links li {
-    flex: 1;
+    flex: 0 0 auto;
     min-width: 0;
 }
 .social-links a {
@@ -412,13 +425,12 @@ main{padding:1rem 0 2rem}
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    width: 100%;
     color: var(--text);
     text-decoration: none;
-    padding: 0.4rem 0.75rem;
+    padding: 0.2rem 0.75rem;
     border-radius: var(--radius-lg);
-    background: var(--card);
-    border: var(--border);
+    background: transparent;
+    border: 1px solid transparent;
     transition: all var(--transition-default);
 }
 .social-links a:hover {
@@ -1640,3 +1652,33 @@ body.rot-dragging * {
     color: var(--text);
     text-decoration: none;
 }
+
+/* GitHub activity chart */
+.github-chart-wrap {
+    display: block;
+    overflow-x: auto;
+    padding: 0.25rem 0;
+}
+
+.github-chart-wrap a {
+    display: block;
+    width: 100%;
+}
+
+.github-chart-wrap svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.github-chart-wrap svg text {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-size: 9px;
+    fill: var(--muted);
+}
+
+.github-chart-wrap svg rect[data-level="0"] { fill: var(--muted); opacity: 0.25; }
+.github-chart-wrap svg rect[data-level="1"] { fill: var(--gh-level-1); }
+.github-chart-wrap svg rect[data-level="2"] { fill: var(--gh-level-2); }
+.github-chart-wrap svg rect[data-level="3"] { fill: var(--gh-level-3); }
+.github-chart-wrap svg rect[data-level="4"] { fill: var(--gh-level-4); }
