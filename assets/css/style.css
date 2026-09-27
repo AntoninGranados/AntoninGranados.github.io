@@ -1589,24 +1589,6 @@ body.rot-dragging * {
     border-color: rgba(189, 147, 249, 0.25);
 }
 
-.pub-badge {
-    font-size: var(--font-size-sm);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(189, 147, 249, 0.1);
-    border-radius: var(--radius-sm);
-    padding: 0.18rem 0.45rem;
-    flex-shrink: 0;
-    width: 3.8rem;
-    text-align: center;
-}
-
-[data-theme="light"] .pub-badge {
-    background: rgba(109, 63, 187, 0.1);
-}
-
 .pub-info {
     display: flex;
     align-items: baseline;
