@@ -67,7 +67,7 @@ It combines a renderer, a rigid body simulator, mesh processing tools, and an in
   </section>
   <section>
     <h3>Programmable Shading</h3>
-    <p>A small DSL for authoring materials and camera ray generation in GLSL, hot-reloaded at runtime with parameters surfaced automatically in the editor.</p>
+    <p>A small DSL for authoring materials, camera ray generation, and full-screen compositing passes in GLSL, hot-reloaded at runtime with parameters surfaced automatically in the editor.</p>
   </section>
   <section>
     <h3>Camera</h3>
@@ -163,20 +163,20 @@ Depth of field and motion blur are native to the `Camera` component. An `f_stop`
 
 The lens itself, in contrast, has no native implementation. The same DSL used for materials extends to ray generation: a camera file declares parameters just like a material, but its `main()` returns a ray (an origin and direction per pixel) instead of a BSDF sample, and hot-reloads the same way. Even bundled lenses like the tilt-shift (Scheimpflug) one are ordinary scripts on top of this DSL. Orthographic projections, fisheye and other wide-angle mappings, a tilted focal plane, or a lens's field-dependent aberrations all become a few lines of GLSL instead of new engine code.
 
-Swapping the projection changes how the camera relates to the scene, not just how it looks. An orthographic camera emits parallel rays, so dollying into a mesh doesn't converge toward it: it slices through the surface and flips to show the inside, like a moving cross-section. A fisheye camera instead spreads the view direction across an extreme field of view, for a hemispherical, barrel-distorted look.
+An orthographic camera emits parallel rays, so dollying into a mesh slices through the surface and flips to show the inside, like a moving cross-section. A fisheye camera spreads the view direction across an extreme field of view, for a hemispherical, barrel-distorted look.
 
 <div class="project-media-grid two" markdown="0">
   <figure class="video-container">
     <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
       <source src="/assets/videos/vk_ray/xray.mp4" type="video/mp4">
     </video>
-    <figcaption>Orthographic camera dollying straight through the Dragon mesh.</figcaption>
+    <figcaption>Orthographic camera effect.</figcaption>
   </figure>
   <figure class="video-container">
     <video autoplay loop muted playsinline preload="auto" disablepictureinpicture>
       <source src="/assets/videos/vk_ray/zoom.mp4" type="video/mp4">
     </video>
-    <figcaption>Fisheye camera orbiting a mesh with an extreme field of view.</figcaption>
+    <figcaption>Fisheye camera effect.</figcaption>
   </figure>
 </div>
 
@@ -184,8 +184,23 @@ Custom ray generation also reaches further than the aperture masks above: a Petz
 
 <figure class="project-hero-media">
   <img src="/assets/imgs/projects/vk_ray/rays/petzval-bunny.webp" alt="Glass bunny rendered with a Petzval-lens camera, showing swirly edge bokeh">
-  <figcaption>Petzval-lens camera: swirly, field-curved bokeh from custom ray sampling, not an aperture mask.</figcaption>
+  <figcaption>Petzval-lens camera with swirly, field-curved bokeh.</figcaption>
 </figure>
+
+## Compositing
+
+The same DSL also authors full-screen compositing passes. A compositing script reads the beauty, normal, albedo, depth, and sky mask AOVs and writes a new image from them, hot-reloading and exposing parameters in the editor just like materials and lenses.
+
+<div class="project-media-grid two" markdown="0">
+  <figure>
+    <img src="/assets/imgs/projects/vk_ray/compositing/drawing.webp" alt="Dragon render composited into an inked crosshatch line drawing">
+    <figcaption>Inked crosshatch effect.</figcaption>
+  </figure>
+  <figure>
+    <img src="/assets/imgs/projects/vk_ray/compositing/halftone.webp" alt="Dragon render composited into a halftone dot-screen print with offset color channels">
+    <figcaption>Printer halftone effect.</figcaption>
+  </figure>
+</div>
 
 ## Simulation and Animation
 
