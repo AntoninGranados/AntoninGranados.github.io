@@ -202,6 +202,32 @@ The same DSL also authors full-screen compositing passes. A compositing script r
   </figure>
 </div>
 
+### Denoising
+
+Direct light sampling and BSDF sampling combined through MIS cut noise, but at the low sample counts needed for interactive rendering, some variance is still visible. The compositing pass that follows the path tracer also runs a screen-space, edge-avoiding À-Trous wavelet filter, following Dammertz et al. [Edge-Avoiding À-Trous Wavelet Transform for Fast Global Illumination Filtering](https://jo.dreggn.org/home/2010_atrous.pdf).
+
+<figure class="compare-slider-figure" markdown="0">
+  <div class="compare-slider" data-lightbox="compare" data-p1="33.3" data-p2="66.6" style="--cs-aspect:1/1">
+    <img src="/assets/imgs/projects/vk_ray/denoising/default.webp" alt="" aria-hidden="true">
+    <img src="/assets/imgs/projects/vk_ray/denoising/sampling.webp" alt="" aria-hidden="true">
+    <img src="/assets/imgs/projects/vk_ray/denoising/denoise.webp" alt="" aria-hidden="true">
+    <div class="compare-slider-handle" tabindex="0" role="slider" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="100" aria-label="Divider between default and importance-sampled renders">
+      <span class="compare-slider-grip" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M8 5L3 12L8 19M16 5L21 12L16 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </div>
+    <div class="compare-slider-handle" tabindex="0" role="slider" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="100" aria-label="Divider between importance-sampled and denoised renders">
+      <span class="compare-slider-grip" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M8 5L3 12L8 19M16 5L21 12L16 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </div>
+    <div class="compare-slider-label">Default</div>
+    <div class="compare-slider-label">Importance Sampling</div>
+    <div class="compare-slider-label">Denoised</div>
+  </div>
+  <figcaption>Same scene at 16 spp. Left to right: default, importance sampling, denoised.</figcaption>
+</figure>
+
 ## Simulation and Animation
 
 The simulation system is scheduled through the ECS and updates transform and rigid body components. Physics is computed offline with a fixed timestep of `1e-4` seconds, then stored as snapshots per animation frame. This makes playback deterministic and avoids re-simulating when scrubbing through the timeline.

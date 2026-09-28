@@ -161,6 +161,7 @@
     });
   </script>
   <script src="/assets/js/rotation-viewer.js"></script>
+  <script src="/assets/js/compare-slider.js"></script>
   <script>
     (function () {
       /* ── Lightbox (images + videos) ── */
@@ -174,6 +175,7 @@
 
       var lbMedia = null, lbWrap = null, progRaf = null, lbIdx = -1;
       var lbRotationDestroy = null;
+      var lbCompareEl = null, lbCompareHome = null, lbCompareNext = null;
 
       function cleanupLbMedia() {
         if (lbRotationDestroy) { lbRotationDestroy(); lbRotationDestroy = null; }
@@ -182,6 +184,15 @@
           lbMedia.src = '';
         }
         lbMedia = null;
+        if (lbCompareEl) {
+          lbCompareEl.style.margin = '';
+          lbCompareEl.style.width = '';
+          lbCompareEl.style.maxWidth = '';
+          lbCompareEl.style.cursor = '';
+          if (lbCompareNext) lbCompareHome.insertBefore(lbCompareEl, lbCompareNext);
+          else lbCompareHome.appendChild(lbCompareEl);
+          lbCompareEl = null; lbCompareHome = null; lbCompareNext = null;
+        }
       }
       var prevBtn = overlay.querySelector('.lightbox-prev');
       var nextBtn = overlay.querySelector('.lightbox-next');
@@ -234,6 +245,7 @@
       ));
 
       function openLightbox(el) {
+        if (el.closest('.lightbox-overlay')) return;
         lbIdx = lbItems.indexOf(el);
         pbDragging = false; pbProgress = null; pbFill = null;
         if (progRaf) { cancelAnimationFrame(progRaf); progRaf = null; }
@@ -300,6 +312,16 @@
           lbWrap.appendChild(progress);
           var lbPlayPromise = lbMedia.play();
           if (lbPlayPromise && lbPlayPromise.catch) lbPlayPromise.catch(function () {});
+        } else if (el.classList.contains('compare-slider')) {
+          lbWrap.className = 'lightbox-compare-wrap';
+          lbCompareEl = el;
+          lbCompareHome = el.parentNode;
+          lbCompareNext = el.nextSibling;
+          el.style.margin = '0';
+          el.style.width = 'min(88vw, calc(94vh - 2.5rem), 1100px)';
+          el.style.maxWidth = '100%';
+          el.style.cursor = 'auto';
+          lbWrap.appendChild(el);
         } else {
           lbMedia = document.createElement('img');
           lbMedia.src = el.src;
