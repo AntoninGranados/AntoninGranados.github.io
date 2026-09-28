@@ -225,7 +225,7 @@ Direct light sampling and BSDF sampling combined through MIS cut noise, but at t
     <div class="compare-slider-label">Importance Sampling</div>
     <div class="compare-slider-label">Denoised</div>
   </div>
-  <figcaption>Same scene at 16 spp. Left to right: default, importance sampling, denoised.</figcaption>
+  <figcaption>Same scene at 8 spp. Left to right: default, importance sampling, denoised.</figcaption>
 </figure>
 
 ## Simulation and Animation
