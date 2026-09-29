@@ -191,14 +191,18 @@ Custom ray generation also reaches further than the aperture masks above: a Petz
 
 The same DSL also authors full-screen compositing passes. A compositing script reads the beauty, normal, albedo, depth, and sky mask AOVs and writes a new image from them, hot-reloading and exposing parameters in the editor just like materials and lenses.
 
-<div class="project-media-grid two" markdown="0">
+<div class="project-media-grid three" markdown="0">
   <figure>
     <img src="/assets/imgs/projects/vk_ray/compositing/drawing.webp" alt="Dragon render composited into an inked crosshatch line drawing">
     <figcaption>Inked crosshatch effect.</figcaption>
   </figure>
   <figure>
     <img src="/assets/imgs/projects/vk_ray/compositing/halftone.webp" alt="Dragon render composited into a halftone dot-screen print with offset color channels">
-    <figcaption>Printer halftone effect.</figcaption>
+    <figcaption>Printer <a href="https://en.wikipedia.org/wiki/Halftone">halftone</a> effect.</figcaption>
+  </figure>
+  <figure>
+    <img src="/assets/imgs/projects/vk_ray/compositing/kuwahara.webp" alt="Dragon render composited with a Kuwahara filter, giving it a painterly, faceted look">
+    <figcaption><a href="https://en.wikipedia.org/wiki/Kuwahara_filter">Kuwahara filter</a>, for a painterly effect.</figcaption>
   </figure>
 </div>
 
